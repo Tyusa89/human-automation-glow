@@ -1,0 +1,128 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Mail, Send } from "lucide-react";
+
+const Contact = () => {
+  return (
+    <section className="py-20 bg-accent text-primary">
+      <div className="container mx-auto px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
+              Let's Build Something Amazing Together
+            </h2>
+            <p className="text-lg text-primary/80 max-w-2xl mx-auto">
+              Ready to transform your business with AI? Get in touch and let's discuss your project.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Contact Form */}
+            <Card className="bg-white/95 backdrop-blur-sm border-white/20 shadow-xl">
+              <CardHeader>
+                <CardTitle className="text-2xl font-semibold text-primary flex items-center">
+                  <Send className="mr-2 h-6 w-6" />
+                  Send Us a Message
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-primary font-medium">
+                    Name
+                  </Label>
+                  <Input 
+                    id="name" 
+                    type="text" 
+                    placeholder="Your full name"
+                    className="border-primary/20 focus:border-primary/40 bg-white/80"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-primary font-medium">
+                    Email
+                  </Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="your@email.com"
+                    className="border-primary/20 focus:border-primary/40 bg-white/80"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="message" className="text-primary font-medium">
+                    Message
+                  </Label>
+                  <Textarea 
+                    id="message" 
+                    placeholder="Tell us about your project and how we can help..."
+                    rows={5}
+                    className="border-primary/20 focus:border-primary/40 bg-white/80 resize-none"
+                  />
+                </div>
+                
+                <Button 
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 text-lg transition-all duration-300 transform hover:scale-105"
+                  size="lg"
+                >
+                  Send Request
+                  <Send className="ml-2 h-5 w-5" />
+                </Button>
+              </CardContent>
+            </Card>
+            
+            {/* Direct Contact Info */}
+            <div className="space-y-8">
+              <Card className="bg-white/95 backdrop-blur-sm border-white/20 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="text-2xl font-semibold text-primary flex items-center">
+                    <Mail className="mr-2 h-6 w-6" />
+                    Direct Contact
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-primary/80 mb-4 leading-relaxed">
+                    Prefer to reach out directly? Send us an email and we'll get back to you within 24 hours.
+                  </p>
+                  <a 
+                    href="mailto:hello@econestai.com"
+                    className="inline-flex items-center text-xl font-semibold text-primary hover:text-primary/80 transition-colors"
+                  >
+                    hello@econestai.com
+                    <Mail className="ml-2 h-5 w-5" />
+                  </a>
+                </CardContent>
+              </Card>
+              
+              <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 border border-white/20 shadow-lg">
+                <h3 className="text-xl font-semibold text-primary mb-3">
+                  What Happens Next?
+                </h3>
+                <ul className="space-y-2 text-primary/80">
+                  <li className="flex items-start">
+                    <span className="inline-block w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                    We'll review your project requirements
+                  </li>
+                  <li className="flex items-start">
+                    <span className="inline-block w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                    Schedule a consultation call within 48 hours
+                  </li>
+                  <li className="flex items-start">
+                    <span className="inline-block w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                    Provide a custom proposal and timeline
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Contact;
