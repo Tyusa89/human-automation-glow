@@ -3,9 +3,67 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Send } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { Mail, Send, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useState } from "react";
+
+const contactSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
+});
+
+type ContactForm = z.infer<typeof contactSchema>;
 
 const Contact = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm<ContactForm>({
+    resolver: zodResolver(contactSchema)
+  });
+
+  const onSubmit = async (data: ContactForm) => {
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('/functions/v1/contact-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: "Message sent successfully!",
+          description: "Thank you for contacting us. We'll get back to you soon with an auto-reply confirmation.",
+        });
+        reset();
+      } else {
+        throw new Error(result.error || 'Failed to send message');
+      }
+    } catch (error) {
+      toast({
+        title: "Failed to send message",
+        description: "Please try again or contact us directly at hello@econestai.com",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <section className="py-20 bg-accent text-primary">
       <div className="container mx-auto px-4">
@@ -29,49 +87,74 @@ const Contact = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-primary font-medium">
-                    Name
-                  </Label>
-                  <Input 
-                    id="name" 
-                    type="text" 
-                    placeholder="Your full name"
-                    className="border-primary/20 focus:border-primary/40 bg-white/80"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-primary font-medium">
-                    Email
-                  </Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="your@email.com"
-                    className="border-primary/20 focus:border-primary/40 bg-white/80"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="message" className="text-primary font-medium">
-                    Message
-                  </Label>
-                  <Textarea 
-                    id="message" 
-                    placeholder="Tell us about your project and how we can help..."
-                    rows={5}
-                    className="border-primary/20 focus:border-primary/40 bg-white/80 resize-none"
-                  />
-                </div>
-                
-                <Button 
-                  className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 text-lg transition-all duration-300 transform hover:scale-105"
-                  size="lg"
-                >
-                  Send Request
-                  <Send className="ml-2 h-5 w-5" />
-                </Button>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-primary font-medium">
+                      Name
+                    </Label>
+                    <Input 
+                      id="name" 
+                      type="text" 
+                      placeholder="Your full name"
+                      className="border-primary/20 focus:border-primary/40 bg-white/80"
+                      {...register("name")}
+                    />
+                    {errors.name && (
+                      <p className="text-sm text-destructive">{errors.name.message}</p>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-primary font-medium">
+                      Email
+                    </Label>
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      placeholder="your@email.com"
+                      className="border-primary/20 focus:border-primary/40 bg-white/80"
+                      {...register("email")}
+                    />
+                    {errors.email && (
+                      <p className="text-sm text-destructive">{errors.email.message}</p>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="message" className="text-primary font-medium">
+                      Message
+                    </Label>
+                    <Textarea 
+                      id="message" 
+                      placeholder="Tell us about your project and how we can help..."
+                      rows={5}
+                      className="border-primary/20 focus:border-primary/40 bg-white/80 resize-none"
+                      {...register("message")}
+                    />
+                    {errors.message && (
+                      <p className="text-sm text-destructive">{errors.message.message}</p>
+                    )}
+                  </div>
+                  
+                  <Button 
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 text-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    size="lg"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        Send Request
+                        <Send className="ml-2 h-5 w-5" />
+                      </>
+                    )}
+                  </Button>
+                </form>
               </CardContent>
             </Card>
             
