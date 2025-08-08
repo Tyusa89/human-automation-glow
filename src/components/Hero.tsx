@@ -21,8 +21,7 @@ const Hero = () => {
           </p>
           
           <p className="text-lg md:text-xl text-foreground/80 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Experience the future of intelligent automation with AI that understands context, 
-            adapts to your needs, and delivers results that feel naturally human.
+            At EcoNest AI, we design intelligent systems that work the way you do — with efficiency, clarity, and a human touch. From custom AI agents to automated workflows, we help creators, coaches, and businesses save time, reduce stress, and focus on what truly matters.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
