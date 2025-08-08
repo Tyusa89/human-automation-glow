@@ -16,7 +16,7 @@ const Services = () => {
     {
       icon: Layout,
       title: "Dashboard Integration",
-      description: "Link your tools into one clean, client-friendly interface."
+      description: "Bring all your tools together in one clear, easy-to-use dashboard. We connect platforms like Notion, Airtable, and Google Sheets so you can see everything that matters — all in one place."
     },
     {
       icon: Target,
