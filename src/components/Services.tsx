@@ -21,7 +21,7 @@ const Services = () => {
     {
       icon: Target,
       title: "AI Strategy Consulting",
-      description: "Tailored guidance to align AI with your goals."
+      description: "Unsure where to start? We help you identify the most impactful AI solutions for your goals, guiding you from idea to implementation with a focus on simplicity and results."
     }
   ];
 
