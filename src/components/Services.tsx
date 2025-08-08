@@ -6,22 +6,22 @@ const Services = () => {
     {
       icon: MessageCircle,
       title: "Custom AI Agents",
-      description: "Chatbots and virtual assistants built to match your brand's personality. Whether it's guiding customers, answering FAQs, or delivering personalized recommendations, our agents work 24/7 so you don't have to."
+      description: "24/7 virtual assistants built for your brand."
     },
     {
       icon: Settings,
       title: "Workflow Automation", 
-      description: "Free your time by automating repetitive tasks. From lead collection to follow-up emails, we design smooth, reliable workflows that keep your business running without constant oversight."
+      description: "Automate tasks and free your time."
     },
     {
       icon: LayoutDashboard,
       title: "Dashboard Integration",
-      description: "Bring all your tools together in one clear, easy-to-use dashboard. We connect platforms like Notion, Airtable, and Google Sheets so you can see everything that matters — all in one place."
+      description: "All your data, tools, and insights in one place."
     },
     {
       icon: Lightbulb,
       title: "AI Strategy Consulting",
-      description: "Unsure where to start? We help you identify the most impactful AI solutions for your goals, guiding you from idea to implementation with a focus on simplicity and results."
+      description: "Smart, simple AI solutions tailored to your goals."
     }
   ];
 
