@@ -6,7 +6,7 @@ const Services = () => {
     {
       icon: Bot,
       title: "Custom AI Agents",
-      description: "Chatbots and assistants designed for your brand and audience."
+      description: "Chatbots and virtual assistants built to match your brand's personality. Whether it's guiding customers, answering FAQs, or delivering personalized recommendations, our agents work 24/7 so you don't have to."
     },
     {
       icon: Zap,
