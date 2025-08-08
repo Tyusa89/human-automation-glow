@@ -11,7 +11,7 @@ const Services = () => {
     {
       icon: Zap,
       title: "Workflow Automation", 
-      description: "Automate repetitive tasks so you can focus on growth."
+      description: "Free your time by automating repetitive tasks. From lead collection to follow-up emails, we design smooth, reliable workflows that keep your business running without constant oversight."
     },
     {
       icon: Layout,
