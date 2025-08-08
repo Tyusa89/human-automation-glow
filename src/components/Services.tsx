@@ -1,25 +1,25 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bot, Zap, Layout, Target } from "lucide-react";
+import { MessageCircle, Settings, LayoutDashboard, Lightbulb } from "lucide-react";
 
 const Services = () => {
   const services = [
     {
-      icon: Bot,
+      icon: MessageCircle,
       title: "Custom AI Agents",
       description: "Chatbots and virtual assistants built to match your brand's personality. Whether it's guiding customers, answering FAQs, or delivering personalized recommendations, our agents work 24/7 so you don't have to."
     },
     {
-      icon: Zap,
+      icon: Settings,
       title: "Workflow Automation", 
       description: "Free your time by automating repetitive tasks. From lead collection to follow-up emails, we design smooth, reliable workflows that keep your business running without constant oversight."
     },
     {
-      icon: Layout,
+      icon: LayoutDashboard,
       title: "Dashboard Integration",
       description: "Bring all your tools together in one clear, easy-to-use dashboard. We connect platforms like Notion, Airtable, and Google Sheets so you can see everything that matters — all in one place."
     },
     {
-      icon: Target,
+      icon: Lightbulb,
       title: "AI Strategy Consulting",
       description: "Unsure where to start? We help you identify the most impactful AI solutions for your goals, guiding you from idea to implementation with a focus on simplicity and results."
     }
