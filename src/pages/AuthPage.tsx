@@ -1,15 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+type Tab = 'magic' | 'password';
 
 export default function AuthPage() {
+  const [tab, setTab] = useState<Tab>('magic');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [password, setPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -17,7 +20,7 @@ export default function AuthPage() {
     });
   }, []);
 
-  async function handleMagicLink(e: React.FormEvent) {
+  async function handleMagic(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
@@ -29,115 +32,78 @@ export default function AuthPage() {
     setSent(true);
   }
 
-  async function handleEmailPassword(e: React.FormEvent, isSignUp: boolean) {
+  async function handlePassword(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    
-    if (isSignUp) {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: window.location.origin + '/dashboard' }
-      });
-      if (error) {
-        setLoading(false);
-        return alert(error.message);
-      }
-      setSent(true);
-    } else {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      if (error) {
-        setLoading(false);
-        return alert(error.message);
-      }
-      // Successful sign in will be handled by the redirect in useEffect
-    }
+    const fn = isSignUp ? supabase.auth.signUp : supabase.auth.signInWithPassword;
+    const { data, error } = await fn({ email, password });
     setLoading(false);
+    if (error) return alert(error.message);
+    if (isSignUp && data.user) {
+      // optional: create profile row here or on first dashboard load
+    }
+    window.location.replace('/dashboard');
+  }
+
+  async function handleReset() {
+    if (!email) return alert('Enter your email first');
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/auth' // Supabase will send link; handle update password on this page if you want
+    });
+    if (error) return alert(error.message);
+    alert('Password reset email sent.');
   }
 
   return (
     <div className="min-h-screen grid place-items-center p-6">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Sign in to EcoNest AI</CardTitle>
-          <CardDescription>Choose your preferred authentication method</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="magic-link" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="magic-link">Magic Link</TabsTrigger>
-              <TabsTrigger value="email-password">Email + Password</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="magic-link" className="space-y-4">
-              {sent ? (
-                <p className="text-center text-sm text-muted-foreground">
-                  Magic link sent. Check your email.
-                </p>
-              ) : (
-                <form onSubmit={handleMagicLink} className="space-y-4">
-                  <Input
-                    type="email"
-                    placeholder="you@company.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? 'Sending…' : 'Send magic link'}
-                  </Button>
-                </form>
-              )}
-            </TabsContent>
-            
-            <TabsContent value="email-password" className="space-y-4">
-              <form className="space-y-4">
-                <Input
-                  type="email"
-                  placeholder="you@company.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <Input
-                  type="password"
-                  placeholder="Your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <div className="flex gap-2">
-                  <Button 
-                    type="button"
-                    variant="outline"
-                    className="flex-1" 
-                    disabled={loading}
-                    onClick={(e) => handleEmailPassword(e, false)}
-                  >
-                    {loading ? 'Signing in…' : 'Sign In'}
-                  </Button>
-                  <Button 
-                    type="button"
-                    className="flex-1" 
-                    disabled={loading}
-                    onClick={(e) => handleEmailPassword(e, true)}
-                  >
-                    {loading ? 'Signing up…' : 'Sign Up'}
-                  </Button>
-                </div>
-              </form>
-              {sent && (
-                <p className="text-center text-sm text-muted-foreground">
-                  Confirmation email sent. Check your inbox.
-                </p>
-              )}
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+      <div className="w-full max-w-md space-y-6">
+        <h1 className="text-2xl font-bold">Sign in to EcoNest AI</h1>
+
+        {/* Tabs */}
+        <div className="flex gap-2">
+          <Button variant={tab==='magic'?'default':'outline'} onClick={()=>setTab('magic')}>Magic link</Button>
+          <Button variant={tab==='password'?'default':'outline'} onClick={()=>setTab('password')}>Email + password</Button>
+        </div>
+
+        {/* Shared email field */}
+        <Input
+          type="email"
+          placeholder="you@company.com"
+          value={email}
+          onChange={(e)=>setEmail(e.target.value)}
+          required
+        />
+
+        {tab === 'magic' ? (
+          <form onSubmit={handleMagic} className="space-y-3">
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Sending…' : 'Send magic link'}
+            </Button>
+            {sent && <p className="text-sm text-muted-foreground">Magic link sent. Check your email.</p>}
+          </form>
+        ) : (
+          <form onSubmit={handlePassword} className="space-y-3">
+            <Input
+              type="password"
+              placeholder="Your password"
+              value={password}
+              onChange={(e)=>setPassword(e.target.value)}
+              required
+            />
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? (isSignUp ? 'Creating…' : 'Signing in…') : (isSignUp ? 'Create account' : 'Sign in')}
+            </Button>
+            <div className="flex items-center justify-between text-sm">
+              <button type="button" className="underline" onClick={()=>setIsSignUp(s=>!s)}>
+                {isSignUp ? 'Have an account? Sign in' : 'New here? Create account'}
+              </button>
+              <button type="button" className="underline" onClick={handleReset}>
+                Forgot password?
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   );
 }
