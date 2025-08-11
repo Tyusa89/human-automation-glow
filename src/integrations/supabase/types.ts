@@ -191,6 +191,39 @@ export type Database = {
         }
         Relationships: []
       }
+      results: {
+        Row: {
+          created_at: string
+          id: string
+          logs: string[] | null
+          params: Json | null
+          payload: Json | null
+          status: string
+          task: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logs?: string[] | null
+          params?: Json | null
+          payload?: Json | null
+          status?: string
+          task: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logs?: string[] | null
+          params?: Json | null
+          payload?: Json | null
+          status?: string
+          task?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           assignee: string | null
