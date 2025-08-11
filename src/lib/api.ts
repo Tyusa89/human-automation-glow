@@ -29,6 +29,12 @@ interface NoteData {
   tags?: string[];
 }
 
+interface MeetingData {
+  lead_email: string;
+  start_iso: string;
+  duration_min?: number;
+}
+
 interface TraceData {
   action: string;
   component: string;
@@ -249,6 +255,51 @@ class APIClient {
     };
   }
 
+  // Meeting scheduling
+  async scheduleMeeting(meetingData: MeetingData): Promise<APIResponse> {
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      // Generate a placeholder meeting link
+      const meetingId = `meeting_${Date.now()}`;
+      const placeholderLink = `https://meet.econest.ai/join/${meetingId}`;
+      
+      const { data, error } = await supabase
+        .from('meetings')
+        .insert([{
+          lead_email: meetingData.lead_email,
+          start_time: meetingData.start_iso,
+          duration_minutes: meetingData.duration_min || 30,
+          meeting_link: placeholderLink,
+          status: 'scheduled'
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error scheduling meeting:', error);
+        return {
+          success: false,
+          error: error.message
+        };
+      }
+
+      return {
+        success: true,
+        data: {
+          ...data,
+          placeholder_link: placeholderLink
+        }
+      };
+    } catch (error) {
+      console.error('Error in scheduleMeeting:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to schedule meeting'
+      };
+    }
+  }
+
   // User management
   async getUserProfile(email: string): Promise<APIResponse> {
     try {
@@ -291,6 +342,7 @@ export const apiClient = new APIClient();
 // Export individual functions for convenience
 export const createLead = (data: LeadData) => apiClient.createLead(data);
 export const createTask = (data: TaskData) => apiClient.createTask(data);
+export const scheduleMeeting = (data: MeetingData) => apiClient.scheduleMeeting(data);
 export const logNote = (data: NoteData) => apiClient.logNote(data);
 export const logTrace = (data: TraceData) => apiClient.logTrace(data);
 export const fetchKB = (query: string, topK?: number) => apiClient.fetchKB(query, topK);
