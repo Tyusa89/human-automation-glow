@@ -31,6 +31,7 @@ interface SPADEResult {
   requiresConfirmation?: boolean;
   requiresClarification?: boolean;
   clarificationQuestion?: string;
+  lowConfidenceOptions?: string[];
   reason?: string;
 }
 
@@ -57,13 +58,14 @@ export class SPADEGuardrails {
       console.log(`SPADE: Evaluating action "${action}" with confidence ${confidence}`);
     }
 
-    // Check if confidence is too low for clarification
+    // Check if confidence is too low - offer options instead of just clarification
     if (confidence < this.config.clarificationThreshold) {
       return {
         shouldProceed: false,
         requiresClarification: true,
-        clarificationQuestion: this.generateClarificationQuestion(context),
-        reason: 'Low confidence requires clarification'
+        lowConfidenceOptions: ['Summarize options', 'Pull docs', 'Escalate to human'],
+        clarificationQuestion: this.generateTargetedQuestion(context),
+        reason: 'Low confidence requires clarification or user choice'
       };
     }
 
@@ -81,6 +83,19 @@ export class SPADEGuardrails {
       shouldProceed: true,
       reason: 'Action meets SPADE requirements'
     };
+  }
+
+  /**
+   * Generate a targeted question for low confidence scenarios
+   */
+  private generateTargetedQuestion(context: ActionContext): string {
+    const { action, userIntent } = context;
+    
+    if (userIntent) {
+      return `I need clarification: What specifically would you like me to do regarding "${userIntent}"?`;
+    }
+    
+    return `I'm not confident about "${action}". What's your preferred next step?`;
   }
 
   /**
