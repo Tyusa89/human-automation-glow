@@ -1,0 +1,2 @@
+-- Create edge function for SOP generation using AI
+-- This will use OpenAI API to generate SOP steps from documents and policies

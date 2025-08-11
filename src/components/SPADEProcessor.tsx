@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { processUserInput } from '@/lib/spade';
-import { createLead, createTask } from '@/lib/api';
+import { createLead, createTask, fetchKB } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle, Clock, AlertCircle, User, Building, Calendar, Mail, MessageSquare, X } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { CheckCircle, Clock, AlertCircle, User, Building, Calendar, Mail, MessageSquare, X, FileText, Lightbulb } from 'lucide-react';
 
 interface SPADEProcessorProps {
   userInput: string;
@@ -38,6 +39,12 @@ export const SPADEProcessor: React.FC<SPADEProcessorProps> = ({ userInput, conte
       // Check if this is transcript processing
       if (spadePlan.plan.some(step => step.tool === 'extract_action_items')) {
         await handleTranscriptProcessing(spadePlan);
+        return;
+      }
+
+      // Check if this is SOP creation
+      if (spadePlan.plan.some(step => step.tool === 'generate_sop_steps')) {
+        await handleSOPCreation(spadePlan);
         return;
       }
 
@@ -197,6 +204,92 @@ export const SPADEProcessor: React.FC<SPADEProcessorProps> = ({ userInput, conte
     return emails ? emails[0] : null;
   };
 
+  const handleSOPCreation = async (spadePlan: any) => {
+    const actions = [];
+    
+    try {
+      // Extract search terms from the user input for KB lookup
+      const searchQuery = extractSearchTermsFromInput(userInput);
+      
+      // Call the SOP generation edge function
+      const { data, error } = await supabase.functions.invoke('generate-sop', {
+        body: {
+          document: userInput,
+          searchQuery: searchQuery
+        }
+      });
+
+      if (error) throw error;
+
+      const { sopContent, firstStepTitle, relatedPolicies, stepsCount } = data;
+
+      // Create a task for the first step only
+      if (firstStepTitle) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        const taskData = {
+          title: firstStepTitle,
+          due_iso: tomorrow.toISOString(),
+          assignee: 'Process Owner',
+          priority: 'high' as const,
+          description: `First step in implementing the generated SOP. Total steps: ${stepsCount}`
+        };
+
+        const taskResult = await createTask(taskData);
+        if (taskResult.success) {
+          actions.push({
+            type: 'task_created',
+            data: taskResult.data,
+            status: 'success'
+          });
+        }
+      }
+
+      // Store the SOP content for display
+      actions.push({
+        type: 'sop_generated',
+        data: { 
+          content: sopContent, 
+          relatedPolicies,
+          stepsCount,
+          firstStepTitle
+        },
+        status: 'success'
+      });
+
+      setExecutedActions(actions);
+      
+      toast({
+        title: "SOP Generated",
+        description: `Created SOP with ${stepsCount} steps and task for first step`,
+      });
+
+    } catch (error) {
+      console.error('SOP generation error:', error);
+      actions.push({
+        type: 'sop_failed',
+        data: { error: error.message },
+        status: 'error'
+      });
+      setExecutedActions(actions);
+      
+      toast({
+        title: "SOP Generation Failed",
+        description: "Please check your OpenAI API key configuration",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const extractSearchTermsFromInput = (input: string): string => {
+    // Extract key terms for knowledge base search
+    const words = input.toLowerCase().split(/\s+/);
+    const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'turn', 'this', 'into', 'doc', 'document']);
+    const keyWords = words.filter(word => word.length > 3 && !stopWords.has(word));
+    return keyWords.slice(0, 5).join(' '); // Take first 5 relevant words
+  };
+
   const handleConfirmSend = async () => {
     if (!pendingDraft) return;
 
@@ -347,6 +440,28 @@ export const SPADEProcessor: React.FC<SPADEProcessorProps> = ({ userInput, conte
                   {action.type === 'task_failed' && (
                     <div className="text-sm text-red-600">
                       Failed to create task: {action.data.title}
+                    </div>
+                  )}
+                  {action.type === 'sop_generated' && (
+                    <div className="text-sm space-y-3">
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-3 w-3" />
+                        <span className="font-medium">SOP Generated ({action.data.stepsCount} steps)</span>
+                      </div>
+                      <div className="bg-muted p-3 rounded text-xs max-h-40 overflow-y-auto">
+                        <pre className="whitespace-pre-wrap font-mono">{action.data.content}</pre>
+                      </div>
+                      {action.data.relatedPolicies && (
+                        <div className="text-xs text-muted-foreground">
+                          <Lightbulb className="h-3 w-3 inline mr-1" />
+                          Related policies were included in generation
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {action.type === 'sop_failed' && (
+                    <div className="text-sm text-red-600">
+                      Failed to generate SOP: {action.data.error}
                     </div>
                   )}
                 </Card>
