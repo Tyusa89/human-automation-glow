@@ -230,6 +230,39 @@ export type Database = {
         }
         Relationships: []
       }
+      traces: {
+        Row: {
+          confidence: number
+          created_at: string
+          id: string
+          intent: string
+          plan: string | null
+          solved: boolean
+          tools_used: string | null
+          updated_at: string
+        }
+        Insert: {
+          confidence: number
+          created_at?: string
+          id?: string
+          intent: string
+          plan?: string | null
+          solved: boolean
+          tools_used?: string | null
+          updated_at?: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          id?: string
+          intent?: string
+          plan?: string | null
+          solved?: boolean
+          tools_used?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

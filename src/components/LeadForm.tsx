@@ -38,11 +38,11 @@ const LeadForm = () => {
       if (result.success) {
         // Log successful lead creation
         await logTrace({
-          action: 'Lead Form Submission',
-          component: 'ContactForm',
-          status: 'success',
-          message: `Lead created for ${formData.email}`,
-          metadata: { leadId: result.data?.id }
+          intent: 'Lead Form Submission',
+          plan: 'Create lead and send confirmation',
+          tools_used: 'createLead',
+          confidence: 1.0,
+          solved: true
         });
         
         toast({
@@ -64,11 +64,11 @@ const LeadForm = () => {
       // Log error trace
       const { logTrace } = await import('@/lib/api');
       await logTrace({
-        action: 'Lead Form Submission',
-        component: 'ContactForm',
-        status: 'error',
-        message: error instanceof Error ? error.message : 'Unknown error',
-        metadata: { formData }
+        intent: 'Lead Form Submission',
+        plan: 'Create lead and handle error',
+        tools_used: 'createLead',
+        confidence: 0.0,
+        solved: false
       });
       
       toast({

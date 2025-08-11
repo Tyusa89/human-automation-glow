@@ -37,11 +37,11 @@ interface MeetingData {
 }
 
 interface TraceData {
-  action: string;
-  component: string;
-  status: 'success' | 'error' | 'warning' | 'pending';
-  message: string;
-  metadata?: Record<string, any>;
+  intent: string;
+  plan?: string;
+  tools_used?: string;
+  confidence: number;
+  solved: boolean;
 }
 
 // Base API client configuration
@@ -263,18 +263,40 @@ class APIClient {
   }
 
   async logTrace(traceData: TraceData): Promise<APIResponse> {
-    console.log('Logging trace:', traceData);
-    
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
-    return {
-      success: true,
-      data: {
-        id: `trace_${Date.now()}`,
-        ...traceData,
-        timestamp: new Date().toISOString()
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      const { data, error } = await supabase
+        .from('traces')
+        .insert([{
+          intent: traceData.intent,
+          plan: traceData.plan,
+          tools_used: traceData.tools_used,
+          confidence: traceData.confidence,
+          solved: traceData.solved
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error logging trace:', error);
+        return {
+          success: false,
+          error: error.message
+        };
       }
-    };
+
+      return {
+        success: true,
+        data
+      };
+    } catch (error) {
+      console.error('Error in logTrace:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to log trace'
+      };
+    }
   }
 
   // Meeting scheduling
