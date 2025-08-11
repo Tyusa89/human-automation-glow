@@ -1,15 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Users, CheckSquare, BookOpen, Activity } from 'lucide-react';
 import LeadsTable from '@/components/LeadsTable';
 import TasksTable from '@/components/TasksTable';
 import KBList from '@/components/KBList';
 import TracesList from '@/components/TracesList';
 import { SPADEProcessor } from '@/components/SPADEProcessor';
+import { runTask } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('leads');
+  const [lastKpi, setLastKpi] = useState<any>(null);
+
+  async function loadLastKpi() {
+    const { data } = await supabase
+      .from('results')
+      .select('*')
+      .eq('task', 'daily_kpi')
+      .order('created_at', { ascending: false })
+      .limit(1);
+    setLastKpi(data?.[0]?.payload || null);
+  }
+
+  useEffect(() => { loadLastKpi(); }, []);
+
+  async function handleRunDaily() {
+    const { status } = await runTask('daily_kpi', { since: 'yesterday' });
+    if (status === 'ok') await loadLastKpi();
+  }
 
   const stats = [
     {
@@ -106,6 +127,14 @@ const Dashboard = () => {
                 <div className="mb-4">
                   <h3 className="text-lg font-semibold text-foreground mb-2">Task Management</h3>
                   <p className="text-muted-foreground">Track and manage your automation tasks</p>
+                </div>
+                <div className="mb-4 flex items-center gap-3">
+                  <Button onClick={handleRunDaily}>Run Daily Summary</Button>
+                  {lastKpi && (
+                    <div className="text-sm text-muted-foreground">
+                      Last: {lastKpi.date} · Leads {lastKpi.leads_today} · Tasks {lastKpi.tasks_run} · Avg resp {lastKpi.avg_response_min}m
+                    </div>
+                  )}
                 </div>
                 <TasksTable />
               </TabsContent>
