@@ -34,6 +34,15 @@ interface SPADEResponse {
   actions: SPADEAction[];
   diff: SPADEDiff;
   notes: string[];
+  pendingConfirmation?: OutboundDraft;
+}
+
+interface OutboundDraft {
+  type: 'email' | 'sms' | 'api_post' | 'delete' | 'bulk_update';
+  target: string;
+  content: string;
+  action: string;
+  inputs: Record<string, any>;
 }
 
 interface SPADEConfig {
@@ -135,19 +144,59 @@ export class EcoNestAI {
   /**
    * D: Apply policies: confirm irreversible actions; never send or delete without explicit Confirm
    */
-  async applyPolicies(plan: PlanStep[]): Promise<boolean> {
-    const irreversibleActions = ['send_email', 'delete_data', 'create_payment', 'schedule_meeting', 'publish_content'];
+  async applyPolicies(plan: PlanStep[]): Promise<{ approved: boolean; pendingDraft?: OutboundDraft }> {
+    const outboundActions = ['send_email', 'send_sms', 'send_chat', 'api_post', 'send_notification'];
+    const irreversibleActions = ['delete_data', 'bulk_update', 'create_payment', 'publish_content'];
     
     for (const step of plan) {
+      // Check for outbound messages that need drafting
+      if (outboundActions.includes(step.tool)) {
+        const draft = this.generateOutboundDraft(step);
+        return { approved: false, pendingDraft: draft };
+      }
+      
+      // Check for other irreversible actions
       if (irreversibleActions.includes(step.tool)) {
         const confirmed = await this.requestConfirmation(step.tool, step.inputs);
         if (!confirmed) {
-          return false;
+          return { approved: false };
         }
       }
     }
     
-    return true;
+    return { approved: true };
+  }
+
+  private generateOutboundDraft(step: PlanStep): OutboundDraft {
+    const { tool, inputs } = step;
+    let content = '';
+    let target = '';
+    
+    switch (tool) {
+      case 'send_email':
+        target = inputs.email || inputs.to || 'recipient@example.com';
+        content = inputs.subject ? `Subject: ${inputs.subject}\n\n${inputs.body || inputs.message || ''}` : inputs.message || '';
+        break;
+      case 'send_sms':
+        target = inputs.phone || inputs.to || '+1234567890';
+        content = inputs.message || '';
+        break;
+      case 'api_post':
+        target = inputs.url || inputs.endpoint || 'External API';
+        content = JSON.stringify(inputs.data || inputs.payload || {}, null, 2);
+        break;
+      default:
+        target = inputs.target || 'Unknown';
+        content = inputs.content || inputs.message || JSON.stringify(inputs, null, 2);
+    }
+
+    return {
+      type: tool.replace('send_', '') as OutboundDraft['type'],
+      target,
+      content,
+      action: step.step,
+      inputs
+    };
   }
 
   /**
@@ -223,14 +272,24 @@ export class EcoNestAI {
     }
 
     // D: Apply policies
-    const approved = await this.applyPolicies(plan);
-    if (!approved) {
-      return {
-        plan: [{ step: "Awaiting confirmation", tool: "confirm", inputs: {}, success_criteria: "user confirms" }],
-        actions: [],
-        diff: { sources: [] },
-        notes: ["Action requires user confirmation"]
-      };
+    const policyResult = await this.applyPolicies(plan);
+    if (!policyResult.approved) {
+      if (policyResult.pendingDraft) {
+        return {
+          plan: [{ step: "Draft ready for confirmation", tool: "confirm_outbound", inputs: {}, success_criteria: "user confirms or declines" }],
+          actions: [],
+          diff: { sources: [] },
+          notes: ["Outbound message draft ready for review"],
+          pendingConfirmation: policyResult.pendingDraft
+        };
+      } else {
+        return {
+          plan: [{ step: "Awaiting confirmation", tool: "confirm", inputs: {}, success_criteria: "user confirms" }],
+          actions: [],
+          diff: { sources: [] },
+          notes: ["Action requires user confirmation"]
+        };
+      }
     }
 
     // E: Execute
@@ -285,11 +344,17 @@ export const processUserInput = (input: string, context?: Record<string, any>) =
 export const SPADE_POLICIES = {
   CONFIRMATION_THRESHOLD: 0.8,
   CLARIFICATION_THRESHOLD: 0.6,
-  IRREVERSIBLE_ACTIONS: [
+  OUTBOUND_ACTIONS: [
     'send_email',
+    'send_sms', 
+    'send_chat',
+    'api_post',
+    'send_notification'
+  ],
+  IRREVERSIBLE_ACTIONS: [
     'delete_data',
+    'bulk_update',
     'create_payment',
-    'schedule_meeting',
     'publish_content'
   ]
 } as const;

@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import { processUserInput } from '@/lib/spade';
 import { createLead, createTask } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle, Clock, AlertCircle, User, Building, Calendar } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, User, Building, Calendar, Mail, MessageSquare, X } from 'lucide-react';
 
 interface SPADEProcessorProps {
   userInput: string;
@@ -16,6 +17,8 @@ export const SPADEProcessor: React.FC<SPADEProcessorProps> = ({ userInput, conte
   const [response, setResponse] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [executedActions, setExecutedActions] = useState<any[]>([]);
+  const [pendingDraft, setPendingDraft] = useState<any>(null);
+  const [editedContent, setEditedContent] = useState<string>('');
   const { toast } = useToast();
 
   const handleProcess = async () => {
@@ -24,6 +27,13 @@ export const SPADEProcessor: React.FC<SPADEProcessorProps> = ({ userInput, conte
       // Process through SPADE methodology
       const spadePlan = await processUserInput(userInput, context);
       setResponse(spadePlan);
+
+      // Check if there's a pending outbound draft
+      if (spadePlan.pendingConfirmation) {
+        setPendingDraft(spadePlan.pendingConfirmation);
+        setEditedContent(spadePlan.pendingConfirmation.content);
+        return; // Stop here and wait for user confirmation
+      }
 
       // Execute the actual plan with real API calls
       const actions = [];
@@ -95,6 +105,70 @@ export const SPADEProcessor: React.FC<SPADEProcessorProps> = ({ userInput, conte
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleConfirmSend = async () => {
+    if (!pendingDraft) return;
+
+    setIsProcessing(true);
+    try {
+      // Log the trace entry for sent message
+      const traceEntry = {
+        action: pendingDraft.action,
+        target: pendingDraft.target,
+        sent: true,
+        timestamp: new Date().toISOString(),
+        content: editedContent
+      };
+      
+      console.log('Outbound message sent:', traceEntry);
+      
+      toast({
+        title: "Message Sent",
+        description: `${pendingDraft.type} sent to ${pendingDraft.target}`,
+      });
+
+      // Clear pending draft and continue with original processing
+      setPendingDraft(null);
+      setEditedContent('');
+      
+      // Continue with the rest of the processing logic
+      await handleProcess();
+      
+    } catch (error) {
+      toast({
+        title: "Send Failed",
+        description: "Failed to send message",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleDeclineSend = () => {
+    if (!pendingDraft) return;
+
+    // Log the trace entry for declined message
+    const traceEntry = {
+      action: pendingDraft.action,
+      target: pendingDraft.target,
+      sent: false,
+      timestamp: new Date().toISOString(),
+      content: editedContent
+    };
+    
+    console.log('Outbound message declined:', traceEntry);
+    
+    toast({
+      title: "Message Declined",
+      description: "Draft discarded, no message sent",
+    });
+
+    // Clear pending draft
+    setPendingDraft(null);
+    setEditedContent('');
+    setResponse(null);
   };
 
   const getStatusIcon = (status: string) => {
@@ -177,6 +251,60 @@ export const SPADEProcessor: React.FC<SPADEProcessorProps> = ({ userInput, conte
                   )}
                 </Card>
               ))}
+            </div>
+          )}
+
+          {pendingDraft && (
+            <div className="space-y-4 border-2 border-orange-200 rounded-lg p-4 bg-orange-50">
+              <div className="flex items-center gap-2">
+                {pendingDraft.type === 'email' ? <Mail className="h-5 w-5" /> : <MessageSquare className="h-5 w-5" />}
+                <h4 className="font-medium text-orange-800">Outbound Message Draft</h4>
+                <Badge variant="outline" className="text-orange-600 border-orange-600">
+                  {pendingDraft.type.toUpperCase()}
+                </Badge>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="text-sm">
+                  <span className="font-medium">To:</span> {pendingDraft.target}
+                </div>
+                <div className="text-sm">
+                  <span className="font-medium">Action:</span> {pendingDraft.action}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Message Content:</label>
+                <Textarea
+                  value={editedContent}
+                  onChange={(e) => setEditedContent(e.target.value)}
+                  className="min-h-[120px]"
+                  placeholder="Edit the message content..."
+                />
+              </div>
+
+              <div className="bg-orange-100 p-3 rounded text-sm text-orange-800">
+                <strong>Confirmation Required:</strong> Do you want to send this now?
+              </div>
+
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleConfirmSend}
+                  disabled={isProcessing}
+                  className="flex-1"
+                >
+                  {isProcessing ? 'Sending...' : 'Yes, Send Now'}
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={handleDeclineSend}
+                  disabled={isProcessing}
+                  className="flex-1"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  No, Discard
+                </Button>
+              </div>
             </div>
           )}
 
