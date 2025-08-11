@@ -3,13 +3,13 @@ import { ArrowRight } from "lucide-react";
 
 const ClosingSection = () => {
   return (
-    <section className="py-20 px-4" style={{ backgroundColor: '#67B497' }}>
+    <section className="py-20 px-4 bg-accent">
       <div className="container mx-auto text-center max-w-4xl">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ color: '#1f4e3d' }}>
+        <h2 className="text-3xl md:text-4xl font-bold mb-6 text-accent-foreground">
           Ready to bring your ideas to life?
         </h2>
         
-        <p className="text-lg md:text-xl mb-8 leading-relaxed" style={{ color: '#2d5a47' }}>
+        <p className="text-lg md:text-xl mb-8 leading-relaxed text-accent-foreground/80">
           Let's build automation that feels human, designed just for you. Whether you're starting small or scaling big, EcoNest AI is here to make your vision work smarter.
         </p>
         
