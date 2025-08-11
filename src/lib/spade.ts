@@ -119,6 +119,12 @@ export class EcoNestAI {
         { step: "Create tasks for each action", tool: "create_multiple_tasks", inputs: {}, success_criteria: "tasks created for all actions" },
         { step: "Link to lead if present", tool: "link_tasks_to_lead", inputs: {}, success_criteria: "tasks linked to lead email" }
       ],
+      'create_sop': [
+        { step: "Fetch related policies from KB", tool: "fetch_KB_answer", inputs: {}, success_criteria: "relevant policies retrieved" },
+        { step: "Generate SOP steps with AI", tool: "generate_sop_steps", inputs: {}, success_criteria: "numbered steps with owners created" },
+        { step: "Create task for first step", tool: "create_task", inputs: {}, success_criteria: "first step task created" },
+        { step: "Output SOP document", tool: "format_sop_output", inputs: {}, success_criteria: "formatted SOP presented" }
+      ],
       'schedule_meeting': [
         { step: "Check existing lead", tool: "get_lead_status", inputs: {}, success_criteria: "lead found or null" },
         { step: "Fill gaps from KB", tool: "fetch_KB_answer", inputs: {}, success_criteria: "facts present" },
@@ -305,6 +311,12 @@ export class EcoNestAI {
   // Helper methods
   private detectIntent(input: string): string {
     const lower = input.toLowerCase();
+    
+    // Check for SOP creation requests
+    if (lower.includes('sop') || (lower.includes('turn') && lower.includes('doc')) || 
+        lower.includes('standard operating procedure') || lower.includes('process document')) {
+      return 'create_sop';
+    }
     
     // Check for transcript patterns
     if (this.isTranscript(input)) {
