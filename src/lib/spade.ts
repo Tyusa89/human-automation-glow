@@ -113,6 +113,12 @@ export class EcoNestAI {
         { step: "Propose next actions", tool: "none", inputs: {}, success_criteria: "user-approved or policy-safe" },
         { step: "Execute", tool: "create_task", inputs: {}, success_criteria: "diff created" }
       ],
+      'process_transcript': [
+        { step: "Extract action items", tool: "extract_action_items", inputs: {}, success_criteria: "3-7 action items identified" },
+        { step: "Identify lead context", tool: "identify_lead_email", inputs: {}, success_criteria: "lead email found or null" },
+        { step: "Create tasks for each action", tool: "create_multiple_tasks", inputs: {}, success_criteria: "tasks created for all actions" },
+        { step: "Link to lead if present", tool: "link_tasks_to_lead", inputs: {}, success_criteria: "tasks linked to lead email" }
+      ],
       'schedule_meeting': [
         { step: "Check existing lead", tool: "get_lead_status", inputs: {}, success_criteria: "lead found or null" },
         { step: "Fill gaps from KB", tool: "fetch_KB_answer", inputs: {}, success_criteria: "facts present" },
@@ -299,6 +305,12 @@ export class EcoNestAI {
   // Helper methods
   private detectIntent(input: string): string {
     const lower = input.toLowerCase();
+    
+    // Check for transcript patterns
+    if (this.isTranscript(input)) {
+      return 'process_transcript';
+    }
+    
     if (lower.includes('lead') || lower.includes('contact') || lower.includes('prospect')) {
       return 'create_lead';
     }
@@ -309,6 +321,65 @@ export class EcoNestAI {
       return 'schedule_meeting';
     }
     return 'unknown';
+  }
+
+  private isTranscript(input: string): boolean {
+    const transcriptIndicators = [
+      /\d{1,2}:\d{2}.*:/,  // Timestamp patterns like "10:30 John:"
+      /\[.*\].*:/,         // Bracket notation like "[John Smith]:"
+      /(speaker|participant)\s*\d+:/i,  // Speaker labels
+      /\w+\s*:\s*[A-Z].*\n.*\w+\s*:/,   // Multiple speaker turns
+      /meeting.*transcript/i,
+      /call.*transcript/i,
+      /conversation.*transcript/i
+    ];
+    
+    const hasMultipleSpeakers = (input.match(/\w+\s*:/g) || []).length >= 2;
+    const hasTranscriptPattern = transcriptIndicators.some(pattern => pattern.test(input));
+    const isLongEnough = input.length > 200; // Transcripts are typically longer
+    
+    return (hasMultipleSpeakers && isLongEnough) || hasTranscriptPattern;
+  }
+
+  private extractActionItems(transcript: string): string[] {
+    const actionPatterns = [
+      /(?:will|going to|need to|should|must|have to|action item|follow up|next step).*?(?:\.|$)/gi,
+      /(?:^|\n).*(?:action|todo|task|follow.*up|next.*step).*?(?:\.|$)/gi,
+      /(?:I'll|we'll|they'll|he'll|she'll).*?(?:\.|$)/gi,
+      /(?:assigned|responsible|owner).*?(?:\.|$)/gi
+    ];
+
+    const actionItems = new Set<string>();
+    
+    actionPatterns.forEach(pattern => {
+      const matches = transcript.match(pattern) || [];
+      matches.forEach(match => {
+        const cleaned = match.trim().replace(/^[^\w]*/, '').replace(/[^\w]*$/, '');
+        if (cleaned.length > 10 && cleaned.length < 150) {
+          actionItems.add(cleaned);
+        }
+      });
+    });
+
+    // Convert to array and limit to 3-7 items
+    const items = Array.from(actionItems).slice(0, 7);
+    return items.length >= 3 ? items : this.generateGenericActions(transcript);
+  }
+
+  private generateGenericActions(transcript: string): string[] {
+    // Fallback: generate generic actions if no specific patterns found
+    return [
+      "Follow up on discussed items",
+      "Review meeting outcomes", 
+      "Share relevant documentation",
+      "Schedule next check-in"
+    ];
+  }
+
+  private findLeadEmail(transcript: string): string | null {
+    const emailPattern = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+    const emails = transcript.match(emailPattern);
+    return emails ? emails[0] : null;
   }
 
   private calculateConfidence(input: string, intent: string): number {
@@ -326,10 +397,21 @@ export class EcoNestAI {
     // Mock implementation - replace with actual tool execution
     console.log(`Executing tool: ${tool}`, inputs);
     
-    return {
-      created: { id: `${tool}_${Date.now()}`, tool, inputs, timestamp: new Date().toISOString() },
-      source: `Tool: ${tool}`
-    };
+    switch (tool) {
+      case 'extract_action_items':
+        const actionItems = this.extractActionItems(this.state.history[this.state.history.length - 1]);
+        return { created: { actionItems }, source: 'Transcript Analysis' };
+      
+      case 'identify_lead_email':
+        const leadEmail = this.findLeadEmail(this.state.history[this.state.history.length - 1]);
+        return { created: { leadEmail }, source: 'Email Detection' };
+      
+      default:
+        return {
+          created: { id: `${tool}_${Date.now()}`, tool, inputs, timestamp: new Date().toISOString() },
+          source: `Tool: ${tool}`
+        };
+    }
   }
 }
 

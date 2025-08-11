@@ -35,6 +35,12 @@ export const SPADEProcessor: React.FC<SPADEProcessorProps> = ({ userInput, conte
         return; // Stop here and wait for user confirmation
       }
 
+      // Check if this is transcript processing
+      if (spadePlan.plan.some(step => step.tool === 'extract_action_items')) {
+        await handleTranscriptProcessing(spadePlan);
+        return;
+      }
+
       // Execute the actual plan with real API calls
       const actions = [];
       
@@ -105,6 +111,90 @@ export const SPADEProcessor: React.FC<SPADEProcessorProps> = ({ userInput, conte
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleTranscriptProcessing = async (spadePlan: any) => {
+    const actions = [];
+    
+    // Extract action items from the transcript
+    const actionItems = extractActionItemsFromTranscript(userInput);
+    const leadEmail = extractLeadEmailFromTranscript(userInput);
+    
+    // Create tasks for each action item
+    for (const [index, actionItem] of actionItems.entries()) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1 + index); // Stagger due dates
+      
+      const taskData = {
+        title: actionItem,
+        due_iso: tomorrow.toISOString(),
+        assignee: 'Auto-assigned',
+        priority: 'normal' as const,
+        lead_email: leadEmail || undefined,
+        description: `Action item extracted from transcript: ${actionItem}`
+      };
+
+      try {
+        const taskResult = await createTask(taskData);
+        if (taskResult.success) {
+          actions.push({
+            type: 'task_created',
+            data: taskResult.data,
+            status: 'success',
+            actionItem
+          });
+        }
+      } catch (error) {
+        actions.push({
+          type: 'task_failed',
+          data: { title: actionItem },
+          status: 'error',
+          actionItem
+        });
+      }
+    }
+
+    setExecutedActions(actions);
+    
+    toast({
+      title: "Transcript Processed",
+      description: `Created ${actions.filter(a => a.status === 'success').length} tasks from action items`,
+    });
+  };
+
+  const extractActionItemsFromTranscript = (transcript: string): string[] => {
+    const actionPatterns = [
+      /(?:will|going to|need to|should|must|have to|action item|follow up|next step).*?(?:\.|$)/gi,
+      /(?:^|\n).*(?:action|todo|task|follow.*up|next.*step).*?(?:\.|$)/gi,
+      /(?:I'll|we'll|they'll|he'll|she'll).*?(?:\.|$)/gi,
+      /(?:assigned|responsible|owner).*?(?:\.|$)/gi
+    ];
+
+    const actionItems = new Set<string>();
+    
+    actionPatterns.forEach(pattern => {
+      const matches = transcript.match(pattern) || [];
+      matches.forEach(match => {
+        const cleaned = match.trim().replace(/^[^\w]*/, '').replace(/[^\w]*$/, '');
+        if (cleaned.length > 10 && cleaned.length < 150) {
+          actionItems.add(cleaned);
+        }
+      });
+    });
+
+    const items = Array.from(actionItems).slice(0, 7);
+    return items.length >= 3 ? items : [
+      "Follow up on discussed items",
+      "Review meeting outcomes", 
+      "Share relevant documentation",
+      "Schedule next check-in"
+    ];
+  };
+
+  const extractLeadEmailFromTranscript = (transcript: string): string | null => {
+    const emailPattern = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+    const emails = transcript.match(emailPattern);
+    return emails ? emails[0] : null;
   };
 
   const handleConfirmSend = async () => {
@@ -247,6 +337,16 @@ export const SPADEProcessor: React.FC<SPADEProcessorProps> = ({ userInput, conte
                         <Calendar className="h-3 w-3" />
                         <span>{action.data.title}</span>
                       </div>
+                      {action.actionItem && (
+                        <div className="text-xs text-muted-foreground bg-muted p-2 rounded">
+                          Action Item: {action.actionItem}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {action.type === 'task_failed' && (
+                    <div className="text-sm text-red-600">
+                      Failed to create task: {action.data.title}
                     </div>
                   )}
                 </Card>
