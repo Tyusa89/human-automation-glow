@@ -182,17 +182,37 @@ class APIClient {
 
   // User management
   async getUserProfile(email: string): Promise<APIResponse> {
-    console.log('Fetching user profile:', email);
-    
-    await new Promise(resolve => setTimeout(resolve, 400));
-    
-    return {
-      success: true,
-      data: {
-        email,
-        profile: {}
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('email', email)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        return {
+          success: false,
+          error: error.message
+        };
       }
-    };
+
+      return {
+        success: true,
+        data: {
+          email,
+          profile: data || null
+        }
+      };
+    } catch (error) {
+      console.error('Error in getUserProfile:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to fetch user profile'
+      };
+    }
   }
 }
 
