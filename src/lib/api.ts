@@ -17,8 +17,10 @@ interface LeadData {
 
 interface TaskData {
   title: string;
-  description: string;
-  priority: 'low' | 'medium' | 'high';
+  due_iso: string;
+  assignee?: string;
+  lead_email?: string;
+  priority?: 'low' | 'normal' | 'high';
 }
 
 interface NoteData {
@@ -126,19 +128,41 @@ class APIClient {
 
   // Task management
   async createTask(taskData: TaskData): Promise<APIResponse> {
-    console.log('Creating task:', taskData);
-    
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    return {
-      success: true,
-      data: {
-        id: `task_${Date.now()}`,
-        ...taskData,
-        status: 'pending',
-        createdAt: new Date().toISOString()
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      const { data, error } = await supabase
+        .from('tasks')
+        .insert([{
+          title: taskData.title,
+          due_date: taskData.due_iso,
+          assignee: taskData.assignee,
+          lead_email: taskData.lead_email,
+          priority: taskData.priority || 'normal',
+          status: 'pending'
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating task:', error);
+        return {
+          success: false,
+          error: error.message
+        };
       }
-    };
+
+      return {
+        success: true,
+        data
+      };
+    } catch (error) {
+      console.error('Error in createTask:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to create task'
+      };
+    }
   }
 
   async getTasks(): Promise<APIResponse> {
