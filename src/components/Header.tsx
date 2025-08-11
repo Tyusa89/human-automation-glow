@@ -42,28 +42,20 @@ const Header = () => {
         </nav>
         
         <div className="flex items-center space-x-4">
-          {session ? (
-            <>
-              <span className="text-sm text-muted-foreground">
-                {session.user?.email}
-              </span>
-              <Button variant="ghost" onClick={handleSignOut}>
-                Sign Out
+          {!session ? (
+            <Link to="/auth">
+              <Button variant="ghost" className="text-foreground hover:text-accent">
+                Sign In
               </Button>
-            </>
+            </Link>
           ) : (
-            <>
-              <Link to="/auth">
-                <Button variant="ghost" className="text-foreground hover:text-accent">
-                  Sign In
-                </Button>
-              </Link>
-              <Link to="/contact">
-                <Button variant="default">
-                  Get a Demo
-                </Button>
-              </Link>
-            </>
+            <Button
+              variant="ghost"
+              className="text-foreground hover:text-accent"
+              onClick={() => supabase.auth.signOut()}
+            >
+              Sign Out
+            </Button>
           )}
         </div>
       </div>
