@@ -39,9 +39,19 @@ export default function AuthPage() {
     const { data, error } = await fn({ email, password });
     setLoading(false);
     if (error) return alert(error.message);
+    
     if (isSignUp && data.user) {
-      // optional: create profile row here or on first dashboard load
+      // Minimal bootstrap record
+      await supabase.from('profiles').insert({
+        user_id: data.user.id,
+        email: email,
+        full_name: null,
+        company: null,
+        role: null,
+        preferences: {}
+      }).select().maybeSingle();
     }
+    
     window.location.replace('/dashboard');
   }
 
