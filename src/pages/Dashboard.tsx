@@ -8,6 +8,7 @@ import TasksTable from '@/components/TasksTable';
 import KBList from '@/components/KBList';
 import TracesList from '@/components/TracesList';
 import { SPADEProcessor } from '@/components/SPADEProcessor';
+import ProfileCard from '@/components/ProfileCard';
 import { runTask } from '@/lib/api';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
@@ -103,6 +104,11 @@ const Dashboard = () => {
               </Card>
             );
           })}
+        </div>
+
+        {/* Profile Section */}
+        <div className="container mx-auto px-4 py-6">
+          <ProfileCard />
         </div>
 
         {/* Main Content Tabs */}
