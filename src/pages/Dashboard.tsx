@@ -10,8 +10,10 @@ import TracesList from '@/components/TracesList';
 import { SPADEProcessor } from '@/components/SPADEProcessor';
 import { runTask } from '@/lib/api';
 import { supabase } from '@/integrations/supabase/client';
+import { useEnsureProfile } from '@/hooks/useEnsureProfile';
 
 const Dashboard = () => {
+  useEnsureProfile();
   const [activeTab, setActiveTab] = useState('leads');
   const [lastKpi, setLastKpi] = useState<any>(null);
 
