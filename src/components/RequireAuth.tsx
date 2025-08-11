@@ -23,6 +23,8 @@ export default function RequireAuth({ children }: { children: JSX.Element }) {
     };
   }, []);
 
-  if (checking) return null; // or a spinner
+  if (checking) {
+    return <div className="p-6 text-sm text-muted-foreground">Signing you in…</div>;
+  }
   return authed ? children : <Navigate to="/auth" replace />;
 }
