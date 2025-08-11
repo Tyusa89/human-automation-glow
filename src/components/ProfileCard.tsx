@@ -4,7 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
-export default function ProfileCard() {
+interface ProfileCardProps {
+  onSaved?: () => void;
+}
+
+export default function ProfileCard({ onSaved }: ProfileCardProps) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [id, setId] = useState<string | null>(null);
@@ -52,6 +56,7 @@ export default function ProfileCard() {
       company: company || null
     }).eq('id', id);
     setSaving(false);
+    onSaved?.();
   }
 
   if (loading) return null;
