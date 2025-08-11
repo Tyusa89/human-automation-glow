@@ -6,6 +6,7 @@ import LeadsTable from '@/components/LeadsTable';
 import TasksTable from '@/components/TasksTable';
 import KBList from '@/components/KBList';
 import TracesList from '@/components/TracesList';
+import { SPADEProcessor } from '@/components/SPADEProcessor';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('leads');
@@ -85,11 +86,12 @@ const Dashboard = () => {
         <Card className="border-accent/20">
           <CardContent className="p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="leads">Leads</TabsTrigger>
                 <TabsTrigger value="tasks">Tasks</TabsTrigger>
                 <TabsTrigger value="kb">Knowledge Base</TabsTrigger>
                 <TabsTrigger value="traces">Traces</TabsTrigger>
+                <TabsTrigger value="spade">SPADE Demo</TabsTrigger>
               </TabsList>
               
               <TabsContent value="leads" className="mt-6">
@@ -122,6 +124,17 @@ const Dashboard = () => {
                   <p className="text-muted-foreground">Monitor automation activity and system logs</p>
                 </div>
                 <TracesList />
+              </TabsContent>
+              
+              <TabsContent value="spade" className="mt-6">
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">SPADE Processing Demo</h3>
+                  <p className="text-muted-foreground">Demonstrating AI-powered lead processing using SPADE methodology</p>
+                </div>
+                <SPADEProcessor 
+                  userInput="Hi, I'm Mia from LumenCo. We need help automating weekly reports."
+                  context={{ source: 'website', timestamp: new Date().toISOString() }}
+                />
               </TabsContent>
             </Tabs>
           </CardContent>
