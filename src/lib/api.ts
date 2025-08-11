@@ -25,6 +25,7 @@ interface TaskData {
 
 interface NoteData {
   content: string;
+  lead_email?: string;
   category?: string;
   tags?: string[];
 }
@@ -226,18 +227,39 @@ class APIClient {
 
   // Notes and traces
   async logNote(noteData: NoteData): Promise<APIResponse> {
-    console.log('Logging note:', noteData);
-    
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    return {
-      success: true,
-      data: {
-        id: `note_${Date.now()}`,
-        ...noteData,
-        createdAt: new Date().toISOString()
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      const { data, error } = await supabase
+        .from('notes')
+        .insert([{
+          content: noteData.content,
+          lead_email: noteData.lead_email,
+          category: noteData.category,
+          tags: noteData.tags
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error logging note:', error);
+        return {
+          success: false,
+          error: error.message
+        };
       }
-    };
+
+      return {
+        success: true,
+        data
+      };
+    } catch (error) {
+      console.error('Error in logNote:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to log note'
+      };
+    }
   }
 
   async logTrace(traceData: TraceData): Promise<APIResponse> {

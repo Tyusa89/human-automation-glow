@@ -125,6 +125,36 @@ export type Database = {
         }
         Relationships: []
       }
+      notes: {
+        Row: {
+          category: string | null
+          content: string
+          created_at: string
+          id: string
+          lead_email: string | null
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          lead_email?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          lead_email?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           company: string | null
