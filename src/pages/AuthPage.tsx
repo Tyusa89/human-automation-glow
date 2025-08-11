@@ -35,8 +35,24 @@ export default function AuthPage() {
   async function handlePassword(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const fn = isSignUp ? supabase.auth.signUp : supabase.auth.signInWithPassword;
-    const { data, error } = await fn({ email, password });
+    
+    let data, error;
+    if (isSignUp) {
+      const result = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`
+        }
+      });
+      data = result.data;
+      error = result.error;
+    } else {
+      const result = await supabase.auth.signInWithPassword({ email, password });
+      data = result.data;
+      error = result.error;
+    }
+    
     setLoading(false);
     if (error) return alert(error.message);
     
