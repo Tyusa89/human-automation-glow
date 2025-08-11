@@ -9,6 +9,7 @@ import KBList from '@/components/KBList';
 import TracesList from '@/components/TracesList';
 import { SPADEProcessor } from '@/components/SPADEProcessor';
 import ProfileCard from '@/components/ProfileCard';
+import CompleteProfile from '@/components/CompleteProfile';
 import { runTask } from '@/lib/api';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
@@ -74,6 +75,11 @@ const Dashboard = () => {
             Monitor your automation, leads, tasks, and system performance
           </p>
         </div>
+      </div>
+
+      {/* Complete Profile Prompt */}
+      <div className="container mx-auto px-4 py-6">
+        <CompleteProfile />
       </div>
 
       {/* Stats Grid */}
