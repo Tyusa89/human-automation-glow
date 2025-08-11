@@ -135,18 +135,42 @@ class APIClient {
 
   // Knowledge Base
   async fetchKB(query: string, topK: number = 3): Promise<APIResponse> {
-    console.log('Searching KB:', { query, topK });
-    
-    await new Promise(resolve => setTimeout(resolve, 600));
-    
-    return {
-      success: true,
-      data: {
-        results: [],
-        query,
-        totalResults: 0
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      // Use PostgreSQL full-text search for better matching
+      const { data, error } = await supabase
+        .from('knowledge_base')
+        .select('*')
+        .textSearch('title,content', query, {
+          type: 'websearch',
+          config: 'english'
+        })
+        .limit(topK);
+
+      if (error) {
+        console.error('Error searching knowledge base:', error);
+        return {
+          success: false,
+          error: error.message
+        };
       }
-    };
+
+      return {
+        success: true,
+        data: {
+          results: data || [],
+          query,
+          totalResults: data?.length || 0
+        }
+      };
+    } catch (error) {
+      console.error('Error in fetchKB:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to search knowledge base'
+      };
+    }
   }
 
   // Notes and traces
