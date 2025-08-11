@@ -201,6 +201,7 @@ export type Database = {
           status: string
           task: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -211,6 +212,7 @@ export type Database = {
           status?: string
           task: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -221,6 +223,7 @@ export type Database = {
           status?: string
           task?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -301,7 +304,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin_or_owner: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_owner: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
