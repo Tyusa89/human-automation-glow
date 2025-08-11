@@ -1,7 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { supabase } from '@/integrations/supabase/client';
+import { useEffect, useState } from 'react';
 
 const Header = () => {
+  const [session, setSession] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
   return (
     <header className="w-full bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -29,14 +42,29 @@ const Header = () => {
         </nav>
         
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" className="text-foreground hover:text-accent">
-            Sign In
-          </Button>
-          <Link to="/contact">
-            <Button variant="default">
-              Get a Demo
-            </Button>
-          </Link>
+          {session ? (
+            <>
+              <span className="text-sm text-muted-foreground">
+                {session.user?.email}
+              </span>
+              <Button variant="ghost" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link to="/auth">
+                <Button variant="ghost" className="text-foreground hover:text-accent">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/contact">
+                <Button variant="default">
+                  Get a Demo
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
