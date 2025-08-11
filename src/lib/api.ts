@@ -8,10 +8,11 @@ interface APIResponse<T = any> {
 }
 
 interface LeadData {
-  name: string;
+  name?: string;
   email: string;
+  source?: string;
   company?: string;
-  message: string;
+  notes?: string;
 }
 
 interface TaskData {
@@ -71,21 +72,41 @@ class APIClient {
 
   // Lead management
   async createLead(leadData: LeadData): Promise<APIResponse> {
-    // For now, simulate the API call - this will be replaced with Supabase Edge Function
-    console.log('Creating lead:', leadData);
-    
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock successful response
-    return {
-      success: true,
-      data: {
-        id: `lead_${Date.now()}`,
-        ...leadData,
-        createdAt: new Date().toISOString()
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      const { data, error } = await supabase
+        .from('leads')
+        .insert([{
+          name: leadData.name,
+          email: leadData.email,
+          source: leadData.source,
+          company: leadData.company,
+          notes: leadData.notes,
+          status: 'new'
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating lead:', error);
+        return {
+          success: false,
+          error: error.message
+        };
       }
-    };
+
+      return {
+        success: true,
+        data
+      };
+    } catch (error) {
+      console.error('Error in createLead:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to create lead'
+      };
+    }
   }
 
   async getLeads(limit: number = 25): Promise<APIResponse> {
