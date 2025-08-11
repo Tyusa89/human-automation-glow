@@ -6,6 +6,18 @@ interface SPADEConfig {
   enableTracing: boolean;
 }
 
+interface PlanStep {
+  step: string;
+  tool: string;
+  success: string;
+}
+
+interface IntentResult {
+  intentDetected: boolean;
+  plan?: PlanStep[];
+  confidence: number;
+}
+
 interface ActionContext {
   action: string;
   confidence: number;
@@ -122,6 +134,54 @@ export class SPADEGuardrails {
       const response = window.prompt(question);
       resolve(response);
     });
+  }
+
+  /**
+   * Detect intent and generate execution plan
+   */
+  detectIntent(userInput: string, context?: any): IntentResult {
+    const input = userInput.toLowerCase();
+    let confidence = 0.3;
+    let intentDetected = false;
+    let plan: PlanStep[] = [];
+
+    // Lead creation intent
+    if (input.includes('lead') || input.includes('contact') || input.includes('prospect')) {
+      intentDetected = true;
+      confidence = 0.8;
+      plan = [
+        { step: "Check existing lead", tool: "get_lead_status", success: "lead found or null" },
+        { step: "Fill gaps from KB", tool: "fetch_KB_answer", success: "facts present" },
+        { step: "Propose next actions", tool: "none", success: "user-approved or policy-safe" },
+        { step: "Execute", tool: "create_lead", success: "diff created" }
+      ];
+    }
+    
+    // Task creation intent
+    else if (input.includes('task') || input.includes('todo') || input.includes('reminder')) {
+      intentDetected = true;
+      confidence = 0.8;
+      plan = [
+        { step: "Check existing lead", tool: "get_lead_status", success: "lead found or null" },
+        { step: "Fill gaps from KB", tool: "fetch_KB_answer", success: "facts present" },
+        { step: "Propose next actions", tool: "none", success: "user-approved or policy-safe" },
+        { step: "Execute", tool: "create_task", success: "diff created" }
+      ];
+    }
+    
+    // Meeting scheduling intent
+    else if (input.includes('meeting') || input.includes('schedule') || input.includes('appointment')) {
+      intentDetected = true;
+      confidence = 0.8;
+      plan = [
+        { step: "Check existing lead", tool: "get_lead_status", success: "lead found or null" },
+        { step: "Fill gaps from KB", tool: "fetch_KB_answer", success: "facts present" },
+        { step: "Propose next actions", tool: "none", success: "user-approved or policy-safe" },
+        { step: "Execute", tool: "schedule_meeting", success: "diff created" }
+      ];
+    }
+
+    return { intentDetected, plan: intentDetected ? plan : undefined, confidence };
   }
 
   /**
