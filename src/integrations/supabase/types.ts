@@ -239,6 +239,7 @@ export type Database = {
           status: string | null
           title: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           assignee?: string | null
@@ -251,6 +252,7 @@ export type Database = {
           status?: string | null
           title: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           assignee?: string | null
@@ -263,6 +265,7 @@ export type Database = {
           status?: string | null
           title?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
