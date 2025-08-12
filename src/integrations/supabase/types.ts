@@ -157,8 +157,8 @@ export type Database = {
       }
       profiles: {
         Row: {
-          company: string | null
           created_at: string
+          "econest AI": string | null
           email: string
           full_name: string | null
           id: string
@@ -168,8 +168,8 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
-          company?: string | null
           created_at?: string
+          "econest AI"?: string | null
           email: string
           full_name?: string | null
           id?: string
@@ -179,8 +179,8 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
-          company?: string | null
           created_at?: string
+          "econest AI"?: string | null
           email?: string
           full_name?: string | null
           id?: string
@@ -311,6 +311,10 @@ export type Database = {
       is_owner: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      profile_auth_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
     }
     Enums: {
