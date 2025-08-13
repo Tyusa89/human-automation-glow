@@ -4,4 +4,4 @@ project_id = "rqldulvkwzvrmcvwttep"
 verify_jwt = false
 
 [functions.run-task]
-verify_jwt = false
+verify_jwt = true
