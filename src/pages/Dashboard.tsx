@@ -13,9 +13,11 @@ import CompleteProfile from '@/components/CompleteProfile';
 import { runTask } from '@/lib/api';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
+import { useToast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
   useEnsureProfile();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('leads');
   const [lastKpi, setLastKpi] = useState<any>(null);
 
@@ -32,8 +34,40 @@ const Dashboard = () => {
   useEffect(() => { loadLastKpi(); }, []);
 
   async function handleRunDaily() {
-    const { status } = await runTask('daily_kpi', { since: 'yesterday' });
-    if (status === 'ok') await loadLastKpi();
+    try {
+      const { status } = await runTask('daily_kpi', { since: 'yesterday' });
+      if (status === 'ok') {
+        await loadLastKpi();
+        toast({
+          title: "Success",
+          description: "Daily KPI report generated successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate daily KPI report",
+        variant: "destructive",
+      });
+    }
+  }
+
+  async function handleGenerateSOP() {
+    try {
+      const { status } = await runTask('generate_sop', { topic: 'Onboarding New Lead' });
+      if (status === 'ok') {
+        toast({
+          title: "Success",
+          description: "SOP for 'Onboarding New Lead' generated successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate SOP",
+        variant: "destructive",
+      });
+    }
   }
 
   const stats = [

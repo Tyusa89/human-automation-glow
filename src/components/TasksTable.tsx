@@ -15,8 +15,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, CheckSquare, Clock, AlertCircle } from 'lucide-react';
+import { Plus, CheckSquare, Clock, AlertCircle, Play, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { runTask } from '@/lib/api';
 
 interface Task {
   id: string;
@@ -147,6 +148,42 @@ const TasksTable = () => {
     });
   };
 
+  const handleRunDaily = async () => {
+    try {
+      const { status } = await runTask('daily_kpi', { since: 'yesterday' });
+      if (status === 'ok') {
+        toast({
+          title: "Success",
+          description: "Daily KPI report generated successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate daily KPI report",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleGenerateSOP = async () => {
+    try {
+      const { status } = await runTask('generate_sop', { topic: 'Onboarding New Lead' });
+      if (status === 'ok') {
+        toast({
+          title: "Success",
+          description: "SOP for 'Onboarding New Lead' generated successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate SOP",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -154,13 +191,32 @@ const TasksTable = () => {
           <h3 className="text-lg font-semibold text-foreground">Tasks</h3>
           <p className="text-sm text-muted-foreground">Manage your automation tasks</p>
         </div>
-        <Dialog open={isAddTaskOpen} onOpenChange={setIsAddTaskOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Task
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2">
+          <Button 
+            onClick={handleRunDaily}
+            variant="outline"
+            size="sm"
+            className="border-primary/20 hover:bg-primary/10"
+          >
+            <Play className="mr-2 h-4 w-4" />
+            Run Daily KPI
+          </Button>
+          <Button 
+            onClick={handleGenerateSOP}
+            variant="outline"
+            size="sm"
+            className="border-accent/20 hover:bg-accent/10"
+          >
+            <FileText className="mr-2 h-4 w-4" />
+            Generate SOP
+          </Button>
+          <Dialog open={isAddTaskOpen} onOpenChange={setIsAddTaskOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Task
+              </Button>
+            </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Create New Task</DialogTitle>
@@ -211,7 +267,8 @@ const TasksTable = () => {
               </div>
             </div>
           </DialogContent>
-        </Dialog>
+          </Dialog>
+        </div>
       </div>
 
       <Card className="border-accent/20">
