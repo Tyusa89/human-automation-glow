@@ -26,7 +26,7 @@ export default function ProfileCard({ onSaved }: ProfileCardProps) {
       // fetch or bootstrap profile
       const { data: row } = await supabase
         .from('profiles')
-        .select('id,email,full_name,company')
+        .select('id,email,full_name')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -34,15 +34,15 @@ export default function ProfileCard({ onSaved }: ProfileCardProps) {
         const { data: inserted } = await supabase
           .from('profiles')
           .insert({ user_id: user.id, email: user.email ?? '' })
-          .select('id,email,full_name,company')
+          .select('id,email,full_name')
           .single();
         if (inserted) {
           setId(inserted.id); setEmail(inserted.email || '');
-          setFullName(inserted.full_name || ''); setCompany(inserted.company || '');
+          setFullName(inserted.full_name || ''); setCompany('');
         }
       } else {
         setId(row.id); setEmail(row.email || '');
-        setFullName(row.full_name || ''); setCompany(row.company || '');
+        setFullName(row.full_name || ''); setCompany('');
       }
       setLoading(false);
     })();

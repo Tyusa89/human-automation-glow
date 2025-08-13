@@ -157,6 +157,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          company: string | null
           created_at: string
           "econest AI": string | null
           email: string
@@ -168,6 +169,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          company?: string | null
           created_at?: string
           "econest AI"?: string | null
           email: string
@@ -179,6 +181,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          company?: string | null
           created_at?: string
           "econest AI"?: string | null
           email?: string
@@ -224,6 +227,21 @@ export type Database = {
           task?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      Roles: {
+        Row: {
+          created_at: string
+          id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
         }
         Relationships: []
       }
