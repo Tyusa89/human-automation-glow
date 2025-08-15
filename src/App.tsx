@@ -8,6 +8,7 @@ import RequireAuth from '@/components/RequireAuth';
 import Dashboard from '@/pages/Dashboard';
 import Index from '@/pages/Index';
 import ServicesPage from '@/pages/Services';
+import Pricing from '@/pages/Pricing';
 import ContactPage from '@/pages/ContactPage';
 import NotFound from '@/pages/NotFound';
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -24,6 +25,7 @@ const App = () => (
           {/* public */}
           <Route path="/" element={<Index />} />
           <Route path="/services" element={<ServicesPage />} />
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/auth" element={<AuthPage />} />
 
