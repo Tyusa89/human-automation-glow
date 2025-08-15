@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      customer_notes: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string | null
+          customer_email: string
+          id: string
+          is_private: boolean
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by?: string | null
+          customer_email: string
+          id?: string
+          is_private?: boolean
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          customer_email?: string
+          id?: string
+          is_private?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       knowledge_base: {
         Row: {
           category: string | null
@@ -227,6 +257,30 @@ export type Database = {
           task?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      staff_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
