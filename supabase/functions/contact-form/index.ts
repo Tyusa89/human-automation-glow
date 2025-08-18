@@ -25,7 +25,7 @@ serve(async (req) => {
 
     const { name, email, message }: ContactFormData = await req.json()
 
-    // Validate required fields
+    // Comprehensive input validation
     if (!name || !email || !message) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields' }),
@@ -33,13 +33,52 @@ serve(async (req) => {
       )
     }
 
+    // Validate field lengths and content
+    if (name.length > 100 || message.length > 5000) {
+      return new Response(
+        JSON.stringify({ error: 'Field length exceeded limits' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid email format' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Sanitize inputs
+    const sanitizedName = name.trim().slice(0, 100)
+    const sanitizedEmail = email.trim().toLowerCase()
+    const sanitizedMessage = message.trim().slice(0, 5000)
+
+    // Rate limiting check - prevent spam (basic implementation)
+    const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown'
+    const { data: recentSubmissions } = await supabase
+      .from('contact_submissions')
+      .select('submitted_at')
+      .eq('client_ip', clientIP)
+      .gte('submitted_at', new Date(Date.now() - 3600000).toISOString()) // Last hour
+      .limit(5)
+
+    if (recentSubmissions && recentSubmissions.length >= 3) {
+      return new Response(
+        JSON.stringify({ error: 'Too many submissions. Please wait before trying again.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     // Store the contact form submission in database
     const { error: dbError } = await supabase
       .from('contact_submissions')
       .insert({
-        name,
-        email,
-        message,
+        name: sanitizedName,
+        email: sanitizedEmail,
+        message: sanitizedMessage,
+        client_ip: clientIP,
         submitted_at: new Date().toISOString()
       })
 
@@ -52,9 +91,9 @@ serve(async (req) => {
     }
 
     // Send auto-reply email to the user
-    const autoReplySubject = `Thank you for contacting EcoNest AI, ${name}!`
+    const autoReplySubject = `Thank you for contacting EcoNest AI, ${sanitizedName}!`
     const autoReplyBody = `
-Dear ${name},
+Dear ${sanitizedName},
 
 Thank you for reaching out to EcoNest AI! We've received your message and are excited to learn more about your project.
 
@@ -83,7 +122,7 @@ Website: https://econestai.com
     // You'll need to configure email sending through Supabase Edge Functions
     // For now, we'll just log the auto-reply (you can integrate with SendGrid, Resend, etc.)
     console.log('Auto-reply email would be sent:')
-    console.log('To:', email)
+    console.log('To:', sanitizedEmail)
     console.log('Subject:', autoReplySubject)
     console.log('Body:', autoReplyBody)
 

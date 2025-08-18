@@ -45,9 +45,13 @@ serve(async (req) => {
   
   if (!body?.task) return bad("Missing task");
 
-  // Extract JWT for potential future auth requirements
+  // Verify JWT authentication is present
   const authHeader = req.headers.get("Authorization") || "";
   const jwt = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  
+  if (!jwt) {
+    return bad("Authentication required", 401);
+  }
 
   console.log(`Running task: ${body.task}`, body.params);
 
