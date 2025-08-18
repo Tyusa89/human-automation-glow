@@ -15,8 +15,41 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Verify authentication (JWT is now required)
+  const authHeader = req.headers.get("Authorization") || "";
+  const jwt = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  if (!jwt) {
+    return new Response(JSON.stringify({ error: "Authentication required" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   try {
-    const { document, searchQuery } = await req.json();
+    const requestBody = await req.json();
+    const { document, searchQuery } = requestBody;
+
+    // Input validation
+    if (!document || typeof document !== "string") {
+      return new Response(JSON.stringify({ error: "Document is required and must be a string" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (document.length > 50000) {
+      return new Response(JSON.stringify({ error: "Document too large (max 50,000 characters)" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (searchQuery && (typeof searchQuery !== "string" || searchQuery.length > 500)) {
+      return new Response(JSON.stringify({ error: "Invalid search query" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');

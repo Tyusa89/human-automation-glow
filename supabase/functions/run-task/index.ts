@@ -35,6 +35,13 @@ serve(async (req) => {
 
   // Require POST + JSON for main functionality
   if (req.method !== "POST") return bad("POST only", 405);
+
+  // Verify authentication (JWT is now required)
+  const authHeader = req.headers.get("Authorization") || "";
+  const jwt = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  if (!jwt) {
+    return bad("Authentication required", 401);
+  }
   
   let body: RunBody;
   try { 
@@ -43,14 +50,16 @@ serve(async (req) => {
     return bad("Invalid JSON"); 
   }
   
+  // Input validation
   if (!body?.task) return bad("Missing task");
-
-  // Verify JWT authentication is present
-  const authHeader = req.headers.get("Authorization") || "";
-  const jwt = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  if (typeof body.task !== "string") return bad("Task must be a string");
+  if (!["daily_kpi", "generate_sop"].includes(body.task)) {
+    return bad("Invalid task type");
+  }
   
-  if (!jwt) {
-    return bad("Authentication required", 401);
+  // Validate params if present
+  if (body.params && typeof body.params !== "object") {
+    return bad("Invalid params format");
   }
 
   console.log(`Running task: ${body.task}`, body.params);
