@@ -14,10 +14,13 @@ import { runTask } from '@/lib/api';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
 import { useToast } from '@/hooks/use-toast';
+import { useRole, isAdminLike } from '@/hooks/useRole';
 
 const Dashboard = () => {
   useEnsureProfile();
   const { toast } = useToast();
+  const { role, loading } = useRole();
+  const admin = isAdminLike(role);
   const [activeTab, setActiveTab] = useState('leads');
   const [lastKpi, setLastKpi] = useState<any>(null);
 
@@ -155,12 +158,14 @@ const Dashboard = () => {
         <Card className="border-accent/20">
           <CardContent className="p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className={`grid w-full ${admin ? 'grid-cols-6' : 'grid-cols-4'}`}>
                 <TabsTrigger value="leads">Leads</TabsTrigger>
                 <TabsTrigger value="tasks">Tasks</TabsTrigger>
                 <TabsTrigger value="kb">Knowledge Base</TabsTrigger>
-                <TabsTrigger value="traces">Traces</TabsTrigger>
                 <TabsTrigger value="spade">SPADE Demo</TabsTrigger>
+                {/* Admin-only tabs */}
+                {admin && <TabsTrigger value="traces">Traces</TabsTrigger>}
+                {admin && <TabsTrigger value="results">Results</TabsTrigger>}
               </TabsList>
               
               <TabsContent value="leads" className="mt-6">
@@ -195,14 +200,6 @@ const Dashboard = () => {
                 <KBList />
               </TabsContent>
               
-              <TabsContent value="traces" className="mt-6">
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">System Traces</h3>
-                  <p className="text-muted-foreground">Monitor automation activity and system logs</p>
-                </div>
-                <TracesList />
-              </TabsContent>
-              
               <TabsContent value="spade" className="mt-6">
                 <div className="mb-4">
                   <h3 className="text-lg font-semibold text-foreground mb-2">SPADE Processing Demo</h3>
@@ -213,6 +210,40 @@ const Dashboard = () => {
                   context={{ source: 'website', timestamp: new Date().toISOString() }}
                 />
               </TabsContent>
+              
+              {/* Admin-only tabs content */}
+              {admin && (
+                <TabsContent value="traces" className="mt-6">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-foreground mb-2">System Traces</h3>
+                    <p className="text-muted-foreground">Monitor automation activity and system logs</p>
+                  </div>
+                  <TracesList />
+                </TabsContent>
+              )}
+              
+              {admin && (
+                <TabsContent value="results" className="mt-6">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Task Results</h3>
+                    <p className="text-muted-foreground">View automation task results and analytics</p>
+                  </div>
+                  <div className="mb-4 flex items-center gap-3">
+                    <Button onClick={handleGenerateSOP}>Generate SOP</Button>
+                  </div>
+                  {/* Results grid would go here */}
+                  <div className="bg-muted/20 rounded-lg p-6 text-center">
+                    <p className="text-muted-foreground">Results management interface coming soon</p>
+                  </div>
+                </TabsContent>
+              )}
+
+              {/* Loading state */}
+              {loading && (
+                <div className="text-sm text-muted-foreground mt-3">
+                  Checking permissions…
+                </div>
+              )}
             </Tabs>
           </CardContent>
         </Card>
