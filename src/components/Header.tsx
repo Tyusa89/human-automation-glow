@@ -46,7 +46,7 @@ const Header = () => {
             Dashboard
           </Link>
           {admin && (
-            <Link to="/results" className="text-foreground hover:text-accent transition-colors font-medium">
+            <Link to="/admin" className="text-foreground hover:text-accent transition-colors font-medium">
               Admin
             </Link>
           )}

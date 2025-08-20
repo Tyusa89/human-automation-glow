@@ -7,6 +7,7 @@ import AuthPage from '@/pages/AuthPage';
 import RequireAuth from '@/components/RequireAuth';
 import Dashboard from '@/pages/Dashboard';
 import Results from '@/pages/Results';
+import AdminPage from '@/pages/AdminPage';
 import Index from '@/pages/Index';
 import ServicesPage from '@/pages/Services';
 import Pricing from '@/pages/Pricing';
@@ -44,6 +45,14 @@ const App = () => (
             element={
               <RequireAuth>
                 <Results />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <RequireAuth>
+                <AdminPage />
               </RequireAuth>
             }
           />
