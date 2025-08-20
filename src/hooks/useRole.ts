@@ -21,9 +21,16 @@ export function useRole(): { role: Role; loading: boolean } {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     let mounted = true;
-    fetchRole().then(r => { if (mounted) { setRole(r); setLoading(false); } });
+    fetchRole().then(r => { 
+      if (mounted) { 
+        console.log('Role fetched:', r);
+        setRole(r); 
+        setLoading(false); 
+      } 
+    });
     return () => { mounted = false; };
   }, []);
+  console.log('Current role state:', role, 'loading:', loading);
   return { role, loading };
 }
 

@@ -21,6 +21,7 @@ const Dashboard = () => {
   const { toast } = useToast();
   const { role, loading } = useRole();
   const admin = isAdminLike(role);
+  console.log('Dashboard - role:', role, 'admin:', admin, 'loading:', loading);
   const [activeTab, setActiveTab] = useState('leads');
   const [lastKpi, setLastKpi] = useState<any>(null);
 
