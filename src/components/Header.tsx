@@ -2,9 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useState } from 'react';
+import { useRole, isAdminLike } from '@/hooks/useRole';
 
 const Header = () => {
   const [session, setSession] = useState<any>(null);
+  const { role } = useRole();
+  const admin = isAdminLike(role);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
@@ -42,6 +45,11 @@ const Header = () => {
           <Link to="/dashboard" className="text-foreground hover:text-accent transition-colors">
             Dashboard
           </Link>
+          {admin && (
+            <Link to="/results" className="text-foreground hover:text-accent transition-colors font-medium">
+              Admin
+            </Link>
+          )}
         </nav>
         
         <div className="flex items-center space-x-4">
