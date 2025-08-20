@@ -6,6 +6,7 @@ import { Routes, Route } from "react-router-dom";
 import AuthPage from '@/pages/AuthPage';
 import RequireAuth from '@/components/RequireAuth';
 import Dashboard from '@/pages/Dashboard';
+import Results from '@/pages/Results';
 import Index from '@/pages/Index';
 import ServicesPage from '@/pages/Services';
 import Pricing from '@/pages/Pricing';
@@ -35,6 +36,14 @@ const App = () => (
             element={
               <RequireAuth>
                 <Dashboard />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/results"
+            element={
+              <RequireAuth>
+                <Results />
               </RequireAuth>
             }
           />
