@@ -4,17 +4,29 @@ import { supabase } from '@/integrations/supabase/client';
 export type Role = 'owner' | 'admin' | 'user' | null;
 
 export async function fetchRole(): Promise<Role> {
-  const { data: u } = await supabase.auth.getUser();
+  const { data: u, error: e0 } = await supabase.auth.getUser();
   const uid = u?.user?.id;
-  if (!uid) return null;
-  const { data, error } = await supabase
+  if (!uid || e0) return null;
+
+  // try user_id first, then id (covers both schema styles)
+  let { data, error } = await supabase
     .from('profiles')
     .select('role')
-    .eq('id', uid)            // using id column as primary key
+    .eq('user_id', uid)
     .maybeSingle();
-  if (error) return null;
-  console.log('uid, role', uid, data?.role, error);
-  return (data?.role as Role) ?? 'user';
+
+  if ((error || !data) as any) {
+    const fallback = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', uid)
+      .maybeSingle();
+    data = fallback.data;
+    error = fallback.error;
+  }
+
+  if (error || !data?.role) return null;   // don't fake 'user' on error
+  return data.role as Role;
 }
 
 export function useRole(): { role: Role; loading: boolean } {
@@ -22,16 +34,9 @@ export function useRole(): { role: Role; loading: boolean } {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     let mounted = true;
-    fetchRole().then(r => { 
-      if (mounted) { 
-        console.log('Role fetched:', r);
-        setRole(r); 
-        setLoading(false); 
-      } 
-    });
+    fetchRole().then(r => { if (mounted) { setRole(r); setLoading(false); } });
     return () => { mounted = false; };
   }, []);
-  console.log('Current role state:', role, 'loading:', loading);
   return { role, loading };
 }
 
