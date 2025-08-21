@@ -110,32 +110,3 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
-
-/* Custom Hero Animations */
-@layer components {
-  /* Animated gradient sweep for the title */
-  @keyframes eco-gradient {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-  
-  .gradient-animate {
-    animation: eco-gradient 8s ease-in-out infinite;
-  }
-
-  /* Soft glow for the accent line */
-  .glow-line {
-    box-shadow: 0 0 14px rgba(16, 185, 129, 0.35); /* emerald-500 */
-  }
-
-  /* Tiny blinking caret for the tagline */
-  @keyframes eco-caret {
-    0%, 49% { opacity: 0; }
-    50%, 100% { opacity: 1; }
-  }
-  
-  .blink-caret {
-    animation: eco-caret 1.2s steps(1, end) infinite;
-  }
-}
