@@ -428,4 +428,32 @@ export const logTrace = (data: TraceData) => apiClient.logTrace(data);
 export const fetchKB = (query: string, topK?: number) => apiClient.fetchKB(query, topK);
 export const getUserProfile = (email: string) => apiClient.getUserProfile(email);
 
+export type KpiSnapshot = {
+  created_at: string;
+  leads_today?: number;
+  tasks_run?: number;
+  avg_response_min?: number;
+};
+
+export async function fetchLatestDailyKpi(): Promise<KpiSnapshot | null> {
+  const { supabase } = await import('@/integrations/supabase/client');
+  
+  const { data, error } = await supabase
+    .from('results')
+    .select('created_at, payload')
+    .eq('task', 'daily_kpi')
+    .order('created_at', { ascending: false })
+    .maybeSingle();
+    
+  if (error || !data) return null;
+
+  const p = (data.payload || {}) as any;
+  return {
+    created_at: data.created_at,
+    leads_today: p.leads_today,
+    tasks_run: p.tasks_run,
+    avg_response_min: p.avg_response_min,
+  };
+}
+
 export default apiClient;
