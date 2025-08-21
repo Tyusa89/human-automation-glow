@@ -10,7 +10,7 @@ export async function fetchRole(): Promise<Role> {
   const { data, error } = await supabase
     .from('profiles')
     .select('role')
-    .eq('user_id', uid)            // if your column is `id` instead, swap to .eq('id', uid)
+    .eq('id', uid)            // using id column as primary key
     .maybeSingle();
   if (error) return null;
   return (data?.role as Role) ?? 'user';
