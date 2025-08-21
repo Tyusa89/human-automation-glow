@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, CheckSquare, BookOpen, Activity } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { Users, CheckSquare, BookOpen, Activity, MoreHorizontal, Settings, Download, RefreshCw } from 'lucide-react';
 import LeadsTable from '@/components/LeadsTable';
 import TasksTable from '@/components/TasksTable';
 import KBList from '@/components/KBList';
@@ -136,12 +137,47 @@ const Dashboard = () => {
       {/* Header */}
       <div className="bg-gradient-to-r from-primary/10 to-accent/10 border-b border-border">
         <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-            Dashboard
-          </h1>
-          <p className="text-muted-foreground">
-            Monitor your automation, leads, tasks, and system performance
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+                Dashboard
+              </h1>
+              <p className="text-muted-foreground">
+                Monitor your automation, leads, tasks, and system performance
+              </p>
+            </div>
+            
+            {/* Three Dots Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-10 w-10">
+                  <MoreHorizontal className="h-5 w-5" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 bg-background border border-border">
+                <DropdownMenuItem onClick={() => loadLastKpi()} className="cursor-pointer">
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Refresh KPI Data
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleRunDaily} className="cursor-pointer">
+                  <Download className="mr-2 h-4 w-4" />
+                  Generate Daily Report
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-pointer" onClick={() => setActiveTab('tasks')}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  Task Management
+                </DropdownMenuItem>
+                {admin && (
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => setActiveTab('traces')}>
+                    <Activity className="mr-2 h-4 w-4" />
+                    System Traces
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
 
