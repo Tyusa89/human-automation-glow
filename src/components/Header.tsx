@@ -1,19 +1,51 @@
-import { Link } from 'react-router-dom';
-import { useRole } from '@/hooks/useRole';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useRole, isAdminLike } from '@/hooks/useRole';
+import { Button } from '@/components/ui/button';
 
 export default function AppHeader() {
-  const { role, loading } = useRole();
+  const navigate = useNavigate();
+  const { role, loading: roleLoading } = useRole();
+  const admin = isAdminLike(role);
+
+  const [authed, setAuthed] = useState(false);
+
+  // watch auth state so we can show Login/Logout correctly
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth.getSession().then(({ data }) => mounted && setAuthed(!!data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setAuthed(!!session);
+    });
+    return () => { sub.subscription.unsubscribe(); mounted = false; };
+  }, []);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    navigate('/auth');
+  }
 
   return (
     <header className="flex items-center justify-between px-4 py-3 border-b">
       <Link to="/" className="font-semibold">EcoNest AI</Link>
       
       <nav className="flex items-center gap-4">
-        <Link to="/dashboard">Dashboard</Link>
-        {/* Add other nav links here */}
+        <Link to="/services" className="hover:text-primary transition-colors">Services</Link>
+        <Link to="/pricing" className="hover:text-primary transition-colors">Pricing</Link>
+        <Link to="/contact" className="hover:text-primary transition-colors">Contact</Link>
+        
+        {authed && (
+          <>
+            <Link to="/dashboard" className="hover:text-primary transition-colors">Dashboard</Link>
+            {admin && (
+              <Link to="/admin" className="hover:text-primary transition-colors font-medium">Admin</Link>
+            )}
+          </>
+        )}
 
-        {/* Tiny role badge */}
-        {!loading && role && (
+        {/* Role badge */}
+        {!roleLoading && role && (
           <span
             className={`px-2 py-0.5 text-xs rounded-full border ${
               role === 'owner'
@@ -25,6 +57,19 @@ export default function AppHeader() {
           >
             {role.toUpperCase()}
           </span>
+        )}
+
+        {/* Auth buttons */}
+        {authed ? (
+          <Button variant="ghost" onClick={handleLogout}>
+            Sign Out
+          </Button>
+        ) : (
+          <Link to="/auth">
+            <Button variant="ghost">
+              Sign In
+            </Button>
+          </Link>
         )}
       </nav>
     </header>
