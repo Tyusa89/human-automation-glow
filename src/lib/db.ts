@@ -5,28 +5,19 @@ import { supabase } from '@/integrations/supabase/client';
  */
 export async function logResult(
   task: string,
-  params: any = {},
-  payload: any = null,
-  status: 'ok' | 'error' | 'pending' = 'ok',
+  params: any,
+  payload: any,
+  status: 'ok' | 'error' = 'ok',
   logs: string[] = []
 ) {
-  try {
-    const { error } = await supabase
-      .from('results')
-      .insert({
-        task,
-        params,
-        payload,
-        status,
-        logs
-      });
+  const { data: u } = await supabase.auth.getUser();
+  const uid = u?.user?.id;
+  if (!uid) throw new Error('Not authenticated');
 
-    if (error) {
-      console.error('Failed to log result:', error);
-    }
-  } catch (err) {
-    console.error('Error logging result:', err);
-  }
+  const { error } = await supabase.from('results').insert({
+    user_id: uid, task, params, payload, status, logs
+  });
+  if (error) throw error;
 }
 
 /**
