@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route } from "react-router-dom";
 import AuthPage from '@/pages/AuthPage';
 import RequireAuth from '@/components/RequireAuth';
+import RequireAdmin from '@/components/RequireAdmin';
 import Dashboard from '@/pages/Dashboard';
 import Results from '@/pages/Results';
 import AdminPage from '@/pages/Admin';
@@ -44,7 +45,9 @@ const App = () => (
             path="/results"
             element={
               <RequireAuth>
-                <Results />
+                <RequireAdmin>
+                  <Results />
+                </RequireAdmin>
               </RequireAuth>
             }
           />
@@ -52,7 +55,9 @@ const App = () => (
             path="/admin"
             element={
               <RequireAuth>
-                <AdminPage />
+                <RequireAdmin>
+                  <AdminPage />
+                </RequireAdmin>
               </RequireAuth>
             }
           />
