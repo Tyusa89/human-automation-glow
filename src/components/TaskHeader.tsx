@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchLatestDailyKpi, runTask } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 
 function TaskHeader() {
   const [kpi, setKpi] = useState<Awaited<ReturnType<typeof fetchLatestDailyKpi>>>(null);
@@ -11,6 +12,17 @@ function TaskHeader() {
   }
 
   useEffect(() => { refresh(); }, []);
+
+  useEffect(() => {
+    const ch = supabase
+      .channel('results-kpi')
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'results', filter: "task=eq.daily_kpi" },
+        () => refresh()
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, []);
 
   async function handleRunDaily() {
     setRunning(true);
