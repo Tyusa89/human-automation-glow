@@ -13,6 +13,7 @@ export async function fetchRole(): Promise<Role> {
     .eq('id', uid)            // using id column as primary key
     .maybeSingle();
   if (error) return null;
+  console.log('uid, role', uid, data?.role, error);
   return (data?.role as Role) ?? 'user';
 }
 
