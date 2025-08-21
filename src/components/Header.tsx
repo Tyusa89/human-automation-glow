@@ -1,77 +1,32 @@
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { supabase } from '@/integrations/supabase/client';
-import { useEffect, useState } from 'react';
-import { useRole, isAdminLike } from '@/hooks/useRole';
+import { Link } from 'react-router-dom';
+import { useRole } from '@/hooks/useRole';
 
-const Header = () => {
-  const [session, setSession] = useState<any>(null);
-  const { role } = useRole();
-  const admin = isAdminLike(role);
+export default function AppHeader() {
+  const { role, loading } = useRole();
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
-    return () => sub.subscription.unsubscribe();
-  }, []);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-  };
   return (
-    <header className="w-full bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <img 
-            src="/lovable-uploads/5fd0e2db-d0a1-4acb-b206-80402fcc72fd.png" 
-            alt="EcoNest AI" 
-            className="h-10 w-auto"
-          />
-        </div>
-        
-        <nav className="hidden md:flex items-center space-x-8">
-          <Link to="/services" className="text-foreground hover:text-accent transition-colors">
-            Services
-          </Link>
-          <Link to="/pricing" className="text-foreground hover:text-accent transition-colors">
-            Pricing
-          </Link>
-          <a href="#about" className="text-foreground hover:text-accent transition-colors">
-            About
-          </a>
-          <Link to="/contact" className="text-foreground hover:text-accent transition-colors">
-            Contact
-          </Link>
-          <Link to="/dashboard" className="text-foreground hover:text-accent transition-colors">
-            Dashboard
-          </Link>
-          {admin && (
-            <Link to="/admin" className="text-foreground hover:text-accent transition-colors font-medium">
-              Admin
-            </Link>
-          )}
-        </nav>
-        
-        <div className="flex items-center space-x-4">
-          {!session ? (
-            <Link to="/auth">
-              <Button variant="ghost" className="text-foreground hover:text-accent">
-                Sign In
-              </Button>
-            </Link>
-          ) : (
-            <Button
-              variant="ghost"
-              className="text-foreground hover:text-accent"
-              onClick={() => supabase.auth.signOut()}
-            >
-              Sign Out
-            </Button>
-          )}
-        </div>
-      </div>
+    <header className="flex items-center justify-between px-4 py-3 border-b">
+      <Link to="/" className="font-semibold">EcoNest AI</Link>
+      
+      <nav className="flex items-center gap-4">
+        <Link to="/dashboard">Dashboard</Link>
+        {/* Add other nav links here */}
+
+        {/* Tiny role badge */}
+        {!loading && role && (
+          <span
+            className={`px-2 py-0.5 text-xs rounded-full border ${
+              role === 'owner'
+                ? 'bg-green-100 text-green-700 border-green-300'
+                : role === 'admin'
+                ? 'bg-blue-100 text-blue-700 border-blue-300'
+                : 'bg-gray-100 text-gray-700 border-gray-300'
+            }`}
+          >
+            {role.toUpperCase()}
+          </span>
+        )}
+      </nav>
     </header>
   );
-};
-
-export default Header;
+}
