@@ -42,10 +42,18 @@ function TaskHeader() {
   }, []);
 
   async function handleRunDaily() {
+    console.log('=== Starting Daily KPI Run ===');
     setRunning(true);
     try {
-      await runTask('daily_kpi', { since: 'yesterday' });
+      console.log('Calling runTask...');
+      const result = await runTask('daily_kpi', { since: 'yesterday' });
+      console.log('runTask result:', result);
+      
+      console.log('Refreshing KPI data after task completion...');
       await refresh(); // <-- update the "Last:" line right after success
+      console.log('=== Daily KPI Run Complete ===');
+    } catch (error) {
+      console.error('Error running daily task:', error);
     } finally {
       setRunning(false);
     }
