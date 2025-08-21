@@ -443,13 +443,22 @@ export async function fetchLatestDailyKpi(): Promise<KpiSnapshot | null> {
     .select('created_at, payload')
     .eq('task', 'daily_kpi')
     .order('created_at', { ascending: false })
-    .maybeSingle();
+    .limit(1);
     
-  if (error || !data) return null;
+  if (error) {
+    console.error('Error fetching KPI data:', error);
+    return null;
+  }
+  
+  if (!data || data.length === 0) {
+    console.log('No KPI data found');
+    return null;
+  }
 
-  const p = (data.payload || {}) as any;
+  const row = data[0];
+  const p = (row.payload || {}) as any;
   return {
-    created_at: data.created_at,
+    created_at: row.created_at,
     leads_today: p.leads_today,
     tasks_run: p.tasks_run,
     avg_response_min: p.avg_response_min,
