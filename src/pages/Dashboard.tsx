@@ -26,16 +26,39 @@ const Dashboard = () => {
   const [lastKpi, setLastKpi] = useState<any>(null);
 
   async function loadLastKpi() {
+    console.log('Loading latest KPI data...');
     const { data } = await supabase
       .from('results')
       .select('*')
       .eq('task', 'daily_kpi')
       .order('created_at', { ascending: false })
       .limit(1);
+    console.log('KPI query result:', data);
     setLastKpi(data?.[0]?.payload || null);
   }
 
   useEffect(() => { loadLastKpi(); }, []);
+
+  // Add real-time subscription for KPI updates
+  useEffect(() => {
+    console.log('Setting up real-time subscription for KPI updates...');
+    const channel = supabase
+      .channel('results-kpi-dashboard')
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'results', filter: "task=eq.daily_kpi" },
+        (payload) => {
+          console.log('Real-time KPI update received:', payload);
+          loadLastKpi();
+        }
+      )
+      .subscribe((status) => {
+        console.log('KPI subscription status:', status);
+      });
+    return () => { 
+      console.log('Cleaning up KPI subscription...');
+      supabase.removeChannel(channel); 
+    };
+  }, []);
 
   async function handleRunDaily() {
     try {
