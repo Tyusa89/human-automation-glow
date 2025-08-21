@@ -1,14 +1,16 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, ArrowLeft } from 'lucide-react';
 import LeadForm from '@/components/LeadForm';
 
 const ContactPage = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   const contactInfo = [
@@ -36,13 +38,28 @@ const ContactPage = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-br from-background via-accent/5 to-primary/10">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            Get In Touch
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Ready to transform your business with AI? Let's discuss how we can help you automate workflows, build custom AI agents, and integrate your systems.
-          </p>
+        <div className="container mx-auto px-4">
+          {/* Back Button */}
+          <div className="mb-8">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => navigate(-1)}
+              className="h-10 w-10"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span className="sr-only">Go back</span>
+            </Button>
+          </div>
+          
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
+              Get In Touch
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Ready to transform your business with AI? Let's discuss how we can help you automate workflows, build custom AI agents, and integrate your systems.
+            </p>
+          </div>
         </div>
       </section>
 

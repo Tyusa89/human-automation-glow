@@ -1,8 +1,10 @@
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Settings, Zap, ArrowRight } from "lucide-react";
+import { MessageCircle, Settings, Zap, ArrowRight, ArrowLeft } from "lucide-react";
 
 const ServicesPage = () => {
+  const navigate = useNavigate();
   const services = [
     {
       icon: Settings,
@@ -28,13 +30,28 @@ const ServicesPage = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-br from-background via-accent/5 to-primary/10">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            Our Services
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Comprehensive AI solutions designed to transform your business operations and drive growth through intelligent automation.
-          </p>
+        <div className="container mx-auto px-4">
+          {/* Back Button */}
+          <div className="mb-8">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => navigate(-1)}
+              className="h-10 w-10"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span className="sr-only">Go back</span>
+            </Button>
+          </div>
+          
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
+              Our Services
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+              Comprehensive AI solutions designed to transform your business operations and drive growth through intelligent automation.
+            </p>
+          </div>
         </div>
       </section>
 
