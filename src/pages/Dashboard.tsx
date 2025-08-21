@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { Users, CheckSquare, BookOpen, Activity, MoreHorizontal, Settings, Download, RefreshCw } from 'lucide-react';
+import { Users, CheckSquare, BookOpen, Activity, MoreHorizontal, Settings, Download, RefreshCw, ArrowLeft } from 'lucide-react';
 import LeadsTable from '@/components/LeadsTable';
 import TasksTable from '@/components/TasksTable';
 import KBList from '@/components/KBList';
@@ -20,6 +21,7 @@ import { useRole, isAdminLike } from '@/hooks/useRole';
 const Dashboard = () => {
   console.log('=== DASHBOARD COMPONENT LOADED ===');
   useEnsureProfile();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { role, loading } = useRole();
   const admin = isAdminLike(role);
@@ -138,13 +140,26 @@ const Dashboard = () => {
       <div className="bg-gradient-to-r from-primary/10 to-accent/10 border-b border-border">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-                Dashboard
-              </h1>
-              <p className="text-muted-foreground">
-                Monitor your automation, leads, tasks, and system performance
-              </p>
+            <div className="flex items-center gap-4">
+              {/* Back Button */}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => navigate(-1)}
+                className="h-10 w-10"
+              >
+                <ArrowLeft className="h-5 w-5" />
+                <span className="sr-only">Go back</span>
+              </Button>
+              
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+                  Dashboard
+                </h1>
+                <p className="text-muted-foreground">
+                  Monitor your automation, leads, tasks, and system performance
+                </p>
+              </div>
             </div>
             
             {/* Three Dots Menu */}
