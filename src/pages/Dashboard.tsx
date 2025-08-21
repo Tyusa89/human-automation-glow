@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRole, isAdminLike } from '@/hooks/useRole';
 
 const Dashboard = () => {
+  console.log('=== DASHBOARD COMPONENT LOADED ===');
   useEnsureProfile();
   const { toast } = useToast();
   const { role, loading } = useRole();
@@ -61,9 +62,14 @@ const Dashboard = () => {
   }, []);
 
   async function handleRunDaily() {
+    alert('BUTTON CLICKED! Check console for details.');
+    console.log('=== RUN DAILY SUMMARY CLICKED ===');
     try {
-      const { status } = await runTask('daily_kpi', { since: 'yesterday' });
-      if (status === 'ok') {
+      console.log('About to call runTask...');
+      const result = await runTask('daily_kpi', { since: 'yesterday' });
+      console.log('runTask completed with result:', result);
+      if (result.status === 'ok') {
+        console.log('Task successful, loading KPI...');
         await loadLastKpi();
         toast({
           title: "Success",
@@ -71,6 +77,7 @@ const Dashboard = () => {
         });
       }
     } catch (error) {
+      console.error('Error in handleRunDaily:', error);
       toast({
         title: "Error",
         description: "Failed to generate daily KPI report",
