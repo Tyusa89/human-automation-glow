@@ -1,8 +1,56 @@
-# Welcome to your Lovable project
+# EcoNest AI
+
+A modern React application with authentication, dashboard, and automated testing.
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/5dc03805-2bbe-4bf6-ab31-f180466b72b5
+
+## Features
+
+- 🔐 User Authentication with Supabase
+- 📊 Dashboard with KPI analytics  
+- 🎨 Modern UI with Tailwind CSS and shadcn/ui
+- 🧪 Automated Testing with Vitest
+- 📱 Responsive Design
+- 🔍 Role-based Access Control
+
+## Testing
+
+### Running Tests
+
+```bash
+# Run tests once
+npm test
+
+# Run tests in watch mode  
+npm run test:watch
+
+# Run tests with UI interface
+npm run test:ui
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+### Manual Testing Checklist
+
+1. **Home Page** (`/`) - Landing page with navigation
+2. **Authentication** (`/auth`) - Sign up/sign in flows
+3. **Dashboard** (`/dashboard`) - Protected main app (requires auth)
+4. **Public Pages** - Services, Pricing, Contact (all have back buttons)
+5. **Admin Panel** (`/admin`) - Admin-only section
+
+### Creating Test Users
+
+**Via Auth Page:**
+1. Go to `/auth` 
+2. Create account with email/password
+3. To promote to admin: Supabase Dashboard → Auth → Users → Edit role
+
+**Test User Credentials:**
+- Create your own test accounts via the signup flow
+- Use real email addresses for magic link testing
 
 ## How can I edit this code?
 
