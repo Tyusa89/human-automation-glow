@@ -1,0 +1,7 @@
+project_id = "rqldulvkwzvrmcvwttep"
+
+[functions.generate-sop]
+verify_jwt = false
+
+[functions.run-task]
+verify_jwt = true

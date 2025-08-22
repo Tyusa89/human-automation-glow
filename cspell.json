@@ -1,0 +1,17 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "supabase",
+    "shadcn",
+    "cmdk",
+    "embla",
+    "sonner",
+    "vaul"
+  ],
+  "ignorePaths": [
+    "node_modules",
+    "package-lock.json",
+    "yarn.lock"
+  ]
+}
