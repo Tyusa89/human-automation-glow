@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, CheckSquare, Clock, AlertCircle, Play, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { runTask } from '@/lib/api';
+import { runTask } from '@/lib/db';
 
 interface Task {
   id: string;

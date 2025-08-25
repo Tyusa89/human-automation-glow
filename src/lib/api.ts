@@ -380,41 +380,7 @@ class APIClient {
   }
 }
 
-export async function runTask(task: "daily_kpi" | "generate_sop", params: any = {}) {
-  const { supabase } = await import('@/integrations/supabase/client');
-  
-  try {
-    const { data, error } = await supabase.functions.invoke('run-task', {
-      body: { task, params }
-    });
-
-    if (error) {
-      // Log error to results table
-      await supabase.from('results').insert({
-        task, params, payload: null, logs: [error.message], status: 'error'
-      });
-      throw error;
-    }
-
-    // Log successful result
-    await supabase.from('results').insert({
-      task,
-      params,
-      payload: data?.payload ?? null,
-      logs: data?.logs ?? [],
-      status: data?.status ?? 'ok'
-    });
-
-    return data; // { status, payload, logs }
-  } catch (err) {
-    // Ensure any unexpected errors are also logged
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-    await supabase.from('results').insert({
-      task, params, payload: null, logs: [errorMessage], status: 'error'
-    });
-    throw err;
-  }
-}
+// runTask moved to src/lib/db.ts to avoid duplicate logging
 
 // Export singleton instance
 export const apiClient = new APIClient();

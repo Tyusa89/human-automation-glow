@@ -12,7 +12,7 @@ import TracesList from '@/components/TracesList';
 import { SPADEProcessor } from '@/components/SPADEProcessor';
 import ProfileCard from '@/components/ProfileCard';
 import CompleteProfile from '@/components/CompleteProfile';
-import { runTask } from '@/lib/api';
+import { runTask } from '@/lib/db';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
 import { useToast } from '@/hooks/use-toast';

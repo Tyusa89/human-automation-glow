@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { fetchLatestDailyKpi, runTask } from '@/lib/api';
+import { fetchLatestDailyKpi } from '@/lib/api';
+import { runTask } from '@/lib/db';
 import { supabase } from '@/integrations/supabase/client';
 
 function TaskHeader() {
