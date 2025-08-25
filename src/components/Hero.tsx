@@ -3,6 +3,7 @@ import { ArrowRight, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Hero = () => {
+  console.log("Hero component rendering");
   return (
     <section className="relative overflow-hidden">
       {/* Soft background vignette */}
