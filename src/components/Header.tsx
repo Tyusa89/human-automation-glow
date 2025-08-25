@@ -27,19 +27,19 @@ export default function AppHeader() {
   }
 
   return (
-    <header className="flex items-center justify-between px-4 py-3 border-b">
-      <Link to="/" className="font-semibold">EcoNest AI</Link>
+    <header className="flex items-center justify-between px-4 py-3 border-b bg-background">
+      <Link to="/" className="font-semibold text-foreground text-xl">EcoNest AI</Link>
       
       <nav className="flex items-center gap-4">
-        <Link to="/services" className="hover:text-primary transition-colors">Services</Link>
-        <Link to="/pricing" className="hover:text-primary transition-colors">Pricing</Link>
-        <Link to="/contact" className="hover:text-primary transition-colors">Contact</Link>
+        <Link to="/services" className="hover:text-primary transition-colors text-foreground">Services</Link>
+        <Link to="/pricing" className="hover:text-primary transition-colors text-foreground">Pricing</Link>
+        <Link to="/contact" className="hover:text-primary transition-colors text-foreground">Contact</Link>
         
         {authed && (
           <>
-            <Link to="/dashboard" className="hover:text-primary transition-colors">Dashboard</Link>
+            <Link to="/dashboard" className="hover:text-primary transition-colors text-foreground">Dashboard</Link>
             {admin && (
-              <Link to="/admin" className="hover:text-primary transition-colors font-medium">Admin</Link>
+              <Link to="/admin" className="hover:text-primary transition-colors font-medium text-foreground">Admin</Link>
             )}
           </>
         )}
