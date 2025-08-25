@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,8 @@ import {
 type Tab = 'magic' | 'password';
 
 export default function AuthPage() {
+  console.log('AuthPage component is rendering');
+  
   // UI state
   const [tab, setTab] = useState<Tab>('magic');
 
@@ -34,8 +37,13 @@ export default function AuthPage() {
 
   // if already authed, skip this page
   useEffect(() => {
+    console.log('Checking existing session...');
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) window.location.replace('/dashboard');
+      console.log('Session check result:', data);
+      if (data.session) {
+        console.log('User already authenticated, redirecting to dashboard');
+        window.location.replace('/dashboard');
+      }
     });
   }, []);
 
@@ -153,14 +161,29 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen grid place-items-center p-6">
-      <div className="w-full max-w-md space-y-6">
-        <h1 className="text-2xl font-bold">Sign in to EcoNest AI</h1>
+    <div className="min-h-screen grid place-items-center p-6 bg-background">
+      <div className="w-full max-w-md space-y-6 bg-card p-8 rounded-lg border shadow-lg">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Welcome to EcoNest AI</h1>
+          <p className="text-muted-foreground">Sign in to continue</p>
+        </div>
 
         {/* Tabs */}
-        <div className="flex gap-2">
-          <Button variant={tab==='magic'?'default':'outline'} onClick={()=>setTab('magic')}>Magic link</Button>
-          <Button variant={tab==='password'?'default':'outline'} onClick={()=>setTab('password')}>Email + password</Button>
+        <div className="flex gap-2 w-full">
+          <Button 
+            variant={tab==='magic'?'default':'outline'} 
+            onClick={()=>setTab('magic')}
+            className="flex-1"
+          >
+            Magic link
+          </Button>
+          <Button 
+            variant={tab==='password'?'default':'outline'} 
+            onClick={()=>setTab('password')}
+            className="flex-1"
+          >
+            Email + password
+          </Button>
         </div>
 
         {/* Error display */}
@@ -171,16 +194,22 @@ export default function AuthPage() {
         )}
 
         {/* Shared email field */}
-        <Input
-          type="email"
-          placeholder="you@company.com"
-          value={email}
-          onChange={(e)=>setEmail(e.target.value)}
-          required
-        />
+        <div className="space-y-2">
+          <label htmlFor="email" className="text-sm font-medium text-foreground">
+            Email address
+          </label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="you@company.com"
+            value={email}
+            onChange={(e)=>setEmail(e.target.value)}
+            required
+          />
+        </div>
 
         {tab === 'magic' ? (
-          <form onSubmit={handleMagic} className="space-y-3">
+          <form onSubmit={handleMagic} className="space-y-4">
             <Button 
               type="submit" 
               className="w-full" 
@@ -194,20 +223,26 @@ export default function AuthPage() {
               }
             </Button>
             {sent && (
-              <p className="text-sm text-muted-foreground">
-                Magic link sent. Check your email and click the link to sign in.
+              <p className="text-sm text-muted-foreground text-center">
+                Magic link sent! Check your email and click the link to sign in.
               </p>
             )}
           </form>
         ) : (
-          <form onSubmit={handlePassword} className="space-y-3">
-            <Input
-              type="password"
-              placeholder={`Password (min ${PASSWORD_MIN_LEN} chars)`}
-              value={password}
-              onChange={(e)=>setPassword(e.target.value)}
-              required
-            />
+          <form onSubmit={handlePassword} className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium text-foreground">
+                Password
+              </label>
+              <Input
+                id="password"
+                type="password"
+                placeholder={`Password (min ${PASSWORD_MIN_LEN} chars)`}
+                value={password}
+                onChange={(e)=>setPassword(e.target.value)}
+                required
+              />
+            </div>
             
             {/* Password requirements for signup */}
             {isSignUp && passwordErrors.length > 0 && (
@@ -230,19 +265,36 @@ export default function AuthPage() {
               className="w-full" 
               disabled={loading || (isSignUp && passwordErrors.length > 0)}
             >
-              {loading ? (isSignUp ? 'Creating…' : 'Signing in…') : (isSignUp ? 'Create account' : 'Sign in')}
+              {loading ? (isSignUp ? 'Creating account…' : 'Signing in…') : (isSignUp ? 'Create account' : 'Sign in')}
             </Button>
             
             <div className="flex items-center justify-between text-sm">
-              <button type="button" className="underline" onClick={()=>setIsSignUp(s=>!s)}>
+              <button 
+                type="button" 
+                className="text-primary hover:underline" 
+                onClick={()=>setIsSignUp(s=>!s)}
+              >
                 {isSignUp ? 'Have an account? Sign in' : 'New here? Create account'}
               </button>
-              <button type="button" className="underline" onClick={handleReset}>
+              <button 
+                type="button" 
+                className="text-primary hover:underline" 
+                onClick={handleReset}
+              >
                 Forgot password?
               </button>
             </div>
           </form>
         )}
+
+        <div className="text-center">
+          <a 
+            href="/" 
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            ← Back to home
+          </a>
+        </div>
       </div>
     </div>
   );

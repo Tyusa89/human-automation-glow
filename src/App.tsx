@@ -18,55 +18,59 @@ import ErrorBoundary from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <ErrorBoundary>
-        <Routes>
-          {/* public */}
-          <Route path="/" element={<Index />} />
-          <Route path="/services" element={<ServicesPage />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/auth" element={<AuthPage />} />
+const App = () => {
+  console.log('App component is rendering');
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <ErrorBoundary>
+          <Routes>
+            {/* public */}
+            <Route path="/" element={<Index />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/auth" element={<AuthPage />} />
 
-          {/* protected */}
-          <Route
-            path="/dashboard"
-            element={
-              <RequireAuth>
-                <Dashboard />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/results"
-            element={
-              <RequireAuth>
-                <RequireAdmin>
-                  <Results />
-                </RequireAdmin>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <RequireAuth>
-                <RequireAdmin>
-                  <AdminPage />
-                </RequireAdmin>
-              </RequireAuth>
-            }
-          />
+            {/* protected */}
+            <Route
+              path="/dashboard"
+              element={
+                <RequireAuth>
+                  <Dashboard />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/results"
+              element={
+                <RequireAuth>
+                  <RequireAdmin>
+                    <Results />
+                  </RequireAdmin>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <RequireAuth>
+                  <RequireAdmin>
+                    <AdminPage />
+                  </RequireAdmin>
+                </RequireAuth>
+              }
+            />
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </ErrorBoundary>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </ErrorBoundary>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
