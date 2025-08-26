@@ -6,6 +6,7 @@ import Portfolio from "@/components/Portfolio";
 import Contact from "@/components/Contact";
 import ClosingSection from "@/components/ClosingSection";
 import Footer from "@/components/Footer";
+import CustomerServiceWidget from "@/components/CustomerServiceWidget";
 
 const Index = () => {
   console.log("Index component rendering");
@@ -19,6 +20,7 @@ const Index = () => {
       <Contact />
       <ClosingSection />
       <Footer />
+      <CustomerServiceWidget />
     </div>
   );
 };
