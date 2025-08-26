@@ -27,12 +27,13 @@ const CustomerServiceWidget: React.FC = () => {
 
   if (!isOpen) {
     return (
-      <div className="fixed bottom-4 right-4 z-50">
+      <div className="fixed bottom-4 right-4 z-[9999]">
         <Button
           onClick={handleOpen}
-          className="rounded-full w-14 h-14 bg-emerald-600 hover:bg-emerald-700 shadow-lg animate-pulse"
+          className="rounded-full w-14 h-14 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg animate-pulse border-2 border-white"
+          aria-label="Open customer service chat"
         >
-          <MessageCircle className="h-6 w-6 text-white" />
+          <MessageCircle className="h-6 w-6" />
         </Button>
       </div>
     );
