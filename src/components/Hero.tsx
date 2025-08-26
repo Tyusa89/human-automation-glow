@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ArrowRight, Play } from "lucide-react";
 import { Link } from "react-router-dom";
+import AIAgentDemo from "./AIAgentDemo";
 
 const Hero = () => {
   console.log("Hero component rendering");
@@ -55,23 +56,12 @@ const Hero = () => {
                 Watch Demo
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl w-full">
-              <DialogTitle className="sr-only">EcoNest AI Demo Video</DialogTitle>
+            <DialogContent className="max-w-5xl w-full h-[80vh]">
+              <DialogTitle className="sr-only">EcoNest AI Agent Demo</DialogTitle>
               <DialogDescription className="sr-only">
-                Watch our demo video to see EcoNest AI automation in action
+                Experience our interactive AI agent demo to see EcoNest AI automation in action
               </DialogDescription>
-              <div className="aspect-video w-full">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                  title="EcoNest AI Demo"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="rounded-lg"
-                />
-              </div>
+              <AIAgentDemo onClose={() => {}} />
             </DialogContent>
           </Dialog>
         </div>
