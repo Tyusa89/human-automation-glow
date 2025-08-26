@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ArrowRight, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -42,15 +43,33 @@ const Hero = () => {
             </Button>
           </Link>
           
-          <Button 
-            variant="outline" 
-            size="lg" 
-            className="border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white 
-                       font-semibold px-8 py-4 text-lg hover-scale"
-          >
-            <Play className="mr-2 h-5 w-5" />
-            Watch Demo
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white 
+                           font-semibold px-8 py-4 text-lg hover-scale"
+              >
+                <Play className="mr-2 h-5 w-5" />
+                Watch Demo
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl w-full">
+              <div className="aspect-video w-full">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                  title="EcoNest AI Demo"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="rounded-lg"
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </section>
