@@ -1,11 +1,15 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAutoLogout } from '@/hooks/useAutoLogout';
 
 type AuthCtx = { loading: boolean };
 const AuthContext = createContext<AuthCtx>({ loading: true });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
+  
+  // Initialize auto-logout functionality
+  useAutoLogout();
 
   useEffect(() => {
     let cancelled = false;
