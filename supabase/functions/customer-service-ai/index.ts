@@ -40,6 +40,7 @@ serve(async (req) => {
   try {
     const { message, conversationHistory = [] } = await req.json();
     console.log('Received customer service request:', { message, historyLength: conversationHistory.length });
+    console.log('Function deployment check - timestamp:', new Date().toISOString());
 
     if (!message) {
       throw new Error('Message is required');
