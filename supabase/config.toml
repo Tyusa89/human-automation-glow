@@ -1,10 +1,1 @@
 project_id = "rqldulvkwzvrmcvwttep"
-
-[functions.customer-service-ai]
-verify_jwt = false
-
-[functions.generate-sop]
-verify_jwt = true
-
-[functions.run-task]
-verify_jwt = true
