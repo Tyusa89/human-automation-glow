@@ -13,7 +13,7 @@ import {
   PASSWORD_MIN_LEN,
 } from '@/lib/authPolicy';
 
-type Tab = 'magic' | 'password';
+type Tab = 'magic' | 'password' | 'phone';
 
 export default function AuthPage() {
   console.log('AuthPage component is rendering');
@@ -34,6 +34,11 @@ export default function AuthPage() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [error, setError] = useState<string>('');
+
+  // phone flow
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
 
   // if already authed, skip this page
   useEffect(() => {
@@ -160,6 +165,46 @@ export default function AuthPage() {
     setError('Password reset email sent. Check your inbox.');
   }
 
+  // ---------- Phone handlers ----------
+  async function handleSendOtp(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    
+    const { error } = await supabase.auth.signInWithOtp({
+      phone: phone
+    });
+    
+    setLoading(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    
+    setOtpSent(true);
+    setError('SMS sent! Enter the verification code.');
+  }
+
+  async function handleVerifyOtp(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    
+    const { error } = await supabase.auth.verifyOtp({
+      phone: phone,
+      token: otp,
+      type: 'sms'
+    });
+    
+    setLoading(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    
+    window.location.replace('/dashboard');
+  }
+
   return (
     <div className="min-h-screen grid place-items-center p-6 bg-background">
       <div className="w-full max-w-md space-y-6 bg-card p-8 rounded-lg border shadow-lg">
@@ -173,16 +218,23 @@ export default function AuthPage() {
           <Button 
             variant={tab==='magic'?'default':'outline'} 
             onClick={()=>setTab('magic')}
-            className="flex-1"
+            className="flex-1 text-xs"
           >
             Magic link
           </Button>
           <Button 
             variant={tab==='password'?'default':'outline'} 
             onClick={()=>setTab('password')}
-            className="flex-1"
+            className="flex-1 text-xs"
           >
             Email + password
+          </Button>
+          <Button 
+            variant={tab==='phone'?'default':'outline'} 
+            onClick={()=>setTab('phone')}
+            className="flex-1 text-xs"
+          >
+            SMS
           </Button>
         </div>
 
@@ -193,20 +245,36 @@ export default function AuthPage() {
           </Alert>
         )}
 
-        {/* Shared email field */}
-        <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium text-foreground">
-            Email address
-          </label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="you@company.com"
-            value={email}
-            onChange={(e)=>setEmail(e.target.value)}
-            required
-          />
-        </div>
+        {/* Shared input field */}
+        {tab !== 'phone' ? (
+          <div className="space-y-2">
+            <label htmlFor="email" className="text-sm font-medium text-foreground">
+              Email address
+            </label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="you@company.com"
+              value={email}
+              onChange={(e)=>setEmail(e.target.value)}
+              required
+            />
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <label htmlFor="phone" className="text-sm font-medium text-foreground">
+              Phone number
+            </label>
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="+1234567890"
+              value={phone}
+              onChange={(e)=>setPhone(e.target.value)}
+              required
+            />
+          </div>
+        )}
 
         {tab === 'magic' ? (
           <form onSubmit={handleMagic} className="space-y-4">
@@ -228,7 +296,7 @@ export default function AuthPage() {
               </p>
             )}
           </form>
-        ) : (
+        ) : tab === 'password' ? (
           <form onSubmit={handlePassword} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium text-foreground">
@@ -285,6 +353,52 @@ export default function AuthPage() {
               </button>
             </div>
           </form>
+        ) : (
+          /* Phone authentication */
+          <div className="space-y-4">
+            {!otpSent ? (
+              <form onSubmit={handleSendOtp} className="space-y-4">
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={loading}
+                >
+                  {loading ? 'Sending SMS...' : 'Send verification code'}
+                </Button>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyOtp} className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="otp" className="text-sm font-medium text-foreground">
+                    Verification code
+                  </label>
+                  <Input
+                    id="otp"
+                    type="text"
+                    placeholder="123456"
+                    value={otp}
+                    onChange={(e)=>setOtp(e.target.value)}
+                    required
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={loading}
+                >
+                  {loading ? 'Verifying...' : 'Verify and sign in'}
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  className="w-full" 
+                  onClick={() => {setOtpSent(false); setOtp(''); setError('');}}
+                >
+                  Back to phone number
+                </Button>
+              </form>
+            )}
+          </div>
         )}
 
         <div className="text-center">
