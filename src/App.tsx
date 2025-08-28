@@ -14,6 +14,7 @@ import Index from '@/pages/Index';
 import ProductPage from '@/pages/Product';
 import SolutionsPage from '@/pages/Solutions';
 import TemplatesPage from '@/pages/Templates';
+import IntegrationsPage from '@/pages/Integrations';
 import ServicesPage from '@/pages/Services';
 import Pricing from '@/pages/Pricing';
 import ContactPage from '@/pages/ContactPage';
@@ -40,7 +41,7 @@ const App = () => {
                 <Route path="/product" element={<ProductPage />} />
                 <Route path="/solutions" element={<SolutionsPage />} />
                 <Route path="/templates" element={<TemplatesPage />} />
-                <Route path="/integrations" element={<Index />} />
+                <Route path="/integrations" element={<IntegrationsPage />} />
                 <Route path="/docs" element={<Index />} />
                 <Route path="/trust" element={<Index />} />
                 <Route path="/services" element={<ServicesPage />} />
