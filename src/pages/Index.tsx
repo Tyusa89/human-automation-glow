@@ -8,6 +8,27 @@ import { Button } from "@/components/ui/button";
 export default function Index() {
   return (
     <>
+      {/* Left Sitemap rail */}
+      <aside className="fixed left-4 top-24 hidden lg:block z-30">
+        <Card className="w-56 sticky top-24">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Sitemap</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm">
+            <ul className="space-y-2">
+              <li><a className="hover:underline" href="#home">Home</a></li>
+              <li><a className="hover:underline" href="#product">Product</a></li>
+              <li><a className="hover:underline" href="#solutions">Solutions</a></li>
+              <li><a className="hover:underline" href="#templates">Templates</a></li>
+              <li><a className="hover:underline" href="#integrations">Integrations</a></li>
+              <li><a className="hover:underline" href="#pricing">Pricing</a></li>
+              <li><a className="hover:underline" href="#docs">Docs</a></li>
+              <li><a className="hover:underline" href="#trust">Trust & Security</a></li>
+            </ul>
+          </CardContent>
+        </Card>
+      </aside>
+
       <Section title="Build AI agents and automations — visually" eyebrow="Home">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div>
