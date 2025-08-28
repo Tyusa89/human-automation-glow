@@ -31,6 +31,7 @@ export default function AppHeader() {
       <Link to="/" className="font-semibold text-foreground text-xl">EcoNest AI</Link>
       
       <nav className="flex items-center gap-4">
+        <Link to="/" className="hover:text-primary transition-colors text-foreground">Home</Link>
         <Link to="/services" className="hover:text-primary transition-colors text-foreground">Services</Link>
         <Link to="/pricing" className="hover:text-primary transition-colors text-foreground">Pricing</Link>
         <Link to="/contact" className="hover:text-primary transition-colors text-foreground">Contact</Link>
