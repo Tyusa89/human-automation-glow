@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route } from "react-router-dom";
 import { Header, Footer } from '@/components/Chrome';
+import { CommandMenu } from '@/components/CommandMenu';
 import AuthPage from '@/pages/AuthPage';
 import RequireAuth from '@/components/RequireAuth';
 import RequireAdmin from '@/components/RequireAdmin';
@@ -35,6 +36,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <ErrorBoundary>
+            <CommandMenu />
             <Header />
             <main>
               <Routes>
