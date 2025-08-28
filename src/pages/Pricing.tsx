@@ -1,50 +1,41 @@
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { Section } from "@/components/Sections";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Check } from "lucide-react";
 
-export default function Pricing() {
-  const navigate = useNavigate();
-  const tiers = [
-    { name: "Starter", price: "$49/mo", features: ["Lead capture", "1 automation", "Email support"] },
-    { name: "Pro", price: "$149/mo", features: ["Everything in Starter", "3 automations", "Priority support"] },
-    { name: "Custom", price: "Let's talk", features: ["Unlimited automations", "SLA", "Dedicated engineer"] },
-  ];
-  
+const pricing = [
+  { name: "Starter", price: "$0", blurb: "Explore & test", features: ["1 workspace","2 agents · 1k msgs/mo","10 templates","Community support"] },
+  { name: "Pro", price: "$39", blurb: "Solo & small teams", features: ["Unlimited templates","5 agents · 10k msgs/mo","Integrations directory","Email support"] },
+  { name: "Business", price: "Custom", blurb: "Scale ops", features: ["SSO, Roles & RLS","VPC / self-host","Audit logs & SLA","Dedicated success"] },
+];
+
+export default function PricingPage() {
   return (
-    <>
-      <Header />
-      <main className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-20">
-          {/* Back Button */}
-          <div className="mb-8">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => navigate(-1)}
-              className="h-10 w-10"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              <span className="sr-only">Go back</span>
-            </Button>
-          </div>
-          
-          <h1 className="text-3xl font-bold mb-8 text-center">Simple, scalable pricing</h1>
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {tiers.map(t => (
-              <div key={t.name} className="border border-border rounded-2xl p-6 bg-card">
-                <h2 className="text-xl font-semibold text-card-foreground">{t.name}</h2>
-                <p className="text-3xl my-4 text-card-foreground">{t.price}</p>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  {t.features.map(f => <li key={f}>• {f}</li>)}
-                </ul>
+    <Section title="Pricing" eyebrow="Simple & scalable">
+      <div className="grid md:grid-cols-3 gap-6">
+        {pricing.map(tier => (
+          <Card key={tier.name} className="relative">
+            <CardHeader>
+              <div className="flex items-baseline justify-between">
+                <CardTitle>{tier.name}</CardTitle>
               </div>
-            ))}
-          </div>
-        </div>
-      </main>
-      <Footer />
-    </>
+              <div className="text-3xl font-semibold mt-2">
+                {tier.price}<span className="text-base text-muted-foreground">/mo</span>
+              </div>
+              <div className="text-sm text-muted-foreground">{tier.blurb}</div>
+            </CardHeader>
+            <CardContent className="text-sm text-foreground space-y-2">
+              {tier.features.map(f => (
+                <div key={f} className="flex items-center gap-2"><Check className="h-4 w-4"/>{f}</div>
+              ))}
+              <div className="pt-3">
+                <Button>Choose {tier.name}</Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <p className="text-xs text-muted-foreground mt-4">Alt billing idea: per-resolution for support (Fin-style).</p>
+    </Section>
   );
 }
