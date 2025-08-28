@@ -1,52 +1,8 @@
-import { Section } from "@/components/Sections";
+import { Section, Pill } from "@/components/Sections";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles } from "lucide-react";
-
-const pricing = [
-  {
-    name: "Starter",
-    price: "$0",
-    blurb: "For exploring and testing",
-    features: [
-      "1 workspace",
-      "2 agents · 1,000 msgs/mo",
-      "10 templates",
-      "Community support",
-    ],
-  },
-  {
-    name: "Pro",
-    price: "$39",
-    blurb: "For solopreneurs & small teams", 
-    features: [
-      "Unlimited templates",
-      "5 agents · 10k msgs/mo",
-      "Integrations directory",
-      "Email support",
-    ],
-  },
-  {
-    name: "Business",
-    price: "Custom",
-    blurb: "For scaling operations",
-    features: [
-      "SSO, Roles & RLS",
-      "VPC / self‑host options",
-      "Audit logs & SLA",
-      "Dedicated success",
-    ],
-  },
-];
-
-function Pill({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-700 text-white px-3 py-1 text-xs">
-      <Sparkles className="h-3.5 w-3.5" />
-      {children}
-    </span>
-  );
-}
+import { Check } from "lucide-react";
+import { pricing } from "@/lib/data";
 
 export default function PricingPage() {
   return (

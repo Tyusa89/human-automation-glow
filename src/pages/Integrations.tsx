@@ -1,7 +1,6 @@
 import { Section } from "@/components/Sections";
 import { Link as LinkIcon } from "lucide-react";
-
-const integrations = ["Slack","Gmail","Google Sheets","HubSpot","Salesforce","Zendesk","Twilio","Notion","Postgres","Webhook"];
+import { integrations } from "@/lib/data";
 
 export default function IntegrationsPage() {
   return (
