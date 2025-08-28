@@ -3,13 +3,6 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useRole, isAdminLike } from '@/hooks/useRole';
 import { Button } from '@/components/ui/button';
-import { Map } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 export default function AppHeader() {
   const navigate = useNavigate();
@@ -45,42 +38,6 @@ export default function AppHeader() {
         <Link to="/services" className="hover:text-primary transition-colors text-foreground">Services</Link>
         <Link to="/pricing" className="hover:text-primary transition-colors text-foreground">Pricing</Link>
         <Link to="/contact" className="hover:text-primary transition-colors text-foreground">Contact</Link>
-        
-        {/* Sitemap Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="gap-2">
-              <Map className="h-4 w-4" />
-              Sitemap
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 bg-background border">
-            <DropdownMenuItem asChild>
-              <a href="#home" className="w-full">Home</a>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <a href="#product" className="w-full">Product</a>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <a href="#solutions" className="w-full">Solutions</a>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <a href="#templates" className="w-full">Templates</a>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <a href="#integrations" className="w-full">Integrations</a>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <a href="#pricing" className="w-full">Pricing</a>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <a href="#docs" className="w-full">Docs</a>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <a href="#trust" className="w-full">Trust & Security</a>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
         
         {authed && (
           <>
