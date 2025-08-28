@@ -8,10 +8,12 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b bg-background/70 backdrop-blur">
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-xl bg-primary text-primary-foreground grid place-items-center font-bold overflow-hidden">
-            <img src={brand.logoUrl} alt={brand.name} className="h-8 w-8 object-contain" />
-          </div>
-          <div className="font-semibold">{brand.name}</div>
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
+            <div className="h-8 w-8 rounded-xl bg-primary text-primary-foreground grid place-items-center font-bold overflow-hidden">
+              <img src={brand.logoUrl} alt={brand.name} className="h-8 w-8 object-contain" />
+            </div>
+            <div className="font-semibold">{brand.name}</div>
+          </Link>
           <div className="hidden md:flex items-center gap-2 ml-3">
             <Badge>Beta</Badge>
             <Badge>Zapier × Intercom vibe</Badge>
