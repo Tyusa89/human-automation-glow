@@ -12,6 +12,7 @@ import Results from '@/pages/Results';
 import AdminPage from '@/pages/Admin';
 import Index from '@/pages/Index';
 import ProductPage from '@/pages/Product';
+import SolutionsPage from '@/pages/Solutions';
 import ServicesPage from '@/pages/Services';
 import Pricing from '@/pages/Pricing';
 import ContactPage from '@/pages/ContactPage';
@@ -36,7 +37,7 @@ const App = () => {
                 {/* public */}
                 <Route path="/" element={<Index />} />
                 <Route path="/product" element={<ProductPage />} />
-                <Route path="/solutions" element={<Index />} />
+                <Route path="/solutions" element={<SolutionsPage />} />
                 <Route path="/templates" element={<Index />} />
                 <Route path="/integrations" element={<Index />} />
                 <Route path="/docs" element={<Index />} />
