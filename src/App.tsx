@@ -23,6 +23,7 @@ import TrustPage from '@/pages/Trust';
 import ContactPage from '@/pages/ContactPage';
 import NotFound from '@/pages/NotFound';
 import ErrorBoundary from "./components/ErrorBoundary";
+import { TemplateDetail } from '@/components/templates/TemplateDetail';
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => {
                 <Route path="/product" element={<ProductPage />} />
                 <Route path="/solutions" element={<SolutionsPage />} />
                 <Route path="/templates" element={<TemplatesPage />} />
+                <Route path="/templates/:slug" element={<TemplateDetail />} />
                 <Route path="/integrations" element={<IntegrationsPage />} />
                 <Route path="/docs" element={<DocsPage />} />
                 <Route path="/trust" element={<TrustPage />} />
