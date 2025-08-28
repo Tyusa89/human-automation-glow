@@ -1,60 +1,16 @@
 import React from "react";
-import { motion } from "framer-motion";
-import {
-  Bot,
-  Workflow,
-  Shield,
-  Database,
-  Puzzle,
-  Globe,
-  Link as LinkIcon,
-  BookOpen,
-  DollarSign,
-  Sparkles,
-  Zap,
-  Check,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bot, Workflow, Check, Puzzle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Section, Feature, Pill } from "@/components/Sections";
+import { StudioMock } from "@/components/StudioMock";
+import Product from "./Product";
+import Solutions from "./Solutions";
+import Templates from "./Templates";
+import Integrations from "./Integrations";
+import Docs from "./Docs";
+import Trust from "./Trust";
 import CustomerServiceWidget from "@/components/CustomerServiceWidget";
-
-// --- Helpers ---
-const Section: React.FC<{ id: string; title: string; eyebrow?: string; children: React.ReactNode }>
-  = ({ id, title, eyebrow, children }) => (
-  <section id={id} className="scroll-mt-24 py-16 md:py-24">
-    <div className="max-w-6xl mx-auto px-4">
-      <div className="mb-8">
-        {eyebrow && (
-          <div className="text-xs uppercase tracking-widest text-muted-foreground mb-2">{eyebrow}</div>
-        )}
-        <h2 className="text-2xl md:text-4xl font-semibold text-foreground">{title}</h2>
-      </div>
-      {children}
-    </div>
-  </section>
-);
-
-const Feature: React.FC<{ icon: React.ReactNode; title: string; copy: string }>
-  = ({ icon, title, copy }) => (
-  <div className="flex gap-4 p-4 rounded-2xl border bg-card shadow-sm">
-    <div className="shrink-0 p-2 rounded-xl bg-muted border">{icon}</div>
-    <div>
-      <h3 className="font-semibold text-foreground">{title}</h3>
-      <p className="text-muted-foreground text-sm leading-relaxed">{copy}</p>
-    </div>
-  </div>
-);
-
-const Badge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <span className="inline-flex items-center rounded-full border bg-card px-2.5 py-1 text-xs text-muted-foreground">{children}</span>
-);
-
-const Pill: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <span className="inline-flex items-center gap-1 rounded-full bg-primary text-primary-foreground px-3 py-1 text-xs">
-    <Sparkles className="h-3.5 w-3.5" />
-    {children}
-  </span>
-);
 
 // --- Content data ---
 const templateCards = [
@@ -147,34 +103,7 @@ const Index = () => {
               <div>Self‑host option</div>
             </div>
           </div>
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="bg-card border rounded-2xl shadow-sm p-4"
-          >
-            <div className="text-sm text-muted-foreground mb-2">Visual Automation Studio</div>
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { icon: <Bot className="h-5 w-5" />, label: "Agent" },
-                { icon: <Workflow className="h-5 w-5" />, label: "Flow" },
-                { icon: <Database className="h-5 w-5" />, label: "Data" },
-                { icon: <Puzzle className="h-5 w-5" />, label: "Integration" },
-                { icon: <Globe className="h-5 w-5" />, label: "Channel" },
-                { icon: <Shield className="h-5 w-5" />, label: "Policy" },
-              ].map((n, i) => (
-                <div key={i} className="border rounded-xl p-3 bg-muted">
-                  <div className="flex items-center gap-2 text-foreground">
-                    {n.icon}
-                    <span className="text-xs">{n.label}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-3 text-xs text-muted-foreground flex items-center gap-2">
-              <Zap className="h-4 w-4" /> Drag, connect, and publish without code
-            </div>
-          </motion.div>
+          <StudioMock />
         </div>
 
         <div className="grid md:grid-cols-3 gap-4 mt-12">
@@ -184,75 +113,10 @@ const Index = () => {
         </div>
       </Section>
 
-      {/* Product */}
-      <Section id="product" title="Product" eyebrow="Overview">
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="space-y-4">
-            <Feature icon={<Workflow className="h-5 w-5" />} title="Visual Flow Designer" copy="Snap together triggers, actions, conditions, and approvals. Reusable subflows keep things tidy." />
-            <Feature icon={<Bot className="h-5 w-5" />} title="Agent Studio" copy="Define goals, tools, retrieval sources, and evaluation. Preview chats and measure resolution." />
-            <Feature icon={<Database className="h-5 w-5" />} title="Data Hub" copy="Connect Supabase/Postgres, Notion, Sheets, or files. Control access with RLS and roles." />
-            <Feature icon={<Shield className="h-5 w-5" />} title="Governance" copy="Workspaces, roles, audit logs, redaction, prompt shields, rate limits, and keys vault." />
-          </div>
-          <Card className="border-dashed">
-            <CardHeader>
-              <CardTitle>Micro‑tour</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground space-y-3">
-              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Create a <b>Lead‑Qual Agent</b> from a template</div>
-              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Wire to <b>Sheets</b> and <b>HubSpot</b></div>
-              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Add <b>scoring logic</b> and <b>booking</b></div>
-              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Publish to <b>website widget</b> and track outcomes</div>
-            </CardContent>
-          </Card>
-        </div>
-      </Section>
-
-      {/* Solutions */}
-      <Section id="solutions" title="Solutions" eyebrow="By team & industry">
-        <div className="grid md:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader><CardTitle>Support</CardTitle></CardHeader>
-            <CardContent className="text-sm text-muted-foreground">Deflect FAQs, triage issues, and handoff with full context to agents in Zendesk/Intercom.</CardContent>
-          </Card>
-          <Card>
-            <CardHeader><CardTitle>Marketing & Growth</CardTitle></CardHeader>
-            <CardContent className="text-sm text-muted-foreground">Qualify leads, personalize pages, and route hot prospects to sales calendars.</CardContent>
-          </Card>
-          <Card>
-            <CardHeader><CardTitle>Ops & RevOps</CardTitle></CardHeader>
-            <CardContent className="text-sm text-muted-foreground">Automate back‑office: data syncs, enrichment, approvals, and reporting.</CardContent>
-          </Card>
-        </div>
-      </Section>
-
-      {/* Templates */}
-      <Section id="templates" title="Templates" eyebrow="Start fast">
-        <div className="grid md:grid-cols-4 gap-4">
-          {templateCards.map((t) => (
-            <Card key={t.title} className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <CardTitle className="text-base">{t.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">{t.desc}</CardContent>
-            </Card>
-          ))}
-        </div>
-        <div className="mt-6">
-          <Button>Browse all templates</Button>
-        </div>
-      </Section>
-
-      {/* Integrations */}
-      <Section id="integrations" title="Integrations" eyebrow="Connect everything">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          {integrations.map((name) => (
-            <div key={name} className="border rounded-xl bg-card p-3 text-sm flex items-center gap-2">
-              <LinkIcon className="h-4 w-4" /> {name}
-            </div>
-          ))}
-        </div>
-        <p className="text-xs text-muted-foreground mt-3">Plus generic REST, Webhook, and DB connectors.</p>
-      </Section>
+      <Product />
+      <Solutions />
+      <Templates />
+      <Integrations />
 
       {/* Pricing */}
       <Section id="pricing" title="Pricing" eyebrow="Simple & scalable">
@@ -281,44 +145,8 @@ const Index = () => {
         <p className="text-xs text-muted-foreground mt-4">Alt model inspiration: per‑resolution billing for support agents (à la Intercom Fin).</p>
       </Section>
 
-      {/* Docs */}
-      <Section id="docs" title="Docs & Academy" eyebrow="Learn & build">
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><BookOpen className="h-5 w-5"/>Quickstart</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground space-y-2">
-              <div>1. Create your first agent from a template</div>
-              <div>2. Connect data & integrations</div>
-              <div>3. Publish to widget or channel</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Workflow className="h-5 w-5"/>How‑to Guides</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground space-y-2">
-              <div>• Build a lead‑qualifying concierge</div>
-              <div>• Triage & deflection for support</div>
-              <div>• Human‑in‑the‑loop approvals</div>
-            </CardContent>
-          </Card>
-        </div>
-        <div className="mt-6">
-          <Button variant="outline">Open Docs</Button>
-          <Button className="ml-2">Watch a 3‑min demo</Button>
-        </div>
-      </Section>
-
-      {/* Trust */}
-      <Section id="trust" title="Trust & Security" eyebrow="Governance first">
-        <div className="grid md:grid-cols-3 gap-4">
-          <Feature icon={<Shield className="h-5 w-5" />} title="Compliance" copy="SOC 2 Type II, GDPR, data residency options." />
-          <Feature icon={<Database className="h-5 w-5" />} title="Data Controls" copy="Row‑Level Security, role‑based access, PII redaction, and secrets vault." />
-          <Feature icon={<Globe className="h-5 w-5" />} title="Deployment" copy="Multi‑tenant cloud, VPC peering, or self‑hosted for maximum control." />
-        </div>
-      </Section>
+      <Docs />
+      <Trust />
 
       {/* Footer */}
       <footer className="border-t py-10">
