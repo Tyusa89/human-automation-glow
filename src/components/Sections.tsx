@@ -46,7 +46,7 @@ export function Badge({ children }: { children: ReactNode }) {
 
 export function Pill({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-primary text-primary-foreground px-3 py-1 text-xs">
+    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-700 text-white px-3 py-1 text-xs">
       <Sparkles className="h-3.5 w-3.5" />
       {children}
     </span>

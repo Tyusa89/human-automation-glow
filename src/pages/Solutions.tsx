@@ -7,7 +7,7 @@ export default function SolutionsPage() {
       <div className="grid md:grid-cols-3 gap-4">
         <Card>
           <CardHeader><CardTitle>Support</CardTitle></CardHeader>
-          <CardContent className="text-sm text-muted-foreground">Deflect FAQs, triage issues, and handoff with full context to Zendesk/Intercom.</CardContent>
+          <CardContent className="text-sm text-muted-foreground">Deflect FAQs, triage issues, and handoff with full context to agents in Zendesk/Intercom.</CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>Marketing & Growth</CardTitle></CardHeader>
@@ -15,7 +15,7 @@ export default function SolutionsPage() {
         </Card>
         <Card>
           <CardHeader><CardTitle>Ops & RevOps</CardTitle></CardHeader>
-          <CardContent className="text-sm text-muted-foreground">Automate back-office: syncs, enrichment, approvals, and reporting.</CardContent>
+          <CardContent className="text-sm text-muted-foreground">Automate back‑office: data syncs, enrichment, approvals, and reporting.</CardContent>
         </Card>
       </div>
     </Section>

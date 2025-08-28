@@ -29,7 +29,7 @@ const App = () => {
   console.log('App component is rendering');
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-muted/50 via-background to-background text-foreground">
+    <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-background to-background text-foreground">
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
