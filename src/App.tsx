@@ -11,6 +11,7 @@ import Dashboard from '@/pages/Dashboard';
 import Results from '@/pages/Results';
 import AdminPage from '@/pages/Admin';
 import Index from '@/pages/Index';
+import ProductPage from '@/pages/Product';
 import ServicesPage from '@/pages/Services';
 import Pricing from '@/pages/Pricing';
 import ContactPage from '@/pages/ContactPage';
@@ -34,7 +35,7 @@ const App = () => {
               <Routes>
                 {/* public */}
                 <Route path="/" element={<Index />} />
-                <Route path="/product" element={<Index />} />
+                <Route path="/product" element={<ProductPage />} />
                 <Route path="/solutions" element={<Index />} />
                 <Route path="/templates" element={<Index />} />
                 <Route path="/integrations" element={<Index />} />
