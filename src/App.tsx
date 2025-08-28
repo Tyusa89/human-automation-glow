@@ -23,56 +23,66 @@ const App = () => {
   console.log('App component is rendering');
   
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <ErrorBoundary>
-          <Header />
-          <Routes>
-            {/* public */}
-            <Route path="/" element={<Index />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/auth" element={<AuthPage />} />
+    <div className="min-h-screen bg-gradient-to-b from-muted/50 via-background to-background text-foreground">
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <ErrorBoundary>
+            <Header />
+            <main>
+              <Routes>
+                {/* public */}
+                <Route path="/" element={<Index />} />
+                <Route path="/product" element={<Index />} />
+                <Route path="/solutions" element={<Index />} />
+                <Route path="/templates" element={<Index />} />
+                <Route path="/integrations" element={<Index />} />
+                <Route path="/docs" element={<Index />} />
+                <Route path="/trust" element={<Index />} />
+                <Route path="/services" element={<ServicesPage />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/auth" element={<AuthPage />} />
 
-            {/* protected */}
-            <Route
-              path="/dashboard"
-              element={
-                <RequireAuth>
-                  <Dashboard />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/results"
-              element={
-                <RequireAuth>
-                  <RequireAdmin>
-                    <Results />
-                  </RequireAdmin>
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/admin"
-              element={
-                <RequireAuth>
-                  <RequireAdmin>
-                    <AdminPage />
-                  </RequireAdmin>
-                </RequireAuth>
-              }
-            />
+                {/* protected */}
+                <Route
+                  path="/dashboard"
+                  element={
+                    <RequireAuth>
+                      <Dashboard />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/results"
+                  element={
+                    <RequireAuth>
+                      <RequireAdmin>
+                        <Results />
+                      </RequireAdmin>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/admin"
+                  element={
+                    <RequireAuth>
+                      <RequireAdmin>
+                        <AdminPage />
+                      </RequireAdmin>
+                    </RequireAuth>
+                  }
+                />
 
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Footer />
-        </ErrorBoundary>
-      </TooltipProvider>
-    </QueryClientProvider>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+            <Footer />
+          </ErrorBoundary>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </div>
   );
 };
 
