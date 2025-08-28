@@ -3,7 +3,7 @@ import { Bot, Workflow, Check, Puzzle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Section, Feature, Pill } from "@/components/Sections";
-import { StudioMock } from "@/components/StudioMock";
+import StudioMock from "@/components/StudioMock";
 import Product from "./Product";
 import Solutions from "./Solutions";
 import Templates from "./Templates";
