@@ -9,29 +9,29 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 160 68% 15%;
+    --foreground: 156 39% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 160 68% 15%;
+    --card-foreground: 156 39% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 160 68% 15%;
+    --popover-foreground: 156 39% 20%;
 
-    --primary: 160 68% 15%;
+    --primary: 156 39% 29%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 160 20% 96%;
-    --secondary-foreground: 160 68% 15%;
+    --secondary: 156 20% 96%;
+    --secondary-foreground: 156 39% 20%;
 
-    --muted: 160 20% 96%;
-    --muted-foreground: 160 30% 45%;
+    --muted: 156 20% 96%;
+    --muted-foreground: 156 25% 45%;
 
-    --accent: 160 41% 56%;
+    --accent: 156 39% 48%;
     --accent-foreground: 0 0% 100%;
     
-    /* Brand gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(160 68% 15%), hsl(160 41% 56%));
-    --gradient-accent: linear-gradient(90deg, hsl(160 41% 56% / 0.1), hsl(160 41% 56% / 0.05));
+    /* Brand gradients - Emerald theme */
+    --gradient-hero: linear-gradient(135deg, hsl(156 39% 29%), hsl(156 39% 48%));
+    --gradient-accent: linear-gradient(90deg, hsl(156 39% 48% / 0.1), hsl(156 39% 48% / 0.05));
     
     /* Animations */
     --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -63,26 +63,26 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 160 68% 8%;
-    --foreground: 160 20% 95%;
+    --background: 156 39% 8%;
+    --foreground: 156 20% 95%;
 
-    --card: 160 68% 10%;
-    --card-foreground: 160 20% 95%;
+    --card: 156 39% 10%;
+    --card-foreground: 156 20% 95%;
 
-    --popover: 160 68% 10%;
-    --popover-foreground: 160 20% 95%;
+    --popover: 156 39% 10%;
+    --popover-foreground: 156 20% 95%;
 
-    --primary: 160 41% 56%;
-    --primary-foreground: 160 68% 8%;
+    --primary: 156 39% 48%;
+    --primary-foreground: 156 39% 8%;
 
-    --secondary: 160 30% 18%;
-    --secondary-foreground: 160 20% 95%;
+    --secondary: 156 25% 18%;
+    --secondary-foreground: 156 20% 95%;
 
-    --muted: 160 30% 18%;
-    --muted-foreground: 160 20% 65%;
+    --muted: 156 25% 18%;
+    --muted-foreground: 156 20% 65%;
 
-    --accent: 160 41% 56%;
-    --accent-foreground: 160 68% 8%;
+    --accent: 156 39% 48%;
+    --accent-foreground: 156 39% 8%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;

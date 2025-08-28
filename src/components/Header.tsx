@@ -35,7 +35,10 @@ export default function AppHeader() {
 
   return (
     <header className="flex items-center justify-between px-4 py-3 border-b bg-background">
-      <Link to="/" className="font-semibold text-foreground text-xl">EcoNest AI</Link>
+      <Link to="/" className="font-semibold text-foreground text-xl flex items-center gap-2">
+        <div className="h-8 w-8 rounded-xl bg-primary text-primary-foreground grid place-items-center font-bold text-sm">EN</div>
+        EcoNest AI
+      </Link>
       
       <nav className="flex items-center gap-4">
         <Link to="/" className="hover:text-primary transition-colors text-foreground">Home</Link>
