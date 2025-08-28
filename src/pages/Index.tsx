@@ -143,6 +143,27 @@ const pricing = [
 export default function EcoNestWireframe() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-white text-slate-900">
+      {/* Left Sitemap rail */}
+      <aside className="fixed left-4 top-24 hidden lg:block z-30">
+        <Card className="w-56 sticky top-24">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Sitemap</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm">
+            <ul className="space-y-2">
+              <li><a className="hover:underline" href="#home">Home</a></li>
+              <li><a className="hover:underline" href="#product">Product</a></li>
+              <li><a className="hover:underline" href="#solutions">Solutions</a></li>
+              <li><a className="hover:underline" href="#templates">Templates</a></li>
+              <li><a className="hover:underline" href="#integrations">Integrations</a></li>
+              <li><a className="hover:underline" href="#pricing">Pricing</a></li>
+              <li><a className="hover:underline" href="#docs">Docs</a></li>
+              <li><a className="hover:underline" href="#trust">Trust & Security</a></li>
+            </ul>
+          </CardContent>
+        </Card>
+      </aside>
+
       {/* Top Bar */}
       <header className="sticky top-0 z-40 border-b bg-white/70 backdrop-blur">
         <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
@@ -227,127 +248,171 @@ export default function EcoNestWireframe() {
         </div>
       </Section>
 
+      {/* Product */}
+      <Section id="product" title="Product" eyebrow="Overview">
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="space-y-4">
+            <Feature icon={<Workflow className="h-5 w-5" />} title="Visual Flow Designer" copy="Snap together triggers, actions, conditions, and approvals. Reusable subflows keep things tidy." />
+            <Feature icon={<Bot className="h-5 w-5" />} title="Agent Studio" copy="Define goals, tools, retrieval sources, and evaluation. Preview chats and measure resolution." />
+            <Feature icon={<Database className="h-5 w-5" />} title="Data Hub" copy="Connect Supabase/Postgres, Notion, Sheets, or files. Control access with RLS and roles." />
+            <Feature icon={<Shield className="h-5 w-5" />} title="Governance" copy="Workspaces, roles, audit logs, redaction, prompt shields, rate limits, and keys vault." />
+          </div>
+          <Card className="border-dashed">
+            <CardHeader>
+              <CardTitle>Micro‑tour</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-slate-600 space-y-3">
+              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Create a <b>Lead‑Qual Agent</b> from a template</div>
+              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Wire to <b>Sheets</b> and <b>HubSpot</b></div>
+              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Add <b>scoring logic</b> and <b>booking</b></div>
+              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Publish to <b>website widget</b> and track outcomes</div>
+            </CardContent>
+          </Card>
+        </div>
+      </Section>
+
+      {/* Solutions */}
+      <Section id="solutions" title="Solutions" eyebrow="By team & industry">
+        <div className="grid md:grid-cols-3 gap-4">
+          <Card>
+            <CardHeader><CardTitle>Support</CardTitle></CardHeader>
+            <CardContent className="text-sm text-slate-600">Deflect FAQs, triage issues, and handoff with full context to agents in Zendesk/Intercom.</CardContent>
+          </Card>
+          <Card>
+            <CardHeader><CardTitle>Marketing & Growth</CardTitle></CardHeader>
+            <CardContent className="text-sm text-slate-600">Qualify leads, personalize pages, and route hot prospects to sales calendars.</CardContent>
+          </Card>
+          <Card>
+            <CardHeader><CardTitle>Ops & RevOps</CardTitle></CardHeader>
+            <CardContent className="text-sm text-slate-600">Automate back‑office: data syncs, enrichment, approvals, and reporting.</CardContent>
+          </Card>
+        </div>
+      </Section>
+
       {/* Templates */}
-      <Section id="templates" title="Start with a template" eyebrow="Templates">
-        <div className="grid md:grid-cols-2 gap-4">
-          {templateCards.map((t, i) => (
-            <Card key={i} className="border-dashed">
+      <Section id="templates" title="Templates" eyebrow="Start fast">
+        <div className="grid md:grid-cols-4 gap-4">
+          {templateCards.map((t) => (
+            <Card key={t.title} className="hover:shadow-md transition-shadow">
               <CardHeader>
-                <CardTitle className="text-lg">{t.title}</CardTitle>
+                <CardTitle className="text-base">{t.title}</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-slate-600 text-sm leading-relaxed">{t.desc}</p>
-                <Button variant="outline" className="mt-3" size="sm">Use template</Button>
-              </CardContent>
+              <CardContent className="text-sm text-slate-600">{t.desc}</CardContent>
             </Card>
           ))}
+        </div>
+        <div className="mt-6">
+          <Button>Browse all templates</Button>
         </div>
       </Section>
 
       {/* Integrations */}
-      <Section id="integrations" title="Connect to everything" eyebrow="Integrations">
-        <div className="flex flex-wrap gap-3">
-          {integrations.map((name, i) => (
-            <Badge key={i}>{name}</Badge>
+      <Section id="integrations" title="Integrations" eyebrow="Connect everything">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          {integrations.map((name) => (
+            <div key={name} className="border rounded-xl bg-white p-3 text-sm flex items-center gap-2">
+              <LinkIcon className="h-4 w-4" /> {name}
+            </div>
           ))}
         </div>
-        <p className="text-slate-600 mt-4">
-          Plus generic API/Webhook connectors, database connections, and custom actions.
-        </p>
+        <p className="text-xs text-slate-500 mt-3">Plus generic REST, Webhook, and DB connectors.</p>
       </Section>
 
       {/* Pricing */}
-      <Section id="pricing" title="Simple, transparent pricing" eyebrow="Pricing">
+      <Section id="pricing" title="Pricing" eyebrow="Simple & scalable">
         <div className="grid md:grid-cols-3 gap-6">
-          {pricing.map((plan, i) => (
-            <Card key={i} className={i === 1 ? `border-emerald-200 ${brand.primary.soft}` : ""}>
+          {pricing.map((tier) => (
+            <Card key={tier.name} className="relative">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  {i === 1 && <Badge>Most popular</Badge>}
+                <div className="flex items-baseline justify-between">
+                  <CardTitle>{tier.name}</CardTitle>
+                  {tier.name === "Pro" && <Pill>Most popular</Pill>}
                 </div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold">{plan.price}</span>
-                  {plan.price !== "Custom" && <span className="text-slate-500">/month</span>}
-                </div>
-                <p className="text-slate-600 text-sm">{plan.blurb}</p>
+                <div className="text-3xl font-semibold mt-2">{tier.price}<span className="text-base text-slate-500">/mo</span></div>
+                <div className="text-sm text-slate-500">{tier.blurb}</div>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm">
-                  {plan.features.map((feature, fi) => (
-                    <li key={fi} className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-emerald-600" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <Button 
-                  className={`w-full mt-4 ${i === 1 ? `${brand.primary.bg} ${brand.primary.bgHover}` : ""}`}
-                  variant={i === 1 ? "default" : "outline"}
-                >
-                  {plan.price === "Custom" ? "Contact sales" : "Get started"}
-                </Button>
+              <CardContent className="text-sm text-slate-700 space-y-2">
+                {tier.features.map((f) => (
+                  <div key={f} className="flex items-center gap-2"><Check className="h-4 w-4"/>{f}</div>
+                ))}
+                <div className="pt-3">
+                  <Button variant={tier.name === "Pro" ? "default" : "outline"}>Choose {tier.name}</Button>
+                </div>
               </CardContent>
             </Card>
           ))}
         </div>
+        <p className="text-xs text-slate-500 mt-4">Alt model inspiration: per‑resolution billing for support agents (à la Intercom Fin).</p>
       </Section>
 
-      {/* Security */}
-      <Section id="trust" title="Enterprise-ready security" eyebrow="Trust & Security">
-        <div className="grid md:grid-cols-2 gap-8">
-          <div>
-            <Feature icon={<Shield className="h-5 w-5" />} title="SOC 2 Type II" copy="Comprehensive security controls and annual audits." />
-            <Feature icon={<Database className="h-5 w-5" />} title="Data Residency" copy="Choose where your data lives: US, EU, or self-hosted." />
-          </div>
-          <div>
-            <Feature icon={<LinkIcon className="h-5 w-5" />} title="SSO & RBAC" copy="Single sign-on with role-based access controls." />
-            <Feature icon={<BookOpen className="h-5 w-5" />} title="Audit Logs" copy="Complete visibility into who did what, when." />
-          </div>
+      {/* Docs */}
+      <Section id="docs" title="Docs & Academy" eyebrow="Learn & build">
+        <div className="grid md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><BookOpen className="h-5 w-5"/>Quickstart</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-slate-600 space-y-2">
+              <div>1. Create your first agent from a template</div>
+              <div>2. Connect data & integrations</div>
+              <div>3. Publish to widget or channel</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><Workflow className="h-5 w-5"/>How‑to Guides</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-slate-600 space-y-2">
+              <div>• Build a lead‑qualifying concierge</div>
+              <div>• Triage & deflection for support</div>
+              <div>• Human‑in‑the‑loop approvals</div>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="mt-6">
+          <Button variant="outline">Open Docs</Button>
+          <Button className="ml-2">Watch a 3‑min demo</Button>
+        </div>
+      </Section>
+
+      {/* Trust */}
+      <Section id="trust" title="Trust & Security" eyebrow="Governance first">
+        <div className="grid md:grid-cols-3 gap-4">
+          <Feature icon={<Shield className="h-5 w-5" />} title="Compliance" copy="SOC 2 Type II, GDPR, data residency options." />
+          <Feature icon={<Database className="h-5 w-5" />} title="Data Controls" copy="Row‑Level Security, role‑based access, PII redaction, and secrets vault." />
+          <Feature icon={<Globe className="h-5 w-5" />} title="Deployment" copy="Multi‑tenant cloud, VPC peering, or self‑hosted for maximum control." />
         </div>
       </Section>
 
       {/* Footer */}
-      <footer className="border-t bg-slate-50 py-12">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="h-8 w-8 rounded-xl bg-emerald-700 text-white grid place-items-center font-bold overflow-hidden">
-                  <img src={brand.logoUrl} alt={brand.name} className="h-8 w-8 object-contain" />
-                </div>
-                <div className="font-semibold">{brand.name}</div>
-              </div>
-              <p className="text-slate-600 text-sm">
-                Agents & automations for modern teams
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-3">Product</h4>
-              <ul className="space-y-2 text-sm text-slate-600">
-                <li><a href="#" className="hover:text-slate-900">Overview</a></li>
-                <li><a href="#templates" className="hover:text-slate-900">Templates</a></li>
-                <li><a href="#integrations" className="hover:text-slate-900">Integrations</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-3">Company</h4>
-              <ul className="space-y-2 text-sm text-slate-600">
-                <li><a href="#trust" className="hover:text-slate-900">Trust</a></li>
-                <li><a href="#docs" className="hover:text-slate-900">Docs</a></li>
-                <li><a href="#pricing" className="hover:text-slate-900">Pricing</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-3">Get Started</h4>
-              <div className="space-y-2">
-                <Button className={`w-full ${brand.primary.bg} ${brand.primary.bgHover}`}>Start free</Button>
-                <Button variant="outline" className="w-full">Book a demo</Button>
-              </div>
-            </div>
+      <footer className="border-t py-10">
+        <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-4 gap-8 text-sm">
+          <div>
+            <div className="font-semibold">EcoNest</div>
+            <p className="text-slate-600 mt-2">Agents & automations for modern teams.</p>
           </div>
-          <div className="border-t mt-8 pt-8 text-center text-sm text-slate-500">
-            <p>&copy; 2024 {brand.name}. All rights reserved.</p>
+          <div>
+            <div className="font-semibold mb-2">Product</div>
+            <ul className="space-y-1 text-slate-600">
+              <li><a href="#product" className="hover:underline">Overview</a></li>
+              <li><a href="#templates" className="hover:underline">Templates</a></li>
+              <li><a href="#integrations" className="hover:underline">Integrations</a></li>
+            </ul>
+          </div>
+          <div>
+            <div className="font-semibold mb-2">Company</div>
+            <ul className="space-y-1 text-slate-600">
+              <li><a href="#trust" className="hover:underline">Trust</a></li>
+              <li><a href="#docs" className="hover:underline">Docs</a></li>
+              <li><a href="#pricing" className="hover:underline">Pricing</a></li>
+            </ul>
+          </div>
+          <div>
+            <div className="font-semibold mb-2">Get started</div>
+            <div className="flex gap-2">
+              <Button className={`${brand.primary.bg} ${brand.primary.bgHover}`}>Start free</Button>
+              <Button variant="outline">Book a demo</Button>
+            </div>
           </div>
         </div>
       </footer>
