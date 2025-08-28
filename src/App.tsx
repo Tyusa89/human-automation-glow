@@ -18,6 +18,7 @@ import IntegrationsPage from '@/pages/Integrations';
 import ServicesPage from '@/pages/Services';
 import PricingPage from '@/pages/Pricing';
 import DocsPage from '@/pages/Docs';
+import TrustPage from '@/pages/Trust';
 import ContactPage from '@/pages/ContactPage';
 import NotFound from '@/pages/NotFound';
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -44,7 +45,7 @@ const App = () => {
                 <Route path="/templates" element={<TemplatesPage />} />
                 <Route path="/integrations" element={<IntegrationsPage />} />
                 <Route path="/docs" element={<DocsPage />} />
-                <Route path="/trust" element={<Index />} />
+                <Route path="/trust" element={<TrustPage />} />
                 <Route path="/services" element={<ServicesPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/contact" element={<ContactPage />} />
