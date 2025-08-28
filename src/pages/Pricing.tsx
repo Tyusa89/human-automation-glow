@@ -8,8 +8,12 @@ export default function PricingPage() {
   return (
     <Section title="Pricing" eyebrow="Simple & scalable">
       <div className="grid md:grid-cols-3 gap-6">
-        {pricing.map(tier => (
-          <Card key={tier.name} className="relative">
+        {pricing.map((tier, index) => (
+          <Card 
+            key={tier.name} 
+            className={`relative hover-scale transition-all duration-300 animate-fade-in ${tier.name === "Pro" ? "ring-2 ring-primary shadow-lg" : ""}`}
+            style={{ animationDelay: `${index * 150}ms` }}
+          >
             <CardHeader>
               <div className="flex items-baseline justify-between">
                 <CardTitle>{tier.name}</CardTitle>
@@ -22,10 +26,17 @@ export default function PricingPage() {
             </CardHeader>
             <CardContent className="text-sm text-foreground space-y-2">
               {tier.features.map(f => (
-                <div key={f} className="flex items-center gap-2"><Check className="h-4 w-4"/>{f}</div>
+                <div key={f} className="flex items-center gap-2 transition-colors hover:text-primary">
+                  <Check className="h-4 w-4 text-primary"/>{f}
+                </div>
               ))}
               <div className="pt-3">
-                <Button variant={tier.name === "Pro" ? "default" : "outline"}>Choose {tier.name}</Button>
+                <Button 
+                  variant={tier.name === "Pro" ? "default" : "outline"}
+                  className="hover-scale w-full"
+                >
+                  Choose {tier.name}
+                </Button>
               </div>
             </CardContent>
           </Card>
