@@ -36,33 +36,12 @@ export const SiteHeader: React.FC = () => (
 // Shared site footer
 export const SiteFooter: React.FC = () => (
   <footer className="border-t py-10">
-    <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-4 gap-8 text-sm">
-      <div>
-        <div className="font-semibold">{brand.name}</div>
-        <p className="text-slate-600 mt-2">Agents & automations for modern teams.</p>
-      </div>
-      <div>
-        <div className="font-semibold mb-2">Product</div>
-        <ul className="space-y-1 text-slate-600">
-          <li><Link to="/product" className="hover:underline">Overview</Link></li>
-          <li><Link to="/templates" className="hover:underline">Templates</Link></li>
-          <li><Link to="/integrations" className="hover:underline">Integrations</Link></li>
-        </ul>
-      </div>
-      <div>
-        <div className="font-semibold mb-2">Company</div>
-        <ul className="space-y-1 text-slate-600">
-          <li><Link to="/trust" className="hover:underline">Trust</Link></li>
-          <li><Link to="/docs" className="hover:underline">Docs</Link></li>
-          <li><Link to="/pricing" className="hover:underline">Pricing</Link></li>
-        </ul>
-      </div>
-      <div>
-        <div className="font-semibold mb-2">Get started</div>
-        <div className="flex gap-2">
-          <Button className={`${brand.primary.bg} ${brand.primary.bgHover}`}>Start free</Button>
-          <Button variant="outline" className={`${brand.primary.border} ${brand.primary.tint} hover:bg-emerald-50`}>Book a demo</Button>
-        </div>
+    <div className="max-w-6xl mx-auto px-4 text-center">
+      <div className="font-semibold">{brand.name}</div>
+      <p className="text-slate-600 mt-2">Agents & automations for modern teams.</p>
+      <div className="flex justify-center gap-2 mt-4">
+        <Button className={`${brand.primary.bg} ${brand.primary.bgHover}`}>Start free</Button>
+        <Button variant="outline" className={`${brand.primary.border} ${brand.primary.tint} hover:bg-emerald-50`}>Book a demo</Button>
       </div>
     </div>
   </footer>
