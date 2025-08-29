@@ -6,9 +6,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { Send, Bot, User, MessageCircle, X, Minimize2, Maximize2 } from 'lucide-react';
+import { Send, Bot, User, MessageCircle, X, Minimize2, Maximize2, Mic, MicOff, Volume2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useRealtimeChat } from '@/hooks/useRealtimeChat';
 
 interface Message {
   id: string;
@@ -30,7 +31,27 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
   onMinimize, 
   onMaximize 
 }) => {
-  const [messages, setMessages] = useState<Message[]>([
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [conversationHistory, setConversationHistory] = useState<Array<{role: string, content: string}>>([]);
+  const [useVoiceMode, setUseVoiceMode] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+  
+  // Initialize realtime chat hook
+  const {
+    messages: realtimeMessages,
+    isConnected,
+    isRecording,
+    currentTranscript,
+    startRecording,
+    stopRecording,
+    sendTextMessage,
+    disconnect
+  } = useRealtimeChat();
+
+  // Fallback messages for text-only mode
+  const [textMessages, setTextMessages] = useState<Message[]>([
     {
       id: '1',
       role: 'assistant',
@@ -38,11 +59,9 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
       timestamp: new Date()
     }
   ]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [conversationHistory, setConversationHistory] = useState<Array<{role: string, content: string}>>([]);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
+
+  // Use appropriate message state based on mode
+  const messages = useVoiceMode ? realtimeMessages : textMessages;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -55,6 +74,14 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
+    if (useVoiceMode) {
+      // Use realtime chat for voice mode
+      sendTextMessage(input);
+      setInput('');
+      return;
+    }
+
+    // Traditional text-only chat mode
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -62,7 +89,7 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
       timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setTextMessages(prev => [...prev, userMessage]);
     const currentInput = input;
     setInput('');
     setIsLoading(true);
@@ -90,7 +117,7 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
         timestamp: new Date()
       };
 
-      setMessages(prev => [...prev, aiMessage]);
+      setTextMessages(prev => [...prev, aiMessage]);
       
       // Update conversation history for context
       setConversationHistory(prev => [
@@ -114,9 +141,24 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
         timestamp: new Date()
       };
 
-      setMessages(prev => [...prev, errorMessage]);
+      setTextMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const toggleVoiceMode = () => {
+    setUseVoiceMode(!useVoiceMode);
+    if (isRecording) {
+      stopRecording();
+    }
+  };
+
+  const handleVoiceToggle = async () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      await startRecording();
     }
   };
 
@@ -214,7 +256,7 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
               </div>
             ))}
             
-            {isLoading && (
+            {(isLoading || (useVoiceMode && currentTranscript)) && (
               <div className="flex items-start gap-3">
                 <Avatar className="h-6 w-6">
                   <AvatarFallback className="bg-emerald-100">
@@ -222,11 +264,15 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
                   </AvatarFallback>
                 </Avatar>
                 <div className="bg-gray-100 rounded-lg p-3">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce [animation-delay:0.1s]" />
-                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce [animation-delay:0.2s]" />
-                  </div>
+                  {currentTranscript ? (
+                    <span className="text-sm text-gray-700">{currentTranscript}</span>
+                  ) : (
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" />
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce [animation-delay:0.1s]" />
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce [animation-delay:0.2s]" />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -235,6 +281,29 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
         </ScrollArea>
 
         <div className="p-4 border-t bg-gray-50">
+          {/* Voice Mode Toggle */}
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs text-gray-600">
+              {useVoiceMode ? 'Voice Mode' : 'Text Mode'}
+            </span>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleVoiceMode}
+                className="text-xs h-6 px-2"
+              >
+                <Volume2 className="h-3 w-3 mr-1" />
+                {useVoiceMode ? 'Switch to Text' : 'Voice Chat'}
+              </Button>
+              {useVoiceMode && (
+                <Badge variant={isConnected ? "default" : "destructive"} className="text-xs">
+                  {isConnected ? 'Connected' : 'Disconnected'}
+                </Badge>
+              )}
+            </div>
+          </div>
+
           <div className="flex flex-wrap gap-1 mb-3">
             {quickActions.map((action, index) => (
               <Button
@@ -254,11 +323,29 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your message..."
+              placeholder={useVoiceMode ? "Type or speak your message..." : "Type your message..."}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
               disabled={isLoading}
               className="text-sm"
             />
+            
+            {/* Voice Controls */}
+            {useVoiceMode && (
+              <Button
+                onClick={handleVoiceToggle}
+                disabled={!isConnected}
+                variant={isRecording ? "destructive" : "outline"}
+                size="sm"
+                className="flex-shrink-0"
+              >
+                {isRecording ? (
+                  <MicOff className="h-3 w-3" />
+                ) : (
+                  <Mic className="h-3 w-3" />
+                )}
+              </Button>
+            )}
+            
             <Button 
               onClick={handleSend} 
               disabled={!input.trim() || isLoading}
