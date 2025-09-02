@@ -27,14 +27,14 @@ const CustomerServiceWidget: React.FC = () => {
 
   if (!isOpen) {
     return (
-      <div className="fixed bottom-4 right-4 z-[9999]">
-        <Button
-          onClick={handleOpen}
-          className="rounded-full w-14 h-14 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg animate-pulse border-2 border-white"
-          aria-label="Open customer service chat"
-        >
-          <MessageCircle className="h-6 w-6" />
-        </Button>
+      <div className="fixed bottom-6 right-6 w-32 h-32 rounded-full shadow-lg overflow-hidden cursor-pointer z-[9999]" onClick={handleOpen}>
+        <iframe
+          src="https://app.spline.design/community/file/8cfb6748-f3dd-44dd-89fb-f46c7ab4186e"
+          frameBorder="0"
+          width="100%"
+          height="100%"
+          title="AI Robot Widget"
+        />
       </div>
     );
   }
