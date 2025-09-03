@@ -8,6 +8,7 @@ import { brand } from "@/components/Brand";
 import { templateCards, integrations } from "@/lib/site-data";
 
 export default function Index() {
+  console.log('Index component is rendering');
   return (
     <>
 
