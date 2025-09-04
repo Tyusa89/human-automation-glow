@@ -11,7 +11,7 @@ import RequireAdmin from '@/components/RequireAdmin';
 import Dashboard from '@/pages/Dashboard';
 import Results from '@/pages/Results';
 import AdminPage from '@/pages/Admin';
-import Index from '@/pages/Index';
+import Test from '@/Test';
 import ProductPage from '@/pages/Product';
 import SolutionsPage from '@/pages/Solutions';
 import TemplatesPage from '@/pages/Templates';
@@ -42,7 +42,7 @@ const App = () => {
             <main>
               <Routes>
                 {/* public */}
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<Test />} />
                 <Route path="/product" element={<ProductPage />} />
                 <Route path="/solutions" element={<SolutionsPage />} />
                 <Route path="/templates" element={<TemplatesPage />} />
