@@ -11,6 +11,7 @@ export default function Index() {
   console.log('Index component is rendering');
   return (
     <>
+      <div>Hello World</div>
 
       <Section id="home" title="Build AI agents and automations — visually" eyebrow="Home">
         <div className="grid md:grid-cols-2 gap-8 items-center">
