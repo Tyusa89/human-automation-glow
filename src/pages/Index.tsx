@@ -8,11 +8,8 @@ import { brand } from "@/components/Brand";
 import { templateCards, integrations } from "@/lib/site-data";
 
 export default function Index() {
-  console.log('Index component is rendering');
-  console.log('About to render Hello World div');
   return (
     <>
-      <div style={{fontSize: '50px', color: 'red', background: 'yellow', padding: '20px'}}>Hello World - THIS SHOULD BE VISIBLE</div>
 
       <Section id="home" title="Build AI agents and automations — visually" eyebrow="Home">
         <div className="grid md:grid-cols-2 gap-8 items-center">
