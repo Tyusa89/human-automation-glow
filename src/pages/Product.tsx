@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Bot, Workflow, Database, Shield, Check } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ProductForm } from "@/components/ProductForm";
 
 // --- Helpers ---
 const Section: React.FC<{ id: string; title: string; eyebrow?: string; children: React.ReactNode }>
@@ -18,27 +20,56 @@ const Section: React.FC<{ id: string; title: string; eyebrow?: string; children:
   </section>
 );
 
-const Feature: React.FC<{ icon: React.ReactNode; title: string; copy: string }>
-  = ({ icon, title, copy }) => (
+const Feature: React.FC<{ icon: React.ReactNode; title: string; copy: string; onGetQuote: () => void }>
+  = ({ icon, title, copy, onGetQuote }) => (
   <div className="flex gap-4 p-4 rounded-2xl border border-slate-200 bg-white shadow-sm">
     <div className="shrink-0 p-2 rounded-xl bg-slate-50 border border-slate-200">{icon}</div>
-    <div>
+    <div className="flex-1">
       <h3 className="font-semibold text-slate-900">{title}</h3>
-      <p className="text-slate-600 text-sm leading-relaxed">{copy}</p>
+      <p className="text-slate-600 text-sm leading-relaxed mb-3">{copy}</p>
+      <Button size="sm" variant="outline" onClick={onGetQuote}>
+        Get Requirements Form
+      </Button>
     </div>
   </div>
 );
 
 export default function ProductPage() {
+  const [activeForm, setActiveForm] = useState<string | null>(null);
+
+  const handleGetQuote = (productType: string) => {
+    setActiveForm(productType);
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-16">
       <Section id="product" title="Product" eyebrow="Overview">
         <div className="grid md:grid-cols-2 gap-8">
           <div className="space-y-4">
-            <Feature icon={<Workflow className="h-5 w-5" />} title="Visual Flow Designer" copy="Snap together triggers, actions, conditions, and approvals. Reusable subflows keep things tidy." />
-            <Feature icon={<Bot className="h-5 w-5" />} title="Agent Studio" copy="Define goals, tools, retrieval sources, and evaluation. Preview chats and measure resolution." />
-            <Feature icon={<Database className="h-5 w-5" />} title="Data Hub" copy="Connect Supabase/Postgres, Notion, Sheets, or files. Control access with RLS and roles." />
-            <Feature icon={<Shield className="h-5 w-5" />} title="Governance" copy="Workspaces, roles, audit logs, redaction, prompt shields, rate limits, and keys vault." />
+            <Feature 
+              icon={<Workflow className="h-5 w-5" />} 
+              title="Visual Flow Designer" 
+              copy="Snap together triggers, actions, conditions, and approvals. Reusable subflows keep things tidy." 
+              onGetQuote={() => handleGetQuote("Visual Flow Designer")}
+            />
+            <Feature 
+              icon={<Bot className="h-5 w-5" />} 
+              title="Agent Studio" 
+              copy="Define goals, tools, retrieval sources, and evaluation. Preview chats and measure resolution." 
+              onGetQuote={() => handleGetQuote("Agent Studio")}
+            />
+            <Feature 
+              icon={<Database className="h-5 w-5" />} 
+              title="Data Hub" 
+              copy="Connect Supabase/Postgres, Notion, Sheets, or files. Control access with RLS and roles." 
+              onGetQuote={() => handleGetQuote("Data Hub")}
+            />
+            <Feature 
+              icon={<Shield className="h-5 w-5" />} 
+              title="Governance" 
+              copy="Workspaces, roles, audit logs, redaction, prompt shields, rate limits, and keys vault." 
+              onGetQuote={() => handleGetQuote("Governance")}
+            />
           </div>
           <Card className="border-dashed">
             <CardHeader>
@@ -53,6 +84,13 @@ export default function ProductPage() {
           </Card>
         </div>
       </Section>
+
+      {activeForm && (
+        <ProductForm 
+          productType={activeForm as any}
+          onClose={() => setActiveForm(null)}
+        />
+      )}
     </div>
   );
 }
