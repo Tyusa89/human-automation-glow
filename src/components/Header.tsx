@@ -29,7 +29,11 @@ export default function AppHeader() {
   return (
     <header className="flex items-center justify-between px-4 py-3 border-b bg-background">
       <Link to="/" className="font-semibold text-foreground text-xl flex items-center gap-2">
-        <div className="h-8 w-8 rounded-xl bg-primary text-primary-foreground grid place-items-center font-bold text-sm">EN</div>
+        <img 
+          src="/lovable-uploads/8cea8862-2c9a-4eeb-b53a-eba08632ca5f.png" 
+          alt="EcoNest AI" 
+          className="h-8 w-8 object-contain"
+        />
         EcoNest AI
       </Link>
       
