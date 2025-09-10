@@ -31,8 +31,12 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" className="hidden md:inline-flex">Sign in</Button>
-          <Button>Start free</Button>
+          <Link to="/auth">
+            <Button variant="ghost" className="hidden md:inline-flex">Sign in</Button>
+          </Link>
+          <Link to="/auth">
+            <Button>Start free</Button>
+          </Link>
         </div>
       </div>
     </header>
@@ -66,7 +70,9 @@ export function Footer() {
         <div>
           <div className="font-semibold mb-2">Get started</div>
           <div className="flex gap-2">
-            <Button>Start free</Button>
+            <Link to="/auth">
+              <Button>Start free</Button>
+            </Link>
             <Button variant="outline">Book a demo</Button>
           </div>
         </div>

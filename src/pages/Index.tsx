@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Bot, Workflow, Database, Puzzle, Globe, Shield, Zap, Check } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,7 +19,9 @@ export default function Index() {
               EcoNest is your Zapier‑meets‑Intercom workspace: design automations, launch customer‑facing agents, and wire them to your data — all in one place.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Button className={`${brand.primary.bg} ${brand.primary.bgHover}`}>Start free</Button>
+              <Link to="/auth">
+                <Button className={`${brand.primary.bg} ${brand.primary.bgHover}`}>Start free</Button>
+              </Link>
               <Button variant="outline" className={`${brand.primary.border} ${brand.primary.tint} hover:bg-emerald-50`}>Book a demo</Button>
               <Pill>Visual Studio • Templates • Integrations</Pill>
             </div>
@@ -193,7 +196,9 @@ export default function Index() {
           <div>
             <div className="font-semibold mb-2">Get started</div>
             <div className="flex gap-2">
-              <Button className={`${brand.primary.bg} ${brand.primary.bgHover}`}>Start free</Button>
+              <Link to="/auth">
+                <Button className={`${brand.primary.bg} ${brand.primary.bgHover}`}>Start free</Button>
+              </Link>
               <Button variant="outline">Book a demo</Button>
             </div>
           </div>
