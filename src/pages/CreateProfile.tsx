@@ -106,9 +106,7 @@ export default function CreateProfile() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-white">
-      <SiteHeader />
-      
-      <div className="max-w-md mx-auto pt-16 pb-24 px-4">
+      <div className="max-w-md mx-auto pt-24 pb-24 px-4">
         <Card className="shadow-lg">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Create Your Profile</CardTitle>
