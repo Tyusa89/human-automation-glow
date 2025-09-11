@@ -27,7 +27,7 @@ export const SiteHeader: React.FC = () => (
         <Link to="/auth">
           <Button variant="ghost" className="hidden md:inline-flex">Sign in</Button>
         </Link>
-        <Link to="/auth">
+        <Link to="/create-profile">
           <Button className={`${brand.primary.bg} ${brand.primary.bgHover}`}>Start free</Button>
         </Link>
       </div>
@@ -42,7 +42,7 @@ export const SiteFooter: React.FC = () => (
       <div className="font-semibold">{brand.name}</div>
       <p className="text-slate-600 mt-2">Agents & automations for modern teams.</p>
       <div className="flex justify-center gap-2 mt-4">
-        <Link to="/auth">
+        <Link to="/create-profile">
           <Button className={`${brand.primary.bg} ${brand.primary.bgHover}`}>Start free</Button>
         </Link>
         <Button variant="outline" className={`${brand.primary.border} ${brand.primary.tint} hover:bg-emerald-50`}>Book a demo</Button>

@@ -21,6 +21,7 @@ import PricingPage from '@/pages/Pricing';
 import DocsPage from '@/pages/Docs';
 import TrustPage from '@/pages/Trust';
 import ContactPage from '@/pages/ContactPage';
+import CreateProfile from '@/pages/CreateProfile';
 import NotFound from '@/pages/NotFound';
 import ErrorBoundary from "./components/ErrorBoundary";
 import { TemplateDetail } from '@/components/templates/TemplateDetail';
@@ -54,6 +55,7 @@ const App = () => {
                 <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/auth" element={<AuthPage />} />
+                <Route path="/create-profile" element={<CreateProfile />} />
 
                 {/* protected */}
                 <Route

@@ -19,7 +19,7 @@ export default function Index() {
               EcoNest is your Zapier‑meets‑Intercom workspace: design automations, launch customer‑facing agents, and wire them to your data — all in one place.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Link to="/auth">
+              <Link to="/create-profile">
                 <Button className={`${brand.primary.bg} ${brand.primary.bgHover}`}>Start free</Button>
               </Link>
               <Button variant="outline" className={`${brand.primary.border} ${brand.primary.tint} hover:bg-emerald-50`}>Book a demo</Button>
@@ -196,7 +196,7 @@ export default function Index() {
           <div>
             <div className="font-semibold mb-2">Get started</div>
             <div className="flex gap-2">
-              <Link to="/auth">
+              <Link to="/create-profile">
                 <Button className={`${brand.primary.bg} ${brand.primary.bgHover}`}>Start free</Button>
               </Link>
               <Button variant="outline">Book a demo</Button>

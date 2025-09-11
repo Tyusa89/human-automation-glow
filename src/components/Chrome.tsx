@@ -34,7 +34,7 @@ export function Header() {
           <Link to="/auth">
             <Button variant="ghost" className="hidden md:inline-flex">Sign in</Button>
           </Link>
-          <Link to="/auth">
+          <Link to="/create-profile">
             <Button>Start free</Button>
           </Link>
         </div>
@@ -70,7 +70,7 @@ export function Footer() {
         <div>
           <div className="font-semibold mb-2">Get started</div>
           <div className="flex gap-2">
-            <Link to="/auth">
+            <Link to="/create-profile">
               <Button>Start free</Button>
             </Link>
             <Button variant="outline">Book a demo</Button>
