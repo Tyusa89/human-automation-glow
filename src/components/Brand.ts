@@ -3,18 +3,18 @@ export const brand = {
   tagline: "Agents & automations for modern teams",
   logoUrl: "/logo-econest.svg",
   primary: {
-    bg: "bg-emerald-600",
-    bgHover: "hover:bg-emerald-700",
-    tint: "text-emerald-700", 
-    border: "border-emerald-600",
-    soft: "bg-emerald-50",
-    solid: "bg-emerald-700",
+    bg: "bg-primary",
+    bgHover: "hover:bg-primary/90",
+    tint: "text-primary", 
+    border: "border-primary",
+    soft: "bg-primary/5",
+    solid: "bg-primary",
   },
   color: {
-    primary: "#059669", // emerald-600
-    primaryBg: "bg-emerald-600",
-    primaryHover: "hover:bg-emerald-700",
-    primaryText: "text-emerald-600", 
-    primaryBorder: "border-emerald-600"
+    primary: "hsl(var(--primary))",
+    primaryBg: "bg-primary",
+    primaryHover: "hover:bg-primary/90",
+    primaryText: "text-primary", 
+    primaryBorder: "border-primary"
   }
 };

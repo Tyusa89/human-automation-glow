@@ -15,7 +15,8 @@ const ClosingSection = () => {
         
         <Button 
           size="lg" 
-          className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold px-8 py-4 text-lg transition-all duration-300 transform hover:scale-105"
+          variant="default"
+          className="font-semibold px-8 py-4 text-lg transition-all duration-300 transform hover:scale-105"
         >
           Start Your AI Project
           <ArrowRight className="ml-2 h-5 w-5" />

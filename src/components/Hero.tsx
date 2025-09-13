@@ -9,26 +9,26 @@ const Hero = () => {
   return (
     <section className="relative overflow-hidden">
       {/* Soft background vignette */}
-      <div className="pointer-events-none absolute -left-40 -top-40 h-96 w-96 rounded-full bg-emerald-300/20 blur-3xl" />
-      <div className="pointer-events-none absolute -right-40 -bottom-40 h-96 w-96 rounded-full bg-teal-300/20 blur-3xl" />
+      <div className="pointer-events-none absolute -left-40 -top-40 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+      <div className="pointer-events-none absolute -right-40 -bottom-40 h-96 w-96 rounded-full bg-accent/10 blur-3xl" />
 
-      <div className="mx-auto max-w-4xl px-6 py-24 text-center animate-fade-in">
+      <div className="mx-auto max-w-4xl px-6 py-16 md:py-24 text-center animate-fade-in">
         {/* Title */}
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight
-                       bg-gradient-to-r from-emerald-700 via-teal-600 to-emerald-700
+                       bg-gradient-to-r from-primary via-accent to-primary
                        bg-[length:200%_200%] bg-clip-text text-transparent
                        drop-shadow-sm hover-scale">
           EcoNest AI
         </h1>
 
         {/* Subheadline */}
-        <p className="mt-6 text-lg md:text-2xl text-emerald-900/70 animate-fade-in [animation-delay:150ms]">
+        <p className="mt-6 text-lg md:text-2xl text-muted-foreground animate-fade-in [animation-delay:150ms]">
           Automation That Feels Human
-          <span className="ml-2 inline-block h-[1.2em] w-[2px] align-[-0.1em] bg-emerald-700/50 animate-pulse" />
+          <span className="ml-2 inline-block h-[1.2em] w-[2px] align-[-0.1em] bg-primary/50 animate-pulse" />
         </p>
 
         {/* Underline accent */}
-        <div className="mx-auto mt-6 h-[3px] w-28 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 
+        <div className="mx-auto mt-6 h-[3px] w-28 rounded-full bg-gradient-to-r from-primary to-accent 
                         animate-scale-in [animation-delay:250ms]" />
 
         {/* Action buttons */}
@@ -36,8 +36,8 @@ const Hero = () => {
           <Link to="/contact">
             <Button 
               size="lg" 
-              className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 
-                         text-white font-semibold px-8 py-4 text-lg hover-scale"
+              variant="default"
+              className="font-semibold px-8 py-4 text-lg hover-scale"
             >
               Get a Demo
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -49,8 +49,7 @@ const Hero = () => {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white 
-                           font-semibold px-8 py-4 text-lg hover-scale"
+                className="border-2 font-semibold px-8 py-4 text-lg hover-scale"
               >
                 <Play className="mr-2 h-5 w-5" />
                 Watch Demo

@@ -29,9 +29,16 @@ All colors MUST be HSL.
     --accent: 156 39% 48%;
     --accent-foreground: 0 0% 100%;
     
-    /* Brand gradients - Emerald theme */
-    --gradient-hero: linear-gradient(135deg, hsl(156 39% 29%), hsl(156 39% 48%));
-    --gradient-accent: linear-gradient(90deg, hsl(156 39% 48% / 0.1), hsl(156 39% 48% / 0.05));
+    /* Enhanced gradients for better design */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    --gradient-accent: linear-gradient(90deg, hsl(var(--accent) / 0.1), hsl(var(--accent) / 0.05));
+    --gradient-button: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.9));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--card) / 0.8));
+    
+    /* Enhanced shadows */
+    --shadow-soft: 0 4px 16px hsl(var(--primary) / 0.1);
+    --shadow-medium: 0 8px 32px hsl(var(--primary) / 0.15);
+    --shadow-strong: 0 16px 48px hsl(var(--primary) / 0.2);
     
     /* Animations */
     --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);

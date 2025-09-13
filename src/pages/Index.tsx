@@ -15,17 +15,17 @@ export default function Index() {
       <Section id="home" title="Build AI agents and automations — visually" eyebrow="Home">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div>
-            <p className="text-lg text-slate-600 leading-relaxed">
+            <p className="text-lg text-muted-foreground leading-relaxed">
               EcoNest is your Zapier‑meets‑Intercom workspace: design automations, launch customer‑facing agents, and wire them to your data — all in one place.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Link to="/create-profile">
-                <Button className={`${brand.primary.bg} ${brand.primary.bgHover}`}>Start free</Button>
+                <Button variant="default">Start free</Button>
               </Link>
-              <Button variant="outline" className={`${brand.primary.border} ${brand.primary.tint} hover:bg-emerald-50`}>Book a demo</Button>
+              <Button variant="outline">Book a demo</Button>
               <Pill>Visual Studio • Templates • Integrations</Pill>
             </div>
-            <div className="mt-6 flex items-center gap-6 text-xs text-slate-500">
+            <div className="mt-6 flex items-center gap-6 text-xs text-muted-foreground">
               <div>GDPR-ready</div><div>RLS/Row Security</div><div>Self‑host option</div>
             </div>
           </div>
@@ -61,7 +61,7 @@ export default function Index() {
             <CardHeader>
               <CardTitle>Micro‑tour</CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-slate-600 space-y-3">
+            <CardContent className="text-sm text-muted-foreground space-y-3">
               <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Create a <b>Lead‑Qual Agent</b> from a template</div>
               <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Wire to <b>Sheets</b> and <b>HubSpot</b></div>
               <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Add <b>scoring logic</b> and <b>booking</b></div>
@@ -76,15 +76,15 @@ export default function Index() {
         <div className="grid md:grid-cols-3 gap-4">
           <Card>
             <CardHeader><CardTitle>Support</CardTitle></CardHeader>
-            <CardContent className="text-sm text-slate-600">Deflect FAQs, triage issues, and handoff with full context to agents in Zendesk/Intercom.</CardContent>
+            <CardContent className="text-sm text-muted-foreground">Deflect FAQs, triage issues, and handoff with full context to agents in Zendesk/Intercom.</CardContent>
           </Card>
           <Card>
             <CardHeader><CardTitle>Marketing & Growth</CardTitle></CardHeader>
-            <CardContent className="text-sm text-slate-600">Qualify leads, personalize pages, and route hot prospects to sales calendars.</CardContent>
+            <CardContent className="text-sm text-muted-foreground">Qualify leads, personalize pages, and route hot prospects to sales calendars.</CardContent>
           </Card>
           <Card>
             <CardHeader><CardTitle>Ops & RevOps</CardTitle></CardHeader>
-            <CardContent className="text-sm text-slate-600">Automate back‑office: data syncs, enrichment, approvals, and reporting.</CardContent>
+            <CardContent className="text-sm text-muted-foreground">Automate back‑office: data syncs, enrichment, approvals, and reporting.</CardContent>
           </Card>
         </div>
       </Section>
@@ -97,12 +97,12 @@ export default function Index() {
               <CardHeader>
                 <CardTitle className="text-base">{t.title}</CardTitle>
               </CardHeader>
-              <CardContent className="text-sm text-slate-600">{t.desc}</CardContent>
+              <CardContent className="text-sm text-muted-foreground">{t.desc}</CardContent>
             </Card>
           ))}
         </div>
         <div className="mt-6">
-          <Button className={`${brand.primary.bg} ${brand.primary.bgHover}`}>Browse all templates</Button>
+          <Button variant="default">Browse all templates</Button>
         </div>
       </Section>
 
@@ -111,18 +111,18 @@ export default function Index() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {integrations.map((name) => (
             <div key={name} className="border rounded-xl bg-white p-3 text-sm flex items-center gap-2">
-              <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-600"/> {name}
+              <span className="inline-block h-2.5 w-2.5 rounded-full bg-primary"/> {name}
             </div>
           ))}
         </div>
-        <p className="text-xs text-slate-500 mt-3">Plus generic REST, Webhook, and DB connectors.</p>
+        <p className="text-xs text-muted-foreground mt-3">Plus generic REST, Webhook, and DB connectors.</p>
       </Section>
 
       {/* Pricing */}
       <Section id="pricing" title="Pricing" eyebrow="Simple & scalable">
         <Card className="border-dashed">
           <CardHeader><CardTitle>Micro‑tour</CardTitle></CardHeader>
-          <CardContent className="text-sm text-slate-600 space-y-3">
+          <CardContent className="text-sm text-muted-foreground space-y-3">
             <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Create a <b>Lead‑Qual Agent</b> from a template</div>
             <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Wire to <b>Sheets</b> and <b>HubSpot</b></div>
             <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Add <b>scoring</b> & <b>booking</b></div>
@@ -138,7 +138,7 @@ export default function Index() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">Quickstart</CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-slate-600 space-y-2">
+            <CardContent className="text-sm text-muted-foreground space-y-2">
               <div>1. Create your first agent from a template</div>
               <div>2. Connect data & integrations</div>
               <div>3. Publish to widget or channel</div>
@@ -148,7 +148,7 @@ export default function Index() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">How‑to Guides</CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-slate-600 space-y-2">
+            <CardContent className="text-sm text-muted-foreground space-y-2">
               <div>• Build a lead‑qualifying concierge</div>
               <div>• Triage & deflection for support</div>
               <div>• Human‑in‑the‑loop approvals</div>
@@ -175,11 +175,11 @@ export default function Index() {
         <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-4 gap-8 text-sm">
           <div>
             <div className="font-semibold">EcoNest</div>
-            <p className="text-slate-600 mt-2">Agents & automations for modern teams.</p>
+            <p className="text-muted-foreground mt-2">Agents & automations for modern teams.</p>
           </div>
           <div>
             <div className="font-semibold mb-2">Product</div>
-            <ul className="space-y-1 text-slate-600">
+            <ul className="space-y-1 text-muted-foreground">
               <li><a href="#product" className="hover:underline">Overview</a></li>
               <li><a href="#templates" className="hover:underline">Templates</a></li>
               <li><a href="#integrations" className="hover:underline">Integrations</a></li>
@@ -187,7 +187,7 @@ export default function Index() {
           </div>
           <div>
             <div className="font-semibold mb-2">Company</div>
-            <ul className="space-y-1 text-slate-600">
+            <ul className="space-y-1 text-muted-foreground">
               <li><a href="#trust" className="hover:underline">Trust</a></li>
               <li><a href="#docs" className="hover:underline">Docs</a></li>
               <li><a href="#pricing" className="hover:underline">Pricing</a></li>
@@ -196,9 +196,9 @@ export default function Index() {
           <div>
             <div className="font-semibold mb-2">Get started</div>
             <div className="flex gap-2">
-              <Link to="/create-profile">
-                <Button className={`${brand.primary.bg} ${brand.primary.bgHover}`}>Start free</Button>
-              </Link>
+                <Link to="/create-profile">
+                  <Button variant="default">Start free</Button>
+                </Link>
               <Button variant="outline">Book a demo</Button>
             </div>
           </div>
