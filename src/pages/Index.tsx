@@ -85,7 +85,6 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Header />
 
       {/* Hero */}
       <section className="relative">
@@ -186,43 +185,6 @@ export default function Index() {
 
       <Footer />
     </div>
-  );
-}
-
-/* ------------------------------- Header ---------------------------------- */
-function Header() {
-  return (
-    <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-14 items-center justify-between">
-          <Link to="/" className="inline-flex items-center gap-2" aria-label="EcoNest home">
-            <span className="inline-block h-8 w-8 rounded-xl bg-primary" aria-hidden="true" />
-            <span className="text-lg font-semibold tracking-tight">EcoNest</span>
-          </Link>
-
-          <nav aria-label="Primary" className="hidden md:block">
-            <ul className="flex items-center gap-6 text-sm font-medium">
-              <li><Link to="/product" className="hover:text-primary">Product</Link></li>
-              <li><Link to="/solutions" className="hover:text-primary">Solutions</Link></li>
-              <li><Link to="/templates" className="hover:text-primary">Templates</Link></li>
-              <li><Link to="/integrations" className="hover:text-primary">Integrations</Link></li>
-              <li><Link to="/pricing" className="hover:text-primary">Pricing</Link></li>
-              <li><Link to="/docs" className="hover:text-primary">Docs</Link></li>
-              <li><Link to="/security" className="hover:text-primary">Security</Link></li>
-            </ul>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <Link to="/auth" className="rounded-xl border border-border px-3 py-1.5 text-sm font-medium hover:bg-accent">
-              Sign in
-            </Link>
-            <Link to="/auth?mode=signup" className="rounded-xl bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground shadow hover:bg-primary/90">
-              Start free
-            </Link>
-          </div>
-        </div>
-      </div>
-    </header>
   );
 }
 
