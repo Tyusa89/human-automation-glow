@@ -1,209 +1,401 @@
-import React from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Bot, Workflow, Database, Puzzle, Globe, Shield, Zap, Check } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Section, Feature, Pill, Badge, StudioTiles } from "@/components/common/ui";
-import { brand } from "@/components/Brand";
-import { templateCards, integrations } from "@/lib/site-data";
+import { useState } from "react";
+
+/** EcoNest – New Landing with Template Preview modal */
+type Template = {
+  id: string;
+  name: string;
+  category: "agent" | "flow" | "data" | "integration" | "channel" | "policy";
+  description: string;
+  requiredIntegrations: string[];
+  steps: string[];
+  estimatedSetup: string;
+};
+
+const TEMPLATES: Record<Template["category"], Template> = {
+  agent: {
+    id: "agent-support-bot",
+    name: "Agent • Support Bot",
+    category: "agent",
+    description:
+      "Customer-facing AI agent with tools, memory, and guardrails. Handles FAQs, gathers context, and escalates cleanly.",
+    requiredIntegrations: ["Knowledge Base (Notion/Docs)", "Slack"],
+    steps: [
+      "Import FAQs / knowledge base",
+      "Configure guardrails & tone",
+      "Connect escalation channel",
+      "Embed on site / chat",
+    ],
+    estimatedSetup: "~8 min",
+  },
+  flow: {
+    id: "flow-triage-escalate",
+    name: "Flow • Triage + Escalate",
+    category: "flow",
+    description:
+      "Multi-step workflow with triggers, branches, retries, and human-in-the-loop approval.",
+    requiredIntegrations: ["Webhook", "Slack"],
+    steps: ["Define trigger", "Add routing rules", "Set approvals", "Publish"],
+    estimatedSetup: "~10 min",
+  },
+  data: {
+    id: "data-sync-warehouse",
+    name: "Data • Sync to Warehouse",
+    category: "data",
+    description:
+      "Validate, normalize, and sync structured data to your sheet/DB/warehouse.",
+    requiredIntegrations: ["Google Sheets", "Postgres"],
+    steps: ["Define schema", "Add validation", "Map destinations", "Schedule sync"],
+    estimatedSetup: "~7 min",
+  },
+  integration: {
+    id: "integration-zendesk",
+    name: "Integration • Zendesk + Slack",
+    category: "integration",
+    description:
+      "Wire Zendesk events into flows. Notify Slack channels and create tickets from agents.",
+    requiredIntegrations: ["Zendesk", "Slack"],
+    steps: ["Auth Zendesk", "Auth Slack", "Pick events", "Test + enable"],
+    estimatedSetup: "~6 min",
+  },
+  channel: {
+    id: "channel-web-widget",
+    name: "Channel • Web Widget",
+    category: "channel",
+    description:
+      "Deploy your agent or flow to a web widget with brand styling and auth.",
+    requiredIntegrations: ["Website Embed"],
+    steps: ["Customize theme", "Set auth rules", "Copy embed code", "Go live"],
+    estimatedSetup: "~5 min",
+  },
+  policy: {
+    id: "policy-guardrails",
+    name: "Policy • Guardrails",
+    category: "policy",
+    description:
+      "Define safety, data handling, and escalation rules applied across agents and flows.",
+    requiredIntegrations: ["—"],
+    steps: ["Select ruleset", "Add PII controls", "Set escalation", "Apply to assets"],
+    estimatedSetup: "~4 min",
+  },
+};
 
 export default function Index() {
+  const [preview, setPreview] = useState<Template | null>(null);
+
   return (
-    <>
+    <div className="min-h-screen bg-background text-foreground">
+      <Header />
 
-      <Section id="home" title="Build AI agents and automations — visually" eyebrow="Home">
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          <div>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              EcoNest is your Zapier‑meets‑Intercom workspace: design automations, launch customer‑facing agents, and wire them to your data — all in one place.
-            </p>
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Link to="/create-profile">
-                <Button variant="default">Start free</Button>
-              </Link>
-              <Button variant="outline">Book a demo</Button>
-              <Pill>Visual Studio • Templates • Integrations</Pill>
-            </div>
-            <div className="mt-6 flex items-center gap-6 text-xs text-muted-foreground">
-              <div>GDPR-ready</div><div>RLS/Row Security</div><div>Self‑host option</div>
-            </div>
-          </div>
-          <StudioTiles
-            items={[
-              { icon: <Bot className="h-5 w-5" />, label: "Agent" },
-              { icon: <Workflow className="h-5 w-5" />, label: "Flow" },
-              { icon: <Database className="h-5 w-5" />, label: "Data" },
-              { icon: <Puzzle className="h-5 w-5" />, label: "Integration" },
-              { icon: <Globe className="h-5 w-5" />, label: "Channel" },
-              { icon: <Shield className="h-5 w-5" />, label: "Policy" },
-            ]}
-          />
-        </div>
+      {/* Hero */}
+      <section className="relative">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+          <div className="grid items-center gap-10 lg:grid-cols-2">
+            {/* Left block */}
+            <div>
+              <div className="flex flex-wrap items-center gap-2 text-sm">
+                <span className="rounded-full bg-secondary/70 px-2.5 py-1 font-medium text-secondary-foreground">Home</span>
+                <span className="rounded-full bg-secondary px-2.5 py-1 font-medium text-secondary-foreground">Beta</span>
+                <span className="rounded-full bg-secondary px-2.5 py-1 font-medium text-secondary-foreground">Zapier × Intercom vibe</span>
+              </div>
 
-        <div className="grid md:grid-cols-3 gap-4 mt-12">
-          <Feature icon={<Workflow className="h-5 w-5" />} title="Automations" copy="Multi‑step workflows with triggers, branches, retries, and human‑in‑the‑loop steps." />
-          <Feature icon={<Bot className="h-5 w-5" />} title="Agents" copy="LLM‑powered agents with tools, memory, and guardrails — deploy to web, chat, or voice." />
-          <Feature icon={<Puzzle className="h-5 w-5" />} title="Integrations" copy="Directory + generic API/Webhook & DB connectors for anything custom." />
-        </div>
-      </Section>
+              <h1 className="mt-5 text-4xl font-extrabold leading-tight text-foreground sm:text-5xl">
+                Build AI agents and automations — visually
+              </h1>
 
-      {/* Product */}
-      <Section id="product" title="Product" eyebrow="Overview">
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="space-y-4">
-            <Feature icon={<Workflow className="h-5 w-5" />} title="Visual Flow Designer" copy="Snap together triggers, actions, conditions, and approvals. Reusable subflows keep things tidy." />
-            <Feature icon={<Bot className="h-5 w-5" />} title="Agent Studio" copy="Define goals, tools, retrieval sources, and evaluation. Preview chats and measure resolution." />
-            <Feature icon={<Database className="h-5 w-5" />} title="Data Hub" copy="Connect Supabase/Postgres, Notion, Sheets, or files. Control access with RLS and roles." />
-            <Feature icon={<Shield className="h-5 w-5" />} title="Governance" copy="Workspaces, roles, audit logs, redaction, prompt shields, rate limits, and keys vault." />
-          </div>
-          <Card className="border-dashed">
-            <CardHeader>
-              <CardTitle>Micro‑tour</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground space-y-3">
-              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Create a <b>Lead‑Qual Agent</b> from a template</div>
-              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Wire to <b>Sheets</b> and <b>HubSpot</b></div>
-              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Add <b>scoring logic</b> and <b>booking</b></div>
-              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Publish to <b>website widget</b> and track outcomes</div>
-            </CardContent>
-          </Card>
-        </div>
-      </Section>
+              <p className="mt-4 text-lg text-muted-foreground">
+                EcoNest is your Zapier-meets-Intercom workspace: design automations, launch customer-facing agents,
+                and wire them to your data — all in one place.
+              </p>
 
-      {/* Solutions */}
-      <Section id="solutions" title="Solutions" eyebrow="By team & industry">
-        <div className="grid md:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader><CardTitle>Support</CardTitle></CardHeader>
-            <CardContent className="text-sm text-muted-foreground">Deflect FAQs, triage issues, and handoff with full context to agents in Zendesk/Intercom.</CardContent>
-          </Card>
-          <Card>
-            <CardHeader><CardTitle>Marketing & Growth</CardTitle></CardHeader>
-            <CardContent className="text-sm text-muted-foreground">Qualify leads, personalize pages, and route hot prospects to sales calendars.</CardContent>
-          </Card>
-          <Card>
-            <CardHeader><CardTitle>Ops & RevOps</CardTitle></CardHeader>
-            <CardContent className="text-sm text-muted-foreground">Automate back‑office: data syncs, enrichment, approvals, and reporting.</CardContent>
-          </Card>
-        </div>
-      </Section>
-
-      {/* Templates */}
-      <Section id="templates" title="Templates" eyebrow="Start fast">
-        <div className="grid md:grid-cols-4 gap-4">
-          {templateCards.map((t) => (
-            <Card key={t.title} className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <CardTitle className="text-base">{t.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">{t.desc}</CardContent>
-            </Card>
-          ))}
-        </div>
-        <div className="mt-6">
-          <Button variant="default">Browse all templates</Button>
-        </div>
-      </Section>
-
-      {/* Integrations */}
-      <Section id="integrations" title="Integrations" eyebrow="Connect everything">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          {integrations.map((name) => (
-            <div key={name} className="border rounded-xl bg-white p-3 text-sm flex items-center gap-2">
-              <span className="inline-block h-2.5 w-2.5 rounded-full bg-primary"/> {name}
-            </div>
-          ))}
-        </div>
-        <p className="text-xs text-muted-foreground mt-3">Plus generic REST, Webhook, and DB connectors.</p>
-      </Section>
-
-      {/* Pricing */}
-      <Section id="pricing" title="Pricing" eyebrow="Simple & scalable">
-        <Card className="border-dashed">
-          <CardHeader><CardTitle>Micro‑tour</CardTitle></CardHeader>
-          <CardContent className="text-sm text-muted-foreground space-y-3">
-            <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Create a <b>Lead‑Qual Agent</b> from a template</div>
-            <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Wire to <b>Sheets</b> and <b>HubSpot</b></div>
-            <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Add <b>scoring</b> & <b>booking</b></div>
-            <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Publish to <b>website widget</b> and track outcomes</div>
-          </CardContent>
-        </Card>
-      </Section>
-
-      {/* Docs */}
-      <Section id="docs" title="Docs & Academy" eyebrow="Learn & build">
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">Quickstart</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground space-y-2">
-              <div>1. Create your first agent from a template</div>
-              <div>2. Connect data & integrations</div>
-              <div>3. Publish to widget or channel</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">How‑to Guides</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground space-y-2">
-              <div>• Build a lead‑qualifying concierge</div>
-              <div>• Triage & deflection for support</div>
-              <div>• Human‑in‑the‑loop approvals</div>
-            </CardContent>
-          </Card>
-        </div>
-        <div className="mt-6">
-          <Button variant="outline">Open Docs</Button>
-          <Button className="ml-2">Watch a 3‑min demo</Button>
-        </div>
-      </Section>
-
-      {/* Trust */}
-      <Section id="trust" title="Trust & Security" eyebrow="Governance first">
-        <div className="grid md:grid-cols-3 gap-4">
-          <Feature icon={<Shield className="h-5 w-5" />} title="Compliance" copy="SOC 2 Type II, GDPR, data residency options." />
-          <Feature icon={<Database className="h-5 w-5" />} title="Data Controls" copy="Row‑Level Security, role‑based access, PII redaction, and secrets vault." />
-          <Feature icon={<Globe className="h-5 w-5" />} title="Deployment" copy="Multi‑tenant cloud, VPC peering, or self‑hosted for maximum control." />
-        </div>
-      </Section>
-
-      {/* Footer */}
-      <footer className="border-t py-10">
-        <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-4 gap-8 text-sm">
-          <div>
-            <div className="font-semibold">EcoNest</div>
-            <p className="text-muted-foreground mt-2">Agents & automations for modern teams.</p>
-          </div>
-          <div>
-            <div className="font-semibold mb-2">Product</div>
-            <ul className="space-y-1 text-muted-foreground">
-              <li><a href="#product" className="hover:underline">Overview</a></li>
-              <li><a href="#templates" className="hover:underline">Templates</a></li>
-              <li><a href="#integrations" className="hover:underline">Integrations</a></li>
-            </ul>
-          </div>
-          <div>
-            <div className="font-semibold mb-2">Company</div>
-            <ul className="space-y-1 text-muted-foreground">
-              <li><a href="#trust" className="hover:underline">Trust</a></li>
-              <li><a href="#docs" className="hover:underline">Docs</a></li>
-              <li><a href="#pricing" className="hover:underline">Pricing</a></li>
-            </ul>
-          </div>
-          <div>
-            <div className="font-semibold mb-2">Get started</div>
-            <div className="flex gap-2">
-                <Link to="/create-profile">
-                  <Button variant="default">Start free</Button>
+              <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row">
+                <Link
+                  to="/auth?mode=signup"
+                  className="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-3 text-base font-semibold text-primary-foreground shadow hover:bg-primary/90"
+                >
+                  Start free
                 </Link>
-              <Button variant="outline">Book a demo</Button>
+                <Link
+                  to="/contact?type=demo"
+                  className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-5 py-3 text-base font-semibold text-primary hover:bg-accent"
+                >
+                  Book a demo
+                </Link>
+
+                <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-2 text-sm font-medium text-primary">
+                  <span className="h-2 w-2 rounded-full bg-primary" />
+                  Visual Studio • Templates • Integrations
+                </span>
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-x-8 gap-y-2 text-sm text-muted-foreground">
+                <span>GDPR-ready</span>
+                <span>RLS/Row Security</span>
+                <span>Self-host option</span>
+              </div>
+            </div>
+
+            {/* Right card: Visual Automation Studio */}
+            <div className="mx-auto w-full max-w-xl">
+              <div className="rounded-2xl border border-border bg-card p-5 shadow-elegant">
+                <div className="mb-3 flex items-center justify-between">
+                  <h3 className="text-base font-semibold">Visual Automation Studio</h3>
+                  <span className="text-xs text-muted-foreground">Drag, connect, and publish without code.</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <StudioTile label="Agent" icon={<IconAgent />} onClick={() => setPreview(TEMPLATES.agent)} />
+                  <StudioTile label="Flow" icon={<IconFlow />} onClick={() => setPreview(TEMPLATES.flow)} />
+                  <StudioTile label="Data" icon={<IconData />} onClick={() => setPreview(TEMPLATES.data)} />
+                  <StudioTile label="Integration" icon={<IconPlug />} onClick={() => setPreview(TEMPLATES.integration)} />
+                  <StudioTile label="Channel" icon={<IconChannel />} onClick={() => setPreview(TEMPLATES.channel)} />
+                  <StudioTile label="Policy" icon={<IconShield />} onClick={() => setPreview(TEMPLATES.policy)} />
+                </div>
+              </div>
             </div>
           </div>
+
+          {/* Feature cards row */}
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            <FeatureCard
+              title="Automations"
+              desc="Multi-step workflows with triggers, branches, retries, and human-in-the-loop steps."
+              icon={<IconNodes />}
+            />
+            <FeatureCard
+              title="Agents"
+              desc="LLM-powered agents with tools, memory, and guardrails — deploy to web, chat, or voice."
+              icon={<IconAgent />}
+            />
+            <FeatureCard
+              title="Integrations"
+              desc="Directory + generic API/Webhook & DB connectors for anything custom."
+              icon={<IconPlug />}
+            />
+          </div>
         </div>
-      </footer>
-    </>
+      </section>
+
+      {/* Modal */}
+      {preview && (
+        <TemplatePreviewModal
+          template={preview}
+          onClose={() => setPreview(null)}
+        />
+      )}
+
+      <Footer />
+    </div>
+  );
+}
+
+/* ------------------------------- Header ---------------------------------- */
+function Header() {
+  return (
+    <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-14 items-center justify-between">
+          <Link to="/" className="inline-flex items-center gap-2" aria-label="EcoNest home">
+            <span className="inline-block h-8 w-8 rounded-xl bg-primary" aria-hidden="true" />
+            <span className="text-lg font-semibold tracking-tight">EcoNest</span>
+          </Link>
+
+          <nav aria-label="Primary" className="hidden md:block">
+            <ul className="flex items-center gap-6 text-sm font-medium">
+              <li><Link to="/product" className="hover:text-primary">Product</Link></li>
+              <li><Link to="/solutions" className="hover:text-primary">Solutions</Link></li>
+              <li><Link to="/templates" className="hover:text-primary">Templates</Link></li>
+              <li><Link to="/integrations" className="hover:text-primary">Integrations</Link></li>
+              <li><Link to="/pricing" className="hover:text-primary">Pricing</Link></li>
+              <li><Link to="/docs" className="hover:text-primary">Docs</Link></li>
+              <li><Link to="/security" className="hover:text-primary">Security</Link></li>
+            </ul>
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <Link to="/auth" className="rounded-xl border border-border px-3 py-1.5 text-sm font-medium hover:bg-accent">
+              Sign in
+            </Link>
+            <Link to="/auth?mode=signup" className="rounded-xl bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground shadow hover:bg-primary/90">
+              Start free
+            </Link>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+/* ------------------------------- Footer ---------------------------------- */
+function Footer() {
+  return (
+    <footer className="border-t border-border bg-background py-8 text-muted-foreground">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <p className="text-sm">© {new Date().getFullYear()} EcoNest. All rights reserved.</p>
+          <nav aria-label="Footer" className="text-sm">
+            <ul className="flex items-center gap-4">
+              <li><Link to="/trust" className="hover:text-foreground">Trust</Link></li>
+              <li><Link to="/docs" className="hover:text-foreground">Docs</Link></li>
+              <li><Link to="/pricing" className="hover:text-foreground">Pricing</Link></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* ------------------------------ Primitives ------------------------------- */
+function StudioTile({
+  label,
+  icon,
+  onClick,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex items-center gap-3 rounded-xl border border-border bg-muted px-4 py-3 text-left text-foreground hover:bg-accent transition-colors"
+    >
+      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-background text-muted-foreground">
+        {icon}
+      </span>
+      <span className="font-medium">{label}</span>
+    </button>
+  );
+}
+
+function FeatureCard({ title, desc, icon }: { title: string; desc: string; icon: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md">
+      <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+        {icon}
+      </div>
+      <h3 className="text-lg font-semibold">{title}</h3>
+      <p className="mt-1 text-muted-foreground">{desc}</p>
+    </div>
+  );
+}
+
+/* ------------------------------ Modal ------------------------------------ */
+function TemplatePreviewModal({ template, onClose }: { template: Template; onClose: () => void }) {
+  const link = `/templates?cat=${template.category}&id=${template.id}`;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden="true" />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tpl-title"
+        className="relative z-10 w-full max-w-lg rounded-2xl border border-border bg-background p-6 shadow-xl"
+      >
+        <div className="flex items-start justify-between gap-6">
+          <div>
+            <h3 id="tpl-title" className="text-xl font-bold tracking-tight">{template.name}</h3>
+            <p className="mt-1 text-sm text-muted-foreground">{template.description}</p>
+          </div>
+          <button onClick={onClose} aria-label="Close" className="rounded-lg p-1 text-muted-foreground hover:bg-accent">✕</button>
+        </div>
+
+        <div className="mt-4">
+          <h4 className="text-sm font-semibold">Required integrations</h4>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {template.requiredIntegrations.map((name) => (
+              <span key={name} className="inline-flex items-center gap-1 rounded-full border border-border bg-muted px-2 py-1 text-xs text-muted-foreground">
+                {name}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <h4 className="text-sm font-semibold">Steps</h4>
+          <ol className="mt-2 list-inside list-decimal text-sm text-muted-foreground">
+            {template.steps.map((s, i) => <li key={i}>{s}</li>)}
+          </ol>
+        </div>
+
+        <div className="mt-6 flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">Estimated setup: {template.estimatedSetup}</span>
+          <div className="flex items-center gap-2">
+            <button onClick={onClose} className="rounded-xl border border-border px-4 py-2 text-sm font-medium hover:bg-accent">Close</button>
+            <Link to={link} className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Use template</Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* --------------------------------- Icons ---------------------------------- */
+function IconAgent() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <rect x="3" y="8" width="18" height="10" rx="2" />
+      <path d="M12 2v4" />
+      <circle cx="9" cy="13" r="1" />
+      <circle cx="15" cy="13" r="1" />
+    </svg>
+  );
+}
+function IconFlow() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path d="M6 3h12M6 21h12" />
+      <rect x="4" y="6" width="6" height="6" rx="2" />
+      <rect x="14" y="12" width="6" height="6" rx="2" />
+      <path d="M10 9h4m-8 6h4" />
+    </svg>
+  );
+}
+function IconData() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <ellipse cx="12" cy="5" rx="8" ry="3" />
+      <path d="M4 5v10c0 1.7 3.6 3 8 3s8-1.3 8-3V5" />
+    </svg>
+  );
+}
+function IconPlug() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path d="M9 7V3m6 4V3" />
+      <path d="M7 13l10-2" />
+      <rect x="3" y="9" width="8" height="8" rx="2" />
+      <rect x="13" y="7" width="8" height="8" rx="2" />
+    </svg>
+  );
+}
+function IconChannel() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <circle cx="7" cy="12" r="3" />
+      <circle cx="17" cy="12" r="3" />
+      <path d="M10 12h4" />
+    </svg>
+  );
+}
+function IconShield() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path d="M12 3l7 4v5c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V7l7-4z" />
+      <path d="M9 12l2 2 4-4" />
+    </svg>
+  );
+}
+function IconNodes() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <circle cx="5" cy="12" r="2" />
+      <circle cx="12" cy="5" r="2" />
+      <circle cx="12" cy="19" r="2" />
+      <circle cx="19" cy="12" r="2" />
+      <path d="M7 12h10M12 7v10" />
+    </svg>
   );
 }
