@@ -20,8 +20,8 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
     }
   };
 
-  const getComplexityColor = (complexity: string) => {
-    switch (complexity) {
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
       case 'Easy': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200';
       case 'Medium': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
       case 'Advanced': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
@@ -34,13 +34,13 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-lg mb-2">{template.title}</CardTitle>
+            <CardTitle className="text-lg mb-2">{template.name}</CardTitle>
             <div className="flex gap-2 mb-3">
               <Badge className={getCategoryColor(template.category)}>
                 {template.category}
               </Badge>
-              <Badge className={getComplexityColor(template.complexity)}>
-                {template.complexity}
+              <Badge className={getDifficultyColor(template.difficulty)}>
+                {template.difficulty}
               </Badge>
             </div>
           </div>
@@ -67,7 +67,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
         
         <div className="flex gap-2">
           <Button asChild size="sm" className="flex-1">
-            <Link to={`/templates/${template.slug}`}>
+            <Link to={`/templates/${template.id}`}>
               View Details
             </Link>
           </Button>

@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { getTemplateBySlug } from '@/lib/templates';
+import { getTemplateById } from '@/lib/templates';
 
 export const TemplateDetail: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const template = slug ? getTemplateBySlug(slug) : null;
+  const { id } = useParams<{ id: string }>();
+  const template = id ? getTemplateById(id) : null;
 
   if (!template) {
     return (
@@ -36,8 +36,8 @@ export const TemplateDetail: React.FC = () => {
     }
   };
 
-  const getComplexityColor = (complexity: string) => {
-    switch (complexity) {
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
       case 'Easy': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200';
       case 'Medium': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
       case 'Advanced': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
@@ -57,13 +57,13 @@ export const TemplateDetail: React.FC = () => {
         
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold mb-4">{template.title}</h1>
+            <h1 className="text-3xl font-bold mb-4">{template.name}</h1>
             <div className="flex gap-2 mb-4">
               <Badge className={getCategoryColor(template.category)}>
                 {template.category}
               </Badge>
-              <Badge className={getComplexityColor(template.complexity)}>
-                {template.complexity}
+              <Badge className={getDifficultyColor(template.difficulty)}>
+                {template.difficulty}
               </Badge>
             </div>
             <p className="text-lg text-muted-foreground max-w-2xl">
@@ -76,59 +76,32 @@ export const TemplateDetail: React.FC = () => {
               <Download className="h-4 w-4 mr-2" />
               Use Template
             </Button>
-            {template.demoUrl && (
-              <Button variant="outline" className="w-full">
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Live Demo
-              </Button>
-            )}
           </div>
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Code2 className="h-5 w-5 mr-2" />
-              Features
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {template.features ? (
-              <ul className="space-y-3">
-                {template.features.map((feature, index) => (
-                  <li key={index} className="flex items-start">
-                    <span className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                    <span className="text-sm">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-muted-foreground text-sm">No features listed</p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Tech Stack</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {template.techStack ? (
-              <div className="flex flex-wrap gap-2">
-                {template.techStack.map((tech, index) => (
-                  <Badge key={index} variant="secondary">
-                    {tech}
-                  </Badge>
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted-foreground text-sm">No tech stack information</p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Code2 className="h-5 w-5 mr-2" />
+            Features
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {template.features ? (
+            <ul className="space-y-3">
+              {template.features.map((feature, index) => (
+                <li key={index} className="flex items-start">
+                  <span className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                  <span className="text-sm">{feature}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-muted-foreground text-sm">No features listed</p>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

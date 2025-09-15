@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/common/ui";
-import { templates, Template } from "@/lib/templates";
+import { TEMPLATES, Template } from "@/lib/templates";
 import { TemplateCard } from "@/components/templates/TemplateCard";
 import { Badge } from "@/components/ui/badge";
 
@@ -11,8 +11,8 @@ export default function TemplatesPage() {
   const categories = ["All", "Support", "Marketing", "Ops", "Data"];
   
   const filteredTemplates = selectedCategory === "All" 
-    ? templates 
-    : templates.filter(template => template.category === selectedCategory);
+    ? TEMPLATES 
+    : TEMPLATES.filter(template => template.category === selectedCategory);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-16">
@@ -36,7 +36,7 @@ export default function TemplatesPage() {
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTemplates.map((template) => (
-            <TemplateCard key={template.slug} template={template} />
+            <TemplateCard key={template.id} template={template} />
           ))}
         </div>
         

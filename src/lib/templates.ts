@@ -1,193 +1,107 @@
-export interface Template {
-  slug: string;
-  title: string;
+export type Template = {
+  id: string;
+  name: string;
   category: "Support" | "Marketing" | "Ops" | "Data";
+  difficulty: "Easy" | "Medium" | "Advanced";
   description: string;
-  complexity: "Easy" | "Medium" | "Advanced";
-  thumbnail: string;
-  features?: string[];
-  techStack?: string[];
-  demoUrl?: string;
-}
+  features: string[];
+};
 
-export const templates: Template[] = [
+export const TEMPLATES: Template[] = [
   {
-    slug: "appointment-booker",
-    title: "Appointment Booker",
+    id: "appointment-booker",
+    name: "Appointment Booker",
     category: "Support",
+    difficulty: "Easy",
     description: "Books meetings, handles reschedules and reminders.",
-    complexity: "Easy",
-    thumbnail: "/thumbs/booker.png",
-    features: [
-      "Calendar integration",
-      "Automated reminders", 
-      "Reschedule handling",
-      "Time zone support"
-    ],
-    techStack: ["React", "TypeScript", "Supabase", "Calendar API"]
+    features: ["Calendar integration", "Automated reminders", "Reschedule handling"],
   },
   {
-    slug: "customer-support-widget",
-    title: "Customer Support Widget", 
+    id: "customer-support-widget",
+    name: "Customer Support Widget",
     category: "Support",
+    difficulty: "Medium",
     description: "AI-powered customer support with ticket escalation.",
-    complexity: "Medium",
-    thumbnail: "/thumbs/support.png",
-    features: [
-      "AI chat assistant",
-      "Ticket management",
-      "Real-time support",
-      "Admin dashboard"
-    ],
-    techStack: ["React", "OpenAI API", "Supabase", "WebSockets"]
+    features: ["AI chat assistant", "Ticket management", "Real-time support"],
   },
   {
-    slug: "lead-qualification-bot",
-    title: "Lead Qualification Bot",
+    id: "lead-qualification-bot",
+    name: "Lead Qualification Bot",
     category: "Marketing",
+    difficulty: "Medium",
     description: "Qualifies leads through intelligent conversations and scoring.",
-    complexity: "Medium",
-    thumbnail: "/thumbs/lead-qual.png",
-    features: [
-      "Conversational AI",
-      "Lead scoring",
-      "CRM integration",
-      "Email automation"
-    ],
-    techStack: ["React", "OpenAI API", "Supabase", "Webhook API"],
-    demoUrl: "https://demo.leadbot.com"
+    features: ["Conversational AI", "Lead scoring", "CRM integration"],
   },
   {
-    slug: "social-media-scheduler",
-    title: "Social Media Scheduler",
+    id: "social-media-scheduler",
+    name: "Social Media Scheduler",
     category: "Marketing",
+    difficulty: "Easy",
     description: "Schedule and manage posts across multiple platforms.",
-    complexity: "Easy",
-    thumbnail: "/thumbs/social.png",
-    features: [
-      "Multi-platform posting",
-      "Content calendar",
-      "Analytics tracking",
-      "Bulk scheduling"
-    ],
-    techStack: ["React", "TypeScript", "Supabase", "Social APIs"]
+    features: ["Multi-platform posting", "Content calendar", "Analytics tracking"],
   },
   {
-    slug: "email-campaign-builder",
-    title: "Email Campaign Builder",
+    id: "email-campaign-builder",
+    name: "Email Campaign Builder",
     category: "Marketing",
+    difficulty: "Advanced",
     description: "Create and send personalized email campaigns with A/B testing.",
-    complexity: "Advanced",
-    thumbnail: "/thumbs/email.png",
-    features: [
-      "Drag & drop editor",
-      "A/B testing",
-      "Segmentation",
-      "Analytics dashboard",
-      "Automation workflows"
-    ],
-    techStack: ["React", "TypeScript", "Supabase", "SendGrid", "Chart.js"]
+    features: ["Drag & drop editor", "A/B testing", "Segmentation"],
   },
   {
-    slug: "inventory-manager",
-    title: "Inventory Manager",
+    id: "inventory-manager",
+    name: "Inventory Manager",
     category: "Ops",
+    difficulty: "Easy",
     description: "Track inventory levels with automated reorder alerts.",
-    complexity: "Easy",
-    thumbnail: "/thumbs/inventory.png",
-    features: [
-      "Stock tracking",
-      "Low stock alerts",
-      "Supplier management",
-      "Barcode scanning"
-    ],
-    techStack: ["React", "TypeScript", "Supabase", "Scanner API"]
+    features: ["Stock tracking", "Low stock alerts", "Supplier management"],
   },
   {
-    slug: "workflow-automation",
-    title: "Workflow Automation",
+    id: "workflow-automation",
+    name: "Workflow Automation",
     category: "Ops",
+    difficulty: "Advanced",
     description: "Automate business processes with custom triggers and actions.",
-    complexity: "Advanced",
-    thumbnail: "/thumbs/workflow.png",
-    features: [
-      "Visual workflow builder",
-      "Custom triggers",
-      "Multi-step automation",
-      "Integration hub",
-      "Error handling"
-    ],
-    techStack: ["React", "TypeScript", "Supabase", "Zapier API", "Node.js"],
-    demoUrl: "https://demo.workflow.com"
+    features: ["Visual workflow builder", "Custom triggers", "Multi-step automation"],
   },
   {
-    slug: "expense-tracker",
-    title: "Expense Tracker",
+    id: "expense-tracker",
+    name: "Expense Tracker",
     category: "Ops",
+    difficulty: "Medium",
     description: "Track business expenses with receipt scanning and reporting.",
-    complexity: "Medium",
-    thumbnail: "/thumbs/expense.png",
-    features: [
-      "Receipt scanning",
-      "Expense categorization",
-      "Monthly reports",
-      "Budget alerts"
-    ],
-    techStack: ["React", "TypeScript", "Supabase", "OCR API"]
+    features: ["Receipt scanning", "Expense categorization", "Monthly reports"],
   },
   {
-    slug: "analytics-dashboard",
-    title: "Analytics Dashboard",
+    id: "analytics-dashboard",
+    name: "Analytics Dashboard",
     category: "Data",
+    difficulty: "Advanced",
     description: "Real-time business analytics with custom KPI tracking.",
-    complexity: "Advanced",
-    thumbnail: "/thumbs/analytics.png",
-    features: [
-      "Real-time data",
-      "Custom KPIs",
-      "Interactive charts",
-      "Export reports",
-      "Data connectors"
-    ],
-    techStack: ["React", "TypeScript", "Supabase", "Chart.js", "D3.js"],
-    demoUrl: "https://demo.analytics.com"
+    features: ["Real-time data", "Custom KPIs", "Interactive charts"],
   },
   {
-    slug: "data-sync-tool",
-    title: "Data Sync Tool",
+    id: "data-sync-tool",
+    name: "Data Sync Tool",
     category: "Data",
+    difficulty: "Medium",
     description: "Synchronize data between multiple systems automatically.",
-    complexity: "Medium",
-    thumbnail: "/thumbs/sync.png",
-    features: [
-      "Multi-platform sync",
-      "Conflict resolution",
-      "Scheduled syncing",
-      "Error logging"
-    ],
-    techStack: ["React", "TypeScript", "Supabase", "API Connectors"]
+    features: ["Multi-platform sync", "Conflict resolution", "Scheduled syncing"],
   },
   {
-    slug: "report-generator",
-    title: "Report Generator",
+    id: "report-generator",
+    name: "Report Generator",
     category: "Data",
+    difficulty: "Easy",
     description: "Generate custom reports from your data sources.",
-    complexity: "Easy",
-    thumbnail: "/thumbs/reports.png",
-    features: [
-      "Template library",
-      "PDF generation",
-      "Data visualization",
-      "Scheduled reports"
-    ],
-    techStack: ["React", "TypeScript", "Supabase", "PDF.js"]
+    features: ["Template library", "PDF generation", "Data visualization"],
   }
 ];
 
-export function getTemplateBySlug(slug: string): Template | undefined {
-  return templates.find(template => template.slug === slug);
+export function getTemplateById(id: string): Template | undefined {
+  return TEMPLATES.find(template => template.id === id);
 }
 
 export function getTemplatesByCategory(category: Template['category']): Template[] {
-  return templates.filter(template => template.category === category);
+  return TEMPLATES.filter(template => template.category === category);
 }
