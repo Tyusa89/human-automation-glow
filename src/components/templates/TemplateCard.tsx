@@ -68,7 +68,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
         <div className="flex gap-2">
           <Button asChild size="sm" className="flex-1">
             <Link to={`/templates/${template.id}`}>
-              View Details
+              Preview
             </Link>
           </Button>
         </div>
