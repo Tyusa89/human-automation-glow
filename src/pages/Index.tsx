@@ -246,7 +246,7 @@ function FeatureCard({ title, desc, icon }: { title: string; desc: string; icon:
 
 /* ------------------------------ Modal ------------------------------------ */
 function TemplatePreviewModal({ template, onClose }: { template: Template; onClose: () => void }) {
-  const link = `/templates?cat=${template.category}&id=${template.id}`;
+  const link = `/templates/${template.id}`;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden="true" />
