@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 /** EcoNest – New Landing with Template Preview modal */
@@ -246,7 +246,12 @@ function FeatureCard({ title, desc, icon }: { title: string; desc: string; icon:
 
 /* ------------------------------ Modal ------------------------------------ */
 function TemplatePreviewModal({ template, onClose }: { template: Template; onClose: () => void }) {
-  const link = `/templates/${template.id}`;
+  const navigate = useNavigate();
+  
+  const handleUseTemplate = () => {
+    navigate("/templates/" + template.id);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden="true" />
@@ -286,7 +291,7 @@ function TemplatePreviewModal({ template, onClose }: { template: Template; onClo
           <span className="text-sm text-muted-foreground">Estimated setup: {template.estimatedSetup}</span>
           <div className="flex items-center gap-2">
             <button onClick={onClose} className="rounded-xl border border-border px-4 py-2 text-sm font-medium hover:bg-accent">Close</button>
-            <Link to={link} className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Use template</Link>
+            <button onClick={handleUseTemplate} className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Use template</button>
           </div>
         </div>
       </div>
