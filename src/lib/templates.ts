@@ -1,7 +1,7 @@
 export type Template = {
   id: string;
   name: string;
-  category: "Support" | "Marketing" | "Ops" | "Data";
+  category: "Support" | "Marketing" | "Ops" | "Data" | "Agent" | "Buy" | "Integration";
   difficulty: "Easy" | "Medium" | "Advanced";
   description: string;
   features: string[];
@@ -95,6 +95,46 @@ export const TEMPLATES: Template[] = [
     difficulty: "Easy",
     description: "Generate custom reports from your data sources.",
     features: ["Template library", "PDF generation", "Data visualization"],
+  },
+  {
+    id: "agent-support-bot",
+    name: "Agent + Support Bot",
+    category: "Agent",
+    difficulty: "Medium",
+    description: "Customer-facing AI with memory, tools, and clean escalation.",
+    features: ["Production-ready support agent", "FAQ handling", "Context collection", "Human handoff", "Transcript logging"],
+  },
+  {
+    id: "lead-qualifier",
+    name: "Buy - Lead Qualifier",
+    category: "Buy",
+    difficulty: "Easy",
+    description: "Capture, score, and route leads to the right sales rep.",
+    features: ["Conversational intake", "Intent scoring", "Demographics enrichment", "Meeting booking", "Lead handoffs"],
+  },
+  {
+    id: "data-docs-sync",
+    name: "Data + Docs Sync",
+    category: "Data",
+    difficulty: "Easy",
+    description: "Keep your docs and answers in sync with a repo or DB.",
+    features: ["Markdown/Notion indexing", "Fresh embeddings", "Scheduled updates", "Pruning policies", "Re-crawl automation"],
+  },
+  {
+    id: "zapier-intercom-integration",
+    name: "Integration - Zapier + Intercom vibe",
+    category: "Integration",
+    difficulty: "Easy",
+    description: "Trigger actions from conversations and sync contact events.",
+    features: ["Contact creation", "Tag synchronization", "Event alerting", "Zapier integration", "Intercom snippets"],
+  },
+  {
+    id: "customer-support-bot",
+    name: "Customer Support Bot",
+    category: "Support",
+    difficulty: "Medium",
+    description: "AI-powered support agent for FAQs and escalation.",
+    features: ["FAQ handling", "Smart escalation", "Transcript logging", "Multi-channel support", "Knowledge base integration"],
   }
 ];
 
