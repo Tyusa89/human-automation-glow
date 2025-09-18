@@ -27,7 +27,7 @@ const Feature: React.FC<{ icon: React.ReactNode; title: string; copy: string; on
     <div className="flex-1">
       <h3 className="font-semibold text-slate-900">{title}</h3>
       <p className="text-slate-600 text-sm leading-relaxed mb-3">{copy}</p>
-      <Button size="sm" variant="outline" onClick={onGetQuote}>
+      <Button size="sm" variant="default" className="text-white">
         Get Requirements Form
       </Button>
     </div>
