@@ -9,24 +9,24 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 156 39% 20%;
+    --foreground: 210 40% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 156 39% 20%;
+    --card-foreground: 210 40% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 156 39% 20%;
+    --popover-foreground: 210 40% 15%;
 
-    --primary: 156 39% 29%;
+    --primary: 158 64% 52%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 156 20% 96%;
-    --secondary-foreground: 156 39% 20%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 210 40% 15%;
 
-    --muted: 156 20% 96%;
-    --muted-foreground: 156 25% 45%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 210 20% 45%;
 
-    --accent: 156 39% 48%;
+    --accent: 158 64% 52%;
     --accent-foreground: 0 0% 100%;
     
     /* Enhanced gradients for better design */
@@ -70,26 +70,26 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 156 39% 8%;
-    --foreground: 156 20% 95%;
+    --background: 220 26% 14%;
+    --foreground: 0 0% 95%;
 
-    --card: 156 39% 10%;
-    --card-foreground: 156 20% 95%;
+    --card: 220 23% 18%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 156 39% 10%;
-    --popover-foreground: 156 20% 95%;
+    --popover: 220 23% 18%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 156 39% 48%;
-    --primary-foreground: 156 39% 8%;
+    --primary: 158 64% 52%;
+    --primary-foreground: 220 26% 14%;
 
-    --secondary: 156 25% 18%;
-    --secondary-foreground: 156 20% 95%;
+    --secondary: 220 20% 25%;
+    --secondary-foreground: 0 0% 90%;
 
-    --muted: 156 25% 18%;
-    --muted-foreground: 156 20% 65%;
+    --muted: 220 20% 25%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 156 39% 48%;
-    --accent-foreground: 156 39% 8%;
+    --accent: 158 64% 52%;
+    --accent-foreground: 220 26% 14%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
