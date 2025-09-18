@@ -98,7 +98,7 @@ export default function Index() {
                 <span className="rounded-full bg-secondary px-2.5 py-1 font-medium text-secondary-foreground">Zapier × Intercom vibe</span>
               </div>
 
-              <h1 className="mt-5 text-4xl font-extrabold leading-tight text-foreground sm:text-5xl">
+              <h1 className="mt-5 text-4xl font-extrabold leading-tight text-white sm:text-5xl">
                 Build AI agents and automations — visually
               </h1>
 
