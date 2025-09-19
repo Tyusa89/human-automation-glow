@@ -326,7 +326,7 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
               placeholder={useVoiceMode ? "Type or speak your message..." : "Type your message..."}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
               disabled={isLoading}
-              className="text-sm"
+              className="text-sm text-white placeholder:text-white/70"
             />
             
             {/* Voice Controls */}
