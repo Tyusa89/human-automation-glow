@@ -116,7 +116,7 @@ export default function Index() {
                 </Link>
                 <Link
                   to="/contact?type=demo"
-                  className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-5 py-3 text-base font-semibold text-primary hover:bg-accent"
+                  className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-5 py-3 text-base font-semibold text-white hover:bg-accent"
                 >
                   Book a demo
                 </Link>
