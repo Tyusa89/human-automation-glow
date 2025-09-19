@@ -283,7 +283,7 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
         <div className="p-4 border-t bg-gray-50">
           {/* Voice Mode Toggle */}
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-gray-600">
+            <span className="text-xs text-white">
               {useVoiceMode ? 'Voice Mode' : 'Text Mode'}
             </span>
             <div className="flex items-center gap-2">
