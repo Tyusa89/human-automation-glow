@@ -69,7 +69,9 @@ export default function PricingPage() {
                       <span className="text-3xl font-bold">
                         ${isYearly ? tier.yearlyPrice : tier.monthlyPrice}
                       </span>
-                      <span className="text-slate-400">/mo</span>
+                      <span className="text-slate-400">
+                        {isYearly ? "/yr" : "/mo"}
+                      </span>
                     </div>
                   )}
                 </div>

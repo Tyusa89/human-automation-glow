@@ -33,8 +33,8 @@ export const pricing = [
   { 
     name: "Growth", 
     price: "$29/mo", 
-    monthlyPrice: "$29",
-    yearlyPrice: "$24",
+    monthlyPrice: "29",
+    yearlyPrice: "290",
     blurb: "Launch real workflows with your team.", 
     features: [
       "Up to 3 templates",
@@ -53,8 +53,8 @@ export const pricing = [
   { 
     name: "Business", 
     price: "$79/mo", 
-    monthlyPrice: "$79",
-    yearlyPrice: "$65",
+    monthlyPrice: "79",
+    yearlyPrice: "790",
     blurb: "Most popular. Scale automation across teams.", 
     features: [
       "Unlimited templates",
@@ -73,8 +73,8 @@ export const pricing = [
   { 
     name: "Pro", 
     price: "$199/mo", 
-    monthlyPrice: "$199",
-    yearlyPrice: "$165",
+    monthlyPrice: "199",
+    yearlyPrice: "1990",
     blurb: "For heavy usage & advanced controls.", 
     features: [
       "Unlimited templates",
