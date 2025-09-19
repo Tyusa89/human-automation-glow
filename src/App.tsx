@@ -25,6 +25,7 @@ import CreateProfile from '@/pages/CreateProfile';
 import NotFound from '@/pages/NotFound';
 import ErrorBoundary from "./components/ErrorBoundary";
 import { TemplateDetail } from '@/components/templates/TemplateDetail';
+import CustomerServiceWidget from '@/components/CustomerServiceWidget';
 
 const queryClient = new QueryClient();
 
@@ -91,6 +92,7 @@ const App = () => {
               </Routes>
             </main>
             <Footer />
+            <CustomerServiceWidget />
           </ErrorBoundary>
         </TooltipProvider>
       </QueryClientProvider>
