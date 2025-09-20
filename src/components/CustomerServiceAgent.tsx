@@ -306,12 +306,12 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
 
           <div className="flex flex-wrap gap-1 mb-3">
             {quickActions.map((action, index) => (
-              <Button
+               <Button
                 key={index}
                 variant="outline"
                 size="sm"
                 onClick={() => setInput(action)}
-                className="text-xs h-6 px-2"
+                className="text-xs h-6 px-2 text-white border-white/20 hover:bg-white/10"
                 disabled={isLoading}
               >
                 {action}
