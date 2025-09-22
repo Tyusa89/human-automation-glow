@@ -9,6 +9,20 @@ import { ArrowLeft, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 
 // Template configuration
 const templateConfigs = {
+  'analytics-dashboard': {
+    name: 'Analytics Dashboard',
+    description: 'Set up your analytics dashboard',
+    steps: [
+      {
+        title: 'Data Sources',
+        description: 'Configure your data connections',
+        fields: [
+          { name: 'dashboardName', label: 'Dashboard Name', type: 'text', required: true },
+          { name: 'dataSource', label: 'Primary Data Source', type: 'text', required: true },
+        ]
+      }
+    ]
+  },
   'lead-qualification-bot': {
     name: 'Lead Qualification Bot',
     description: 'Set up your lead qualification workflow',
@@ -39,15 +53,15 @@ const templateConfigs = {
       }
     ]
   },
-  'support-triage': {
-    name: 'Support Triage Bot',
-    description: 'Configure your support bot',
+  'customer-support-widget': {
+    name: 'Customer Support Widget',
+    description: 'Configure your support widget',
     steps: [
       {
-        title: 'Bot Configuration',
-        description: 'Basic bot settings',
+        title: 'Widget Configuration',
+        description: 'Basic widget settings',
         fields: [
-          { name: 'botName', label: 'Bot Name', type: 'text', required: true },
+          { name: 'widgetName', label: 'Widget Name', type: 'text', required: true },
           { name: 'department', label: 'Department', type: 'text', required: true },
         ]
       },
@@ -61,16 +75,86 @@ const templateConfigs = {
       }
     ]
   },
-  'onboarding-flow': {
-    name: 'Onboarding Flow',
-    description: 'Set up user onboarding',
+  'customer-support-bot': {
+    name: 'Customer Support Bot',
+    description: 'Configure your support bot',
     steps: [
       {
-        title: 'Flow Configuration',
-        description: 'Configure onboarding steps',
+        title: 'Bot Configuration',
+        description: 'Basic bot settings',
         fields: [
-          { name: 'flowName', label: 'Flow Name', type: 'text', required: true },
-          { name: 'welcomeEmail', label: 'Welcome Email Template', type: 'textarea', required: true },
+          { name: 'botName', label: 'Bot Name', type: 'text', required: true },
+          { name: 'department', label: 'Department', type: 'text', required: true },
+        ]
+      }
+    ]
+  },
+  'appointment-booker': {
+    name: 'Appointment Booker',
+    description: 'Set up appointment booking',
+    steps: [
+      {
+        title: 'Booking Configuration',
+        description: 'Configure booking settings',
+        fields: [
+          { name: 'serviceName', label: 'Service Name', type: 'text', required: true },
+          { name: 'duration', label: 'Default Duration (minutes)', type: 'number', required: true },
+        ]
+      }
+    ]
+  },
+  'agent-support-bot': {
+    name: 'Agent + Support Bot',
+    description: 'Configure advanced support bot',
+    steps: [
+      {
+        title: 'Agent Configuration',
+        description: 'Set up your AI agent',
+        fields: [
+          { name: 'agentName', label: 'Agent Name', type: 'text', required: true },
+          { name: 'knowledgeBase', label: 'Knowledge Base URL', type: 'url', required: false },
+        ]
+      }
+    ]
+  },
+  'bio-lead-qualifier': {
+    name: 'Bio + Lead Qualifier',
+    description: 'Set up lead qualification',
+    steps: [
+      {
+        title: 'Qualification Setup',
+        description: 'Configure lead scoring',
+        fields: [
+          { name: 'qualifierName', label: 'Qualifier Name', type: 'text', required: true },
+          { name: 'scoringCriteria', label: 'Scoring Criteria', type: 'textarea', required: true },
+        ]
+      }
+    ]
+  },
+  'data-doc-sync': {
+    name: 'Data + Doc Sync',
+    description: 'Set up document synchronization',
+    steps: [
+      {
+        title: 'Sync Configuration',
+        description: 'Configure sync settings',
+        fields: [
+          { name: 'syncName', label: 'Sync Name', type: 'text', required: true },
+          { name: 'sourceUrl', label: 'Source Repository URL', type: 'url', required: true },
+        ]
+      }
+    ]
+  },
+  'zapier-intercom-integration': {
+    name: 'Zapier + Intercom Integration',
+    description: 'Set up integrations',
+    steps: [
+      {
+        title: 'Integration Setup',
+        description: 'Configure your integrations',
+        fields: [
+          { name: 'integrationName', label: 'Integration Name', type: 'text', required: true },
+          { name: 'zapierWebhook', label: 'Zapier Webhook URL', type: 'url', required: false },
         ]
       }
     ]

@@ -1,1 +1,7 @@
 project_id = "rqldulvkwzvrmcvwttep"
+
+[functions.templates]
+verify_jwt = false
+
+[functions.scaffold]
+verify_jwt = false
