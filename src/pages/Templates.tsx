@@ -428,7 +428,7 @@ export default function TemplatesPage() {
                   size="sm" 
                   variant="outline" 
                   onClick={() => setPreview(t)}
-                  className="text-white bg-primary/20 border-white/30 hover:bg-primary/30 hover:border-white/50 hover:text-white"
+                  className="text-white bg-blue-900 border-blue-800 hover:bg-blue-800 hover:border-blue-700 hover:text-white"
                 >
                   <Eye className="mr-1 h-4 w-4" /> Preview
                 </Button>
