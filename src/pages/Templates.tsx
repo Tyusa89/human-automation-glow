@@ -399,7 +399,7 @@ export default function TemplatesPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((t) => (
           <motion.div key={t.templateId} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
-            <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+            <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] bg-slate-800 border-slate-700">
               <div className="relative h-40 w-full bg-muted">
                 {t.hero ? (
                   <img src={t.hero} alt={t.name} className="h-full w-full object-cover" />
