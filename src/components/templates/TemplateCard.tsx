@@ -1,76 +1,84 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ChevronRight } from 'lucide-react';
 import { Template } from '@/lib/templates';
+
+export type Difficulty = "Easy" | "Medium" | "Advanced";
 
 interface TemplateCardProps {
   template: Template;
 }
 
+const diffTone: Record<string, string> = {
+  Easy: "bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/30",
+  Medium: "bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30",
+  Advanced: "bg-sky-500/20 text-sky-300 ring-1 ring-sky-500/30",
+};
+
 export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'Support': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'Marketing': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'Ops': return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
-      case 'Data': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
-    }
-  };
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'Easy': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200';
-      case 'Medium': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'Advanced': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
-    }
-  };
-
+  const bullets = template.features?.slice(0, 3) || [template.description];
+  const chips = template.features?.slice(3) || [];
+  
   return (
-    <Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-      <CardHeader className="pb-4">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <CardTitle className="text-lg mb-2">{template.name}</CardTitle>
-            <div className="flex gap-2 mb-3">
-              <Badge className={getCategoryColor(template.category)}>
-                {template.category}
-              </Badge>
-              <Badge className={getDifficultyColor(template.difficulty)}>
-                {template.difficulty}
-              </Badge>
-            </div>
-          </div>
+    <Card className="
+      bg-zinc-900/60 border-zinc-800 hover:border-zinc-700
+      transition-colors rounded-2xl shadow-lg
+    ">
+      <CardContent className="p-6 md:p-7">
+        {/* Top row: category + difficulty pill */}
+        <div className="flex items-center gap-2">
+          <Badge className="bg-zinc-800 text-zinc-300">{template.category}</Badge>
+          <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${diffTone[template.difficulty] || diffTone.Easy}`}>
+            {template.difficulty}
+          </span>
         </div>
-      </CardHeader>
-      
-      <CardContent className="pt-0">
-        <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
-          {template.description}
-        </p>
-        
-        {template.features && (
-          <div className="mb-4">
-            <ul className="text-xs text-muted-foreground space-y-1">
-              {template.features.slice(0, 3).map((feature, index) => (
-                <li key={index} className="flex items-center">
-                  <span className="w-1 h-1 bg-primary rounded-full mr-2"></span>
-                  {feature}
-                </li>
-              ))}
-            </ul>
+
+        {/* Title */}
+        <h3 className="mt-4 text-2xl font-semibold tracking-tight text-white">
+          {template.name}
+        </h3>
+
+        {/* Bullets */}
+        <ul className="mt-4 space-y-2 text-zinc-300">
+          {bullets.map((bullet, i) => (
+            <li key={i} className="flex gap-2">
+              <span className="mt-2 h-1.5 w-1.5 rounded-full bg-zinc-500" />
+              <span>{bullet}</span>
+            </li>
+          ))}
+        </ul>
+
+        {/* Chips */}
+        {chips.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {chips.map((chip) => (
+              <span
+                key={chip}
+                className="px-2.5 py-1 text-xs rounded-full bg-zinc-800/80 text-zinc-300 ring-1 ring-zinc-700"
+              >
+                {chip}
+              </span>
+            ))}
           </div>
         )}
-        
-        <div className="flex gap-2">
-          <Button asChild size="sm" className="flex-1">
-            <Link to={`/templates/${template.id}`}>
-              Preview
-            </Link>
-          </Button>
+
+        {/* Footer: setup + actions */}
+        <div className="mt-6 flex items-center justify-between">
+          <span className="text-sm text-zinc-400">Setup: 20–30 min</span>
+
+          <div className="flex items-center gap-2">
+            <Button
+              asChild
+              className="bg-emerald-600 hover:bg-emerald-500 text-white"
+            >
+              <Link to={`/templates/${template.id}`}>
+                Preview <ChevronRight className="ml-1.5 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
