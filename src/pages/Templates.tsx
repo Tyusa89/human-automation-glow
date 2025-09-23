@@ -341,7 +341,8 @@ export default function TemplatesPage() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl p-6 space-y-6">
+    <div className="templates-theme">
+      <div className="mx-auto max-w-7xl p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div>
@@ -502,6 +503,7 @@ export default function TemplatesPage() {
           </div>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 }
