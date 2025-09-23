@@ -1,3 +1,5 @@
+import { normalizeId } from "@/lib/utils/ids";
+
 export type StepField =
   | { kind: "text";  key: string; label: string; default?: string }
   | { kind: "select"; key: string; label: string; options: string[]; default?: string }
@@ -9,11 +11,34 @@ export type SetupStep = { title: string; fields: StepField[] };
 export type TemplateMeta = {
   id: string;            // route id (e.g., "analytics-dashboard")
   name: string;
-  type: "analytics" | "data-sync" | "report" | "integration";
+  type: "analytics" | "data-sync" | "report" | "integration" | "marketing";
   steps: SetupStep[];    // 👈 per-template steps
 };
 
 export const registry: TemplateMeta[] = [
+  {
+    id: normalizeId("Email Campaign Builder"), // "email-campaign-builder"
+    name: "Email Campaign Builder",
+    type: "marketing",
+    steps: [
+      { title: "Basics", fields: [
+        { kind: "text", key: "projectName", label: "Project name", default: "Email Campaign Builder" },
+        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
+      ]},
+      { title: "Campaign", fields: [
+        { kind: "select", key: "campaignType", label: "Campaign Type", options: ["Newsletter","Promotional","Welcome Series","Drip Campaign"], default: "Newsletter" },
+        { kind: "select", key: "template", label: "Email Template", options: ["Modern","Classic","Minimal","Bold"], default: "Modern" },
+      ]},
+      { title: "Audience", fields: [
+        { kind: "checkboxes", key: "segmentation", label: "Audience Segments", options: ["New Subscribers","Active Users","Inactive Users","VIP Customers"], default: ["New Subscribers"] },
+        { kind: "select", key: "frequency", label: "Send Frequency", options: ["Daily","Weekly","Bi-weekly","Monthly"], default: "Weekly" },
+      ]},
+      { title: "Integration", fields: [
+        { kind: "checkboxes", key: "providers", label: "Email Providers", options: ["Mailchimp","SendGrid","Klaviyo","ConvertKit"], default: ["SendGrid"] },
+      ]},
+      { title: "Review", fields: [ { kind: "review" } ]},
+    ],
+  },
   {
     id: "analytics-dashboard",
     name: "Analytics Dashboard",
