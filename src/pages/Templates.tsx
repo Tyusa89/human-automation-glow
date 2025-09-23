@@ -422,9 +422,13 @@ export default function TemplatesPage() {
                 </div>
               </div>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base flex items-center justify-between gap-2">
+                <CardTitle className="text-base flex items-center justify-between gap-2 title">
                   <span>{t.name}</span>
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className={`text-[10px] ${
+                    t.difficulty === "Beginner" ? "pill-easy" : 
+                    t.difficulty === "Intermediate" ? "pill-inter" : 
+                    "pill-advanced"
+                  }`}>
                     {t.difficulty || ""}
                   </Badge>
                 </CardTitle>
@@ -442,10 +446,10 @@ export default function TemplatesPage() {
                 <Button 
                   size="sm" 
                   onClick={(e) => { e.stopPropagation(); handleUseTemplate(t.templateId); }} 
-                  disabled={scaffolding}
-                  className="text-white bg-blue-900 border-blue-800 hover:bg-blue-800 hover:border-blue-700 hover:text-white"
+                  disabled={loadingId === t.templateId}
+                  className="btn-primary"
                 >
-                  {scaffolding ? (
+                  {loadingId === t.templateId ? (
                     <>
                       <Loader2 className="mr-1 h-4 w-4 animate-spin" /> Working…
                     </>
@@ -469,9 +473,9 @@ export default function TemplatesPage() {
 
       {/* Preview Modal */}
       <Dialog open={!!preview} onOpenChange={() => setPreview(null)}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="template-modal max-w-3xl">
           <DialogHeader>
-            <DialogTitle>{preview?.name}</DialogTitle>
+            <DialogTitle className="modal-title">{preview?.name}</DialogTitle>
             <DialogDescription>{preview?.tagline}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -485,7 +489,7 @@ export default function TemplatesPage() {
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                 {preview.features.map((f, i) => (
                   <li key={i} className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-primary rounded-full" />
+                    <div className="w-1.5 h-1.5 bg-primary rounded-full dot" />
                     {f}
                   </li>
                 ))}
@@ -496,7 +500,7 @@ export default function TemplatesPage() {
                 <X className="mr-1 h-4 w-4" /> Close
               </Button>
               {preview && (
-                <Button onClick={() => handleUseTemplate(preview.templateId)}>
+                <Button onClick={() => handleUseTemplate(preview.templateId)} className="btn-primary">
                   <Play className="mr-1 h-4 w-4" /> Use this template
                 </Button>
               )}
