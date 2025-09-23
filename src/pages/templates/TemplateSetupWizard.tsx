@@ -72,7 +72,7 @@ export default function TemplateSetupWizard() {
                 <div>
                   <div className="text-sm text-zinc-300">Project name</div>
                   <input
-                    className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none text-white"
+                    className="mt-2 w-full rounded-xl border border-emerald-500/30 bg-emerald-600/20 px-4 py-3 outline-none text-white"
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
                   />
@@ -80,7 +80,7 @@ export default function TemplateSetupWizard() {
                 <div>
                   <div className="text-sm text-zinc-300">Environment</div>
                   <select
-                    className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-white"
+                    className="mt-2 w-full rounded-xl border border-emerald-500/30 bg-emerald-600/20 px-4 py-3 text-white"
                     value={env}
                     onChange={(e) => setEnv(e.target.value as Env)}
                   >
@@ -106,7 +106,7 @@ export default function TemplateSetupWizard() {
                 ].map((it) => (
                   <label
                     key={it.key}
-                    className="flex items-center gap-3 rounded-xl border border-white/10 bg-black/30 px-4 py-4 cursor-pointer hover:bg-black/40"
+                    className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-600/20 px-4 py-4 cursor-pointer hover:bg-emerald-600/30"
                   >
                     <input
                       type="checkbox"
@@ -134,7 +134,7 @@ export default function TemplateSetupWizard() {
                 ].map((ch) => (
                   <label
                     key={ch.key}
-                    className="flex items-center gap-3 rounded-xl border border-white/10 bg-black/30 px-4 py-4 cursor-pointer hover:bg-black/40"
+                    className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-600/20 px-4 py-4 cursor-pointer hover:bg-emerald-600/30"
                   >
                     <input
                       type="checkbox"
