@@ -12,11 +12,11 @@ interface TemplateCardProps {
   template: Template;
 }
 
-const diffTone: Record<string, string> = {
-  Easy: "bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/30",
-  Medium: "bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30",
-  Advanced: "bg-indigo-500/20 text-indigo-300 ring-1 ring-indigo-500/30",
-};
+const diffTone = {
+  Easy:          "bg-indigo-500/20 text-indigo-300 ring-1 ring-indigo-500/30",
+  Intermediate:  "bg-violet-500/20 text-violet-300 ring-1 ring-violet-500/30",
+  Advanced:      "bg-fuchsia-500/20 text-fuchsia-300 ring-1 ring-fuchsia-500/30",
+} as const;
 
 export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
   const bullets = template.features?.slice(0, 3) || [template.description];
@@ -28,7 +28,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
         {/* Top row: category + difficulty pill */}
         <div className="flex items-center gap-2">
           <Badge className="bg-zinc-800 text-zinc-300">{template.category}</Badge>
-          <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${diffTone[template.difficulty] || diffTone.Easy}`}>
+          <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${diffTone[template.difficulty as keyof typeof diffTone] || diffTone.Easy}`}>
             {template.difficulty}
           </span>
         </div>
