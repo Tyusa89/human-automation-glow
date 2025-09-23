@@ -72,7 +72,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
               className="bg-indigo-600 hover:bg-indigo-500 text-white"
             >
               <Link to={`/templates/${template.id}`}>
-                Preview <ChevronRight className="ml-1.5 h-4 w-4" />
+                Use template <ChevronRight className="ml-1.5 h-4 w-4" />
               </Link>
             </Button>
           </div>
