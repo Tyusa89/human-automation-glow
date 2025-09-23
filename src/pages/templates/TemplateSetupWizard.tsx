@@ -1,48 +1,151 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
-
-type Env = "Development" | "Staging" | "Production";
+import { useState, useMemo } from "react";
+import { getTemplateById, type TemplateMeta, type StepField } from "@/lib/registry";
 
 export default function TemplateSetupWizard() {
   const { templateId } = useParams();
   const nav = useNavigate();
 
-  // global wizard state
-  const [step, setStep] = useState(0); // 0..3
-  const [projectName, setProjectName] = useState("EcoNest Project");
-  const [env, setEnv] = useState<Env>("Development");
-  const [integrations, setIntegrations] = useState({ zapier: false, intercom: false });
-  const [channels, setChannels] = useState({ web: true, email: false, slack: false });
-  const [autoRoute, setAutoRoute] = useState(true);
-  const total = 4;
+  // Get template configuration from registry  
+  const templateMeta = useMemo(() => {
+    if (!templateId) return null;
+    return getTemplateById(templateId);
+  }, [templateId]);
 
+  // Dynamic form state based on template configuration
+  const [step, setStep] = useState(0);
+  const [formData, setFormData] = useState<Record<string, any>>({});
+
+  // Initialize form data with defaults
+  useMemo(() => {
+    if (!templateMeta) return;
+    
+    const initialData: Record<string, any> = {};
+    templateMeta.steps.forEach(stepConfig => {
+      stepConfig.fields.forEach(field => {
+        if (field.kind !== "review" && field.default !== undefined) {
+          initialData[field.key] = field.default;
+        }
+      });
+    });
+    setFormData(initialData);
+  }, [templateMeta]);
+
+  if (!templateMeta) {
+    return (
+      <div className="min-h-screen bg-[#0B1220] text-white flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-400">Template not found</h1>
+          <p className="text-zinc-400 mt-2">The template "{templateId}" doesn't exist in our registry.</p>
+          <button
+            onClick={() => nav("/templates")}
+            className="mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-zinc-100 hover:bg-white/10"
+          >
+            Back to templates
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const total = templateMeta.steps.length;
   const next = () => setStep((s) => Math.min(s + 1, total - 1));
   const back = () => setStep((s) => Math.max(s - 1, 0));
 
+  const updateFormData = (key: string, value: any) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
   const generate = async () => {
-    // only the selected template!
     await fetch("/api/templates/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         templateId,
-        projectName,
-        env: env.toLowerCase(),
-        integrations: Object.keys(integrations).filter((k) => (integrations as any)[k]),
-        channels: Object.keys(channels).filter((k) => (channels as any)[k]),
-        autoAddDemoRoute: autoRoute,
+        ...formData,
       }),
     });
-    nav("/dashboard"); // redirect to dashboard after generation
+    nav("/dashboard");
   };
+
+  const renderField = (field: StepField) => {
+    if (field.kind === "review") return null;
+
+    const value = formData[field.key];
+    
+    switch (field.kind) {
+      case "text":
+        return (
+          <div key={field.key}>
+            <div className="text-sm text-zinc-300">{field.label}</div>
+            <input
+              className="mt-2 w-full rounded-xl border border-emerald-500/30 bg-emerald-600/20 px-4 py-3 outline-none text-white"
+              value={value || ""}
+              onChange={(e) => updateFormData(field.key, e.target.value)}
+            />
+          </div>
+        );
+      
+      case "select":
+        return (
+          <div key={field.key}>
+            <div className="text-sm text-zinc-300">{field.label}</div>
+            <select
+              className="mt-2 w-full rounded-xl border border-emerald-500/30 bg-emerald-600/20 px-4 py-3 text-white"
+              value={value || field.options[0]}
+              onChange={(e) => updateFormData(field.key, e.target.value)}
+            >
+              {field.options.map(option => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </div>
+        );
+      
+      case "checkboxes":
+        return (
+          <div key={field.key}>
+            <div className="text-sm text-zinc-300 mb-4">{field.label}</div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {field.options.map(option => (
+                <label
+                  key={option}
+                  className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-600/20 px-4 py-4 cursor-pointer hover:bg-emerald-600/30"
+                >
+                  <input
+                    type="checkbox"
+                    checked={(value || []).includes(option)}
+                    onChange={(e) => {
+                      const currentArray = value || [];
+                      const newArray = e.target.checked
+                        ? [...currentArray, option]
+                        : currentArray.filter((item: string) => item !== option);
+                      updateFormData(field.key, newArray);
+                    }}
+                    className="rounded border-white/20 bg-black/30"
+                  />
+                  <span>{option}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        );
+      
+      default:
+        return null;
+    }
+  };
+
+  const currentStepConfig = templateMeta.steps[step];
+  const isReviewStep = currentStepConfig.fields.some(field => field.kind === "review");
 
   return (
     <div className="min-h-screen bg-[#0B1220] text-white">
       <div className="mx-auto max-w-5xl px-6 py-10">
-        <div className="text-xs tracking-wider text-zinc-400">INTEGRATION</div>
+        <div className="text-xs tracking-wider text-zinc-400">{templateMeta.type.toUpperCase()}</div>
         <div className="mt-1 text-4xl font-extrabold">Template Setup</div>
         <p className="mt-2 text-zinc-300">
-          Configure your Integration • Zapier × Intercom vibe template.
+          Configure your {templateMeta.name} template.
         </p>
         <button
           className="ml-auto mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-zinc-100 hover:bg-white/10"
@@ -52,7 +155,7 @@ export default function TemplateSetupWizard() {
         </button>
 
         {/* progress bars */}
-        <div className="mt-6 grid grid-cols-4 gap-6">
+        <div className="mt-6 grid gap-6" style={{ gridTemplateColumns: `repeat(${total}, 1fr)` }}>
           {Array.from({ length: total }).map((_, i) => (
             <div
               key={i}
@@ -65,132 +168,21 @@ export default function TemplateSetupWizard() {
 
         {/* panel */}
         <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6">
-          {step === 0 && (
+          <div className="text-lg font-semibold">{currentStepConfig.title}</div>
+          
+          {isReviewStep ? (
             <div>
-              <div className="text-lg font-semibold">Basics</div>
-              <div className="mt-6 space-y-5">
-                <div>
-                  <div className="text-sm text-zinc-300">Project name</div>
-                  <input
-                    className="mt-2 w-full rounded-xl border border-emerald-500/30 bg-emerald-600/20 px-4 py-3 outline-none text-white"
-                    value={projectName}
-                    onChange={(e) => setProjectName(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <div className="text-sm text-zinc-300">Environment</div>
-                  <select
-                    className="mt-2 w-full rounded-xl border border-emerald-500/30 bg-emerald-600/20 px-4 py-3 text-white"
-                    value={env}
-                    onChange={(e) => setEnv(e.target.value as Env)}
-                  >
-                    <option>Development</option>
-                    <option>Staging</option>
-                    <option>Production</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {step === 1 && (
-            <div>
-              <div className="text-lg font-semibold">Integrations</div>
-              <p className="mt-1 text-zinc-400">
-                Toggle what you'll wire now. You can add the rest later.
-              </p>
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
-                {[
-                  { key: "zapier", label: "Zapier" },
-                  { key: "intercom", label: "Intercom" },
-                ].map((it) => (
-                  <label
-                    key={it.key}
-                    className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-600/20 px-4 py-4 cursor-pointer hover:bg-emerald-600/30"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={(integrations as any)[it.key]}
-                      onChange={(e) =>
-                        setIntegrations((s) => ({ ...s, [it.key]: e.target.checked }))
-                      }
-                      className="rounded border-white/20 bg-black/30"
-                    />
-                    <span>{it.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div>
-              <div className="text-lg font-semibold">Channels</div>
-              <div className="mt-6 grid gap-4 md:grid-cols-3">
-                {[
-                  { key: "web", label: "Web" },
-                  { key: "email", label: "Email" },
-                  { key: "slack", label: "Slack" },
-                ].map((ch) => (
-                  <label
-                    key={ch.key}
-                    className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-600/20 px-4 py-4 cursor-pointer hover:bg-emerald-600/30"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={(channels as any)[ch.key]}
-                      onChange={(e) =>
-                        setChannels((s) => ({ ...s, [ch.key]: e.target.checked }))
-                      }
-                      className="rounded border-white/20 bg-black/30"
-                    />
-                    <span>{ch.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div>
-              <div className="text-lg font-semibold">Review</div>
               <div className="mt-4 space-y-2 text-zinc-300">
                 <div>
-                  <span className="text-zinc-400">Template:</span>{" "}
-                  Integration • Zapier × Intercom vibe
+                  <span className="text-zinc-400">Template:</span> {templateMeta.name}
                 </div>
-                <div>
-                  <span className="text-zinc-400">Project:</span> {projectName}
-                </div>
-                <div>
-                  <span className="text-zinc-400">Env:</span>{" "}
-                  {env.toLowerCase()}
-                </div>
-                <div>
-                  <span className="text-zinc-400">Channels:</span>{" "}
-                  {Object.entries(channels)
-                    .filter(([, v]) => v)
-                    .map(([k]) => k)
-                    .join(", ") || "—"}
-                </div>
-                <div>
-                  <span className="text-zinc-400">Integrations:</span>{" "}
-                  {Object.entries(integrations)
-                    .filter(([, v]) => v)
-                    .map(([k]) => k)
-                    .join(", ") || "—"}
-                </div>
+                {Object.entries(formData).map(([key, value]) => (
+                  <div key={key}>
+                    <span className="text-zinc-400">{key}:</span>{" "}
+                    {Array.isArray(value) ? value.join(", ") || "—" : value || "—"}
+                  </div>
+                ))}
               </div>
-
-              <label className="mt-5 flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={autoRoute}
-                  onChange={(e) => setAutoRoute(e.target.checked)}
-                  className="rounded border-white/20 bg-black/30"
-                />
-                <span className="text-zinc-300">Auto-add demo route to router</span>
-              </label>
 
               <div className="mt-6">
                 <button
@@ -200,6 +192,10 @@ export default function TemplateSetupWizard() {
                   Generate project
                 </button>
               </div>
+            </div>
+          ) : (
+            <div className="mt-6 space-y-5">
+              {currentStepConfig.fields.map(renderField)}
             </div>
           )}
         </div>
