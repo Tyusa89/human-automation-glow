@@ -257,6 +257,7 @@ export default function TemplatesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [templates, setTemplates] = useState<Template[]>(fallbackRegistry);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string>("All");
@@ -302,23 +303,27 @@ export default function TemplatesPage() {
     });
   }, [templates, q, cat]);
 
-  async function onUseTemplate(t: Template) {
+  const handleUseTemplate = async (id: string) => {
+    setLoadingId(id);
     setScaffoldMsg(null);
-    if (t.actions?.behavior === "wizard" && t.actions.path) {
-      // Navigate to setup with templateId
-      const url = new URL(t.actions.path, window.location.origin);
-      url.searchParams.set("templateId", t.templateId);
-      window.location.href = url.toString();
-      return;
-    }
+    
+    const template = templates.find(t => t.templateId === id);
+    if (!template) return;
+    
+    try {
+      if (template.actions?.behavior === "wizard" && template.actions.path) {
+        // Navigate to setup with templateId
+        const url = new URL(template.actions.path, window.location.origin);
+        url.searchParams.set("templateId", template.templateId);
+        window.location.href = url.toString();
+        return;
+      }
 
-    if (t.actions?.behavior === "scaffold" && t.actions.api) {
-      try {
-        setScaffolding(true);
-        const res = await fetch(t.actions.api, {
+      if (template.actions?.behavior === "scaffold" && template.actions.api) {
+        const res = await fetch(template.actions.api, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ templateId: t.templateId }),
+          body: JSON.stringify({ templateId: template.templateId }),
         });
         const data = await res.json();
         if (!res.ok || !data?.ok) {
@@ -327,13 +332,13 @@ export default function TemplatesPage() {
         setScaffoldMsg("Project scaffolded successfully. Redirecting…");
         // optional: redirect if API returns a route
         if (data.next) window.location.href = data.next;
-      } catch (e: any) {
-        setScaffoldMsg(e?.message || "Scaffold failed");
-      } finally {
-        setScaffolding(false);
       }
+    } catch (e: any) {
+      setScaffoldMsg(e?.message || "Scaffold failed");
+    } finally {
+      setLoadingId(null);
     }
-  }
+  };
 
   return (
     <div className="mx-auto max-w-7xl p-6 space-y-6">
@@ -434,7 +439,7 @@ export default function TemplatesPage() {
                 </Button>
                 <Button 
                   size="sm" 
-                  onClick={() => onUseTemplate(t)} 
+                  onClick={() => handleUseTemplate(t.templateId)} 
                   disabled={scaffolding}
                   className="text-white bg-blue-900 border-blue-800 hover:bg-blue-800 hover:border-blue-700 hover:text-white"
                 >
@@ -489,7 +494,7 @@ export default function TemplatesPage() {
                 <X className="mr-1 h-4 w-4" /> Close
               </Button>
               {preview && (
-                <Button onClick={() => onUseTemplate(preview)}>
+                <Button onClick={() => handleUseTemplate(preview.templateId)}>
                   <Play className="mr-1 h-4 w-4" /> Use this template
                 </Button>
               )}
