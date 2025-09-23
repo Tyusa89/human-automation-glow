@@ -13,9 +13,9 @@ interface TemplateCardProps {
 }
 
 const diffTone: Record<string, string> = {
-  Easy: "bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/30",
-  Medium: "bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30",
-  Advanced: "bg-sky-500/20 text-sky-300 ring-1 ring-sky-500/30",
+  Easy: "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-300",
+  Medium: "bg-amber-100 text-amber-700 ring-1 ring-amber-300",
+  Advanced: "bg-blue-100 text-blue-700 ring-1 ring-blue-300",
 };
 
 export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
@@ -23,29 +23,26 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
   const chips = template.features?.slice(3) || [];
   
   return (
-    <Card className="
-      bg-zinc-900/60 border-zinc-800 hover:border-zinc-700
-      transition-colors rounded-2xl shadow-lg
-    ">
+    <Card className="bg-white border-zinc-200 text-zinc-900 rounded-2xl shadow hover:shadow-lg transition-all duration-300">
       <CardContent className="p-6 md:p-7">
         {/* Top row: category + difficulty pill */}
         <div className="flex items-center gap-2">
-          <Badge className="bg-zinc-800 text-zinc-300">{template.category}</Badge>
+          <Badge className="bg-zinc-100 text-zinc-700">{template.category}</Badge>
           <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${diffTone[template.difficulty] || diffTone.Easy}`}>
             {template.difficulty}
           </span>
         </div>
 
         {/* Title */}
-        <h3 className="mt-4 text-2xl font-semibold tracking-tight text-white">
+        <h3 className="mt-4 text-2xl font-semibold tracking-tight text-zinc-900">
           {template.name}
         </h3>
 
         {/* Bullets */}
-        <ul className="mt-4 space-y-2 text-zinc-300">
+        <ul className="mt-4 space-y-2 text-zinc-700">
           {bullets.map((bullet, i) => (
             <li key={i} className="flex gap-2">
-              <span className="mt-2 h-1.5 w-1.5 rounded-full bg-zinc-500" />
+              <span className="mt-2 h-1.5 w-1.5 rounded-full bg-zinc-400" />
               <span>{bullet}</span>
             </li>
           ))}
@@ -57,7 +54,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
             {chips.map((chip) => (
               <span
                 key={chip}
-                className="px-2.5 py-1 text-xs rounded-full bg-zinc-800/80 text-zinc-300 ring-1 ring-zinc-700"
+                className="px-2.5 py-1 text-xs rounded-full bg-zinc-100 text-zinc-700 ring-1 ring-zinc-300"
               >
                 {chip}
               </span>
@@ -67,7 +64,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
 
         {/* Footer: setup + actions */}
         <div className="mt-6 flex items-center justify-between">
-          <span className="text-sm text-zinc-400">Setup: 20–30 min</span>
+          <span className="text-sm text-zinc-500">Setup: 20–30 min</span>
 
           <div className="flex items-center gap-2">
             <Button
