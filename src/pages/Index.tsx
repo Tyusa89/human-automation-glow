@@ -249,7 +249,7 @@ function TemplatePreviewModal({ template, onClose }: { template: Template; onClo
   const navigate = useNavigate();
   
   const handleUseTemplate = () => {
-    navigate("/templates/" + template.id);
+    navigate(`/templates/${template.id}/setup`);
   };
 
   return (

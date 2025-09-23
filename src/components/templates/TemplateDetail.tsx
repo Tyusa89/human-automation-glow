@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Download, Code2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +9,13 @@ import { getTemplateById } from '@/lib/templates';
 
 export const TemplateDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const template = id ? getTemplateById(id) : null;
+
+  const handleUseTemplate = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/templates/${template?.id}/setup`);
+  };
 
   if (!template) {
     return (
@@ -72,7 +78,7 @@ export const TemplateDetail: React.FC = () => {
           </div>
           
           <div className="flex flex-col gap-2 min-w-[180px]">
-            <Button className="w-full">
+            <Button className="w-full" onClick={handleUseTemplate}>
               <Download className="h-4 w-4 mr-2" />
               Use Template
             </Button>
