@@ -8,7 +8,7 @@ import { Template } from "@/pages/Templates";
 
 interface TemplatesGridProps {
   templates: Template[];
-  onPreview: (template: Template) => void;
+  onPreview: (templateId: string) => void;
   onScaffoldMessage: (message: string) => void;
 }
 
@@ -19,14 +19,14 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
     setLoadingId(id);
     onScaffoldMessage("");
     
-    const template = templates.find(t => t.templateId === id);
+    const template = templates.find(t => t.id === id);
     if (!template) return;
     
     try {
       if (template.actions?.behavior === "wizard" && template.actions.path) {
         // Navigate to setup with templateId
         const url = new URL(template.actions.path, window.location.origin);
-        url.searchParams.set("templateId", template.templateId);
+        url.searchParams.set("templateId", template.id);
         window.location.href = url.toString();
         return;
       }
@@ -55,11 +55,11 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {templates.map((t) => (
-        <motion.div key={t.templateId} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
+        <motion.div key={t.id} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
           <Card className="template-card bg-zinc-900/60 border-zinc-800 overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
             <div className="relative h-40 w-full bg-muted">
               {t.hero ? (
-                <img src={t.hero} alt={t.name} className="h-full w-full object-cover" />
+                <img src={t.hero} alt={t.title} className="h-full w-full object-cover" />
               ) : (
                 <div className="h-full w-full grid place-items-center text-muted-foreground">No image</div>
               )}
@@ -73,7 +73,7 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
             </div>
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center justify-between gap-2 title">
-                <span>{t.name}</span>
+                <span>{t.title}</span>
                 <Badge variant="outline" className={`text-[10px] ${
                   t.difficulty === "Beginner" ? "pill-easy" : 
                   t.difficulty === "Intermediate" ? "pill-inter" : 
@@ -88,18 +88,18 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
               <Button 
                 size="sm" 
                 variant="outline" 
-                onClick={() => onPreview(t)}
+                onClick={() => onPreview(t.id)}
                 className="text-white bg-blue-900 border-blue-800 hover:bg-blue-800 hover:border-blue-700 hover:text-white"
               >
                 <Eye className="mr-1 h-4 w-4" /> Preview
               </Button>
               <Button 
                 size="sm" 
-                onClick={(e) => { e.stopPropagation(); handleUseTemplate(t.templateId); }} 
-                disabled={loadingId === t.templateId}
+                onClick={(e) => { e.stopPropagation(); handleUseTemplate(t.id); }} 
+                disabled={loadingId === t.id}
                 className="btn-primary"
               >
-                {loadingId === t.templateId ? (
+                {loadingId === t.id ? (
                   <>
                     <Loader2 className="mr-1 h-4 w-4 animate-spin" /> Working…
                   </>

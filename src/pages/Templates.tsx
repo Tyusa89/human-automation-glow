@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Search, Filter, Sparkles, CheckCircle2, X, Play, Loader2 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Search, Filter, Sparkles, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -9,8 +8,8 @@ import "../styles/templates.css";
 
 // ---- Types ---------------------------------------------------------------
 export type Template = {
-  templateId: string; // must match backend registry
-  name: string;
+  id: string; // must match backend registry
+  title: string;
   tagline?: string;
   category: "Bots" | "Dashboards" | "E‑commerce" | "Ops" | "Auth" | "Other";
   difficulty?: "Beginner" | "Intermediate" | "Advanced";
@@ -18,7 +17,7 @@ export type Template = {
   hero?: string; // img url
   gallery?: string[]; // more screenshots
   description?: string;
-  features?: string[];
+  bullets?: string[];
   actions?: {
     behavior: "wizard" | "scaffold"; // where the CTA should go
     path?: string; // e.g., "/setup"
@@ -29,8 +28,8 @@ export type Template = {
 // ---- Local fallback registry (keep in sync with server) -----------------
 const fallbackRegistry: Template[] = [
   {
-    templateId: "analytics-dashboard",
-    name: "Analytics Dashboard",
+    id: "analytics-dashboard",
+    title: "Analytics Dashboard",
     tagline: "Real-time business analytics with custom KPIs and tracking.",
     category: "Dashboards",
     difficulty: "Advanced",
@@ -38,12 +37,12 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png", "/assets/template-card-design.png"],
     description: "Real-time data visualization with custom KPIs, charting library, and interactive charts.",
-    features: ["Real-time data", "Custom KPIs", "Interactive charts"],
+    bullets: ["Real-time data", "Custom KPIs", "Interactive charts"],
     actions: { behavior: "scaffold", api: "/api/scaffold" },
   },
   {
-    templateId: "data-sync-tool",
-    name: "Data Sync Tool",
+    id: "data-sync-tool",
+    title: "Data Sync Tool",
     tagline: "Synchronize data between multiple systems automatically.",
     category: "Ops",
     difficulty: "Intermediate",
@@ -51,12 +50,12 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png"],
     description: "Multi-platform sync, conflict resolution, and scheduled syncing for seamless data flow.",
-    features: ["Multi-platform sync", "Conflict resolution", "Scheduled syncing"],
+    bullets: ["Multi-platform sync", "Conflict resolution", "Scheduled syncing"],
     actions: { behavior: "scaffold", api: "/api/scaffold" },
   },
   {
-    templateId: "report-generator",
-    name: "Report Generator",
+    id: "report-generator",
+    title: "Report Generator",
     tagline: "Generate custom reports from your data sources.",
     category: "Dashboards",
     difficulty: "Beginner",
@@ -64,12 +63,12 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png"],
     description: "Template library, PDF generation, and data visualization for comprehensive reporting.",
-    features: ["Template library", "PDF generation", "Data visualization"],
+    bullets: ["Template library", "PDF generation", "Data visualization"],
     actions: { behavior: "wizard", path: "/setup" },
   },
   {
-    templateId: "workflow-automation",
-    name: "Workflow Automation",
+    id: "workflow-automation",
+    title: "Workflow Automation",
     tagline: "Automate business processes with custom triggers and actions.",
     category: "Ops",
     difficulty: "Advanced",
@@ -77,12 +76,12 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png"],
     description: "Visual workflow builder, custom triggers, and multi-step automation for streamlined operations.",
-    features: ["Visual workflow builder", "Custom triggers", "Multi-step automation"],
+    bullets: ["Visual workflow builder", "Custom triggers", "Multi-step automation"],
     actions: { behavior: "scaffold", api: "/api/scaffold" },
   },
   {
-    templateId: "expense-tracker",
-    name: "Expense Tracker",
+    id: "expense-tracker",
+    title: "Expense Tracker",
     tagline: "Track business expenses with receipt scanning and reporting.",
     category: "Ops",
     difficulty: "Intermediate",
@@ -90,12 +89,12 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png"],
     description: "Receipt scanning, expense categorization, and monthly reports for financial management.",
-    features: ["Receipt scanning", "Expense categorization", "Monthly reports"],
+    bullets: ["Receipt scanning", "Expense categorization", "Monthly reports"],
     actions: { behavior: "scaffold", api: "/api/scaffold" },
   },
   {
-    templateId: "appointment-booker",
-    name: "Appointment Booker",
+    id: "appointment-booker",
+    title: "Appointment Booker",
     tagline: "Book meetings, handle reschedules and reminders.",
     category: "Bots",
     difficulty: "Beginner",
@@ -103,12 +102,12 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png"],
     description: "Calendar integration, automated reminders, and reschedule handling for seamless booking.",
-    features: ["Calendar integration", "Automated reminders", "Reschedule handling"],
+    bullets: ["Calendar integration", "Automated reminders", "Reschedule handling"],
     actions: { behavior: "wizard", path: "/setup" },
   },
   {
-    templateId: "customer-support-widget",
-    name: "Customer Support Widget",
+    id: "customer-support-widget",
+    title: "Customer Support Widget",
     tagline: "AI-powered customer support with ticket escalation.",
     category: "Bots",
     difficulty: "Intermediate",
@@ -116,12 +115,12 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png"],
     description: "AI chat assistant, ticket management, and real-time support for customer satisfaction.",
-    features: ["AI chat assistant", "Ticket management", "Real-time support"],
+    bullets: ["AI chat assistant", "Ticket management", "Real-time support"],
     actions: { behavior: "wizard", path: "/setup" },
   },
   {
-    templateId: "lead-qualification-bot",
-    name: "Lead Qualification Bot",
+    id: "lead-qualification-bot",
+    title: "Lead Qualification Bot",
     tagline: "Qualifies leads through intelligent conversations and scoring.",
     category: "Bots",
     difficulty: "Intermediate",
@@ -129,12 +128,12 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png"],
     description: "Conversational AI, lead scoring, and CRM integration for effective lead qualification.",
-    features: ["Conversational AI", "Lead scoring", "CRM integration"],
+    bullets: ["Conversational AI", "Lead scoring", "CRM integration"],
     actions: { behavior: "wizard", path: "/setup" },
   },
   {
-    templateId: "customer-support-bot",
-    name: "Customer Support Bot",
+    id: "customer-support-bot",
+    title: "Customer Support Bot",
     tagline: "AI-powered support agent for FAQs and escalation.",
     category: "Bots",
     difficulty: "Intermediate",
@@ -142,12 +141,12 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png"],
     description: "FAQ handling, escalation, and transcript logging for comprehensive support.",
-    features: ["FAQ handling", "Escalation", "Transcript logging"],
+    bullets: ["FAQ handling", "Escalation", "Transcript logging"],
     actions: { behavior: "wizard", path: "/setup" },
   },
   {
-    templateId: "agent-support-bot",
-    name: "Agent + Support Bot",
+    id: "agent-support-bot",
+    title: "Agent + Support Bot",
     tagline: "Customer-facing AI with memory, tools, and clean escalation.",
     category: "Bots",
     difficulty: "Intermediate",
@@ -155,12 +154,12 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png"],
     description: "Production-ready support agent with memory, context, and seamless human handoff.",
-    features: ["Knowledge base (Notion/Docs)", "Slack", "Email"],
+    bullets: ["Knowledge base (Notion/Docs)", "Slack", "Email"],
     actions: { behavior: "wizard", path: "/setup" },
   },
   {
-    templateId: "bio-lead-qualifier",
-    name: "Bio + Lead Qualifier",
+    id: "bio-lead-qualifier",
+    title: "Bio + Lead Qualifier",
     tagline: "Capture, score, and route leads to the right members.",
     category: "Bots",
     difficulty: "Beginner",
@@ -168,12 +167,12 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png"],
     description: "Conversational intake that scores intent and routes to appropriate team members or sends handoff.",
-    features: ["CRM (HubSpot/Salesforce)", "Calendar", "Email"],
+    bullets: ["CRM (HubSpot/Salesforce)", "Calendar", "Email"],
     actions: { behavior: "wizard", path: "/setup" },
   },
   {
-    templateId: "data-doc-sync",
-    name: "Data + Doc Sync",
+    id: "data-doc-sync",
+    title: "Data + Doc Sync",
     tagline: "Keep your docs and answers in sync with a repo or DB.",
     category: "Ops",
     difficulty: "Beginner",
@@ -181,12 +180,12 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png"],
     description: "Includes markdown/Notion and keeps embeddings fresh on a schedule. Ships with pruning + re-crawl policies.",
-    features: ["Github/GitLab", "Postgres/Supabase"],
+    bullets: ["Github/GitLab", "Postgres/Supabase"],
     actions: { behavior: "wizard", path: "/setup" },
   },
   {
-    templateId: "zapier-intercom-integration",
-    name: "Integration - Zapier + Intercom vibe",
+    id: "zapier-intercom-integration",
+    title: "Integration - Zapier + Intercom vibe",
     tagline: "Preload actions for contact creation, text sync, and alerting.",
     category: "Other",
     difficulty: "Beginner",
@@ -194,12 +193,12 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png"],
     description: "Ships with example zaps and Intercom snippets for easy integration setup.",
-    features: ["Zapier", "Intercom"],
+    bullets: ["Zapier", "Intercom"],
     actions: { behavior: "wizard", path: "/setup" },
   },
   {
-    templateId: "social-media-scheduler",
-    name: "Social Media Scheduler",
+    id: "social-media-scheduler",
+    title: "Social Media Scheduler",
     tagline: "Schedule and manage posts across multiple platforms.",
     category: "E‑commerce",
     difficulty: "Beginner",
@@ -207,12 +206,12 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png"],
     description: "Multi-platform posting, content calendar, and analytics tracking for social media management.",
-    features: ["Multi-platform posting", "Content calendar", "Analytics tracking"],
+    bullets: ["Multi-platform posting", "Content calendar", "Analytics tracking"],
     actions: { behavior: "scaffold", api: "/api/scaffold" },
   },
   {
-    templateId: "email-campaign-builder",
-    name: "Email Campaign Builder",
+    id: "email-campaign-builder",
+    title: "Email Campaign Builder",
     tagline: "Create and send personalized email campaigns with A/B testing.",
     category: "E‑commerce",
     difficulty: "Advanced",
@@ -220,12 +219,12 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png"],
     description: "Drag & drop editor, A/B testing, and segmentation for effective email marketing.",
-    features: ["Drag & drop editor", "A/B testing", "Segmentation"],
+    bullets: ["Drag & drop editor", "A/B testing", "Segmentation"],
     actions: { behavior: "scaffold", api: "/api/scaffold" },
   },
   {
-    templateId: "inventory-manager",
-    name: "Inventory Manager",
+    id: "inventory-manager",
+    title: "Inventory Manager",
     tagline: "Track inventory levels with automated reorder alerts.",
     category: "Ops",
     difficulty: "Beginner",
@@ -233,7 +232,7 @@ const fallbackRegistry: Template[] = [
     hero: "/assets/template-card-design.png",
     gallery: ["/assets/template-card-design.png"],
     description: "Stock tracking, low stock alerts, and supplier management for efficient inventory control.",
-    features: ["Stock tracking", "Low stock alerts", "Supplier management"],
+    bullets: ["Stock tracking", "Low stock alerts", "Supplier management"],
     actions: { behavior: "scaffold", api: "/api/scaffold" },
   },
 ];
@@ -261,7 +260,8 @@ export default function TemplatesPage() {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string>("All");
 
-  const [preview, setPreview] = useState<Template | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selected = templates.find(t => t.id === selectedId) ?? null;
   const [scaffoldMsg, setScaffoldMsg] = useState<string | null>(null);
 
   // Fetch from API (parity with VSCode data source)
@@ -296,7 +296,7 @@ export default function TemplatesPage() {
     return templates.filter((t) => {
       const inCat = cat === "All" || t.category === cat;
       if (!needle) return inCat;
-      const hay = `${t.name} ${t.tagline} ${t.description} ${t.features?.join(" ")}`.toLowerCase();
+      const hay = `${t.title} ${t.tagline} ${t.description} ${t.bullets?.join(" ")}`.toLowerCase();
       return inCat && hay.includes(needle);
     });
   }, [templates, q, cat]);
@@ -304,13 +304,13 @@ export default function TemplatesPage() {
   const handleModalUseTemplate = async (templateId: string) => {
     setScaffoldMsg("");
     
-    const template = templates.find(t => t.templateId === templateId);
+    const template = templates.find(t => t.id === templateId);
     if (!template) return;
     
     try {
       if (template.actions?.behavior === "wizard" && template.actions.path) {
         const url = new URL(template.actions.path, window.location.origin);
-        url.searchParams.set("templateId", template.templateId);
+        url.searchParams.set("templateId", template.id);
         window.location.href = url.toString();
         return;
       }
@@ -398,7 +398,7 @@ export default function TemplatesPage() {
       {/* Grid */}
       <TemplatesGrid 
         templates={filtered} 
-        onPreview={setPreview}
+        onPreview={setSelectedId}
         onScaffoldMessage={setScaffoldMsg}
       />
 
@@ -408,43 +408,50 @@ export default function TemplatesPage() {
         </div>
       )}
 
-      {/* Preview Modal */}
-      <Dialog open={!!preview} onOpenChange={() => setPreview(null)}>
-        <DialogContent className="template-modal max-w-3xl">
-          <DialogHeader>
-            <DialogTitle className="modal-title">{preview?.name}</DialogTitle>
-            <DialogDescription>{preview?.tagline}</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {preview?.gallery?.map((src, i) => (
-                <img key={i} src={src} alt={`Screenshot ${i + 1}`} className="rounded-md border w-full h-32 object-cover" />
-              ))}
+      {/* Custom Modal */}
+      {selected && (
+        <div className="template-modal fixed inset-0 bg-black/60 grid place-items-center z-50">
+          <div className="w-[min(900px,92vw)] rounded-2xl p-6">
+            <div className="flex items-start justify-between">
+              <h2 className="modal-title text-2xl font-semibold">{selected.title}</h2>
+              <button onClick={() => setSelectedId(null)} className="text-xl hover:opacity-70">✕</button>
             </div>
-            {preview?.description && <p className="text-sm text-muted-foreground">{preview.description}</p>}
-            {preview?.features && preview.features.length > 0 && (
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                {preview.features.map((f, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-primary rounded-full dot" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div className="flex items-center justify-end gap-2 pt-2">
-              <Button variant="ghost" onClick={() => setPreview(null)}>
-                <X className="mr-1 h-4 w-4" /> Close
-              </Button>
-              {preview && (
-                <Button onClick={() => handleModalUseTemplate(preview.templateId)} className="btn-primary">
-                  <Play className="mr-1 h-4 w-4" /> Use this template
-                </Button>
+
+            {/* Template Details */}
+            <div className="mt-4 rounded-xl p-4 bg-black/20 border border-white/10">
+              <p className="font-medium">{selected.description}</p>
+              {selected.bullets && selected.bullets.length > 0 && (
+                <ul className="mt-3 space-y-1">
+                  {selected.bullets.map((b, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="dot mt-2">•</span>
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button 
+                onClick={() => setSelectedId(null)}
+                className="px-4 py-2 rounded-lg hover:bg-white/10 transition-colors"
+              >
+                Close
+              </button>
+              <button
+                className="btn-primary px-4 py-2 rounded-lg"
+                onClick={async () => {
+                  await handleModalUseTemplate(selected.id);
+                  setSelectedId(null);
+                }}
+              >
+                Use this template
+              </button>
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
       </div>
     </div>
   );
