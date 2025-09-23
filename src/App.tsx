@@ -26,6 +26,7 @@ import SetupPage from '@/pages/Setup';
 import NotFound from '@/pages/NotFound';
 import ErrorBoundary from "./components/ErrorBoundary";
 import { TemplateDetail } from '@/components/templates/TemplateDetail';
+import TemplateSetupWizard from '@/pages/templates/TemplateSetupWizard';
 import CustomerServiceWidget from '@/components/CustomerServiceWidget';
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => {
                 <Route path="/product" element={<ProductPage />} />
                 <Route path="/solutions" element={<SolutionsPage />} />
                 <Route path="/templates" element={<TemplatesPage />} />
+                <Route path="/templates/:templateId/setup" element={<TemplateSetupWizard />} />
                 <Route path="/templates/:slug" element={<TemplateDetail />} />
                 <Route path="/integrations" element={<IntegrationsPage />} />
                 <Route path="/docs" element={<DocsPage />} />

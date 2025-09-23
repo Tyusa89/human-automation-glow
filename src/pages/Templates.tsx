@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search, Filter, Sparkles, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -339,6 +340,7 @@ const categories: Array<Template["category"]> = [
 
 // ---- Component -----------------------------------------------------------
 export default function TemplatesPage() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [templates, setTemplates] = useState<Template[]>(fallbackRegistry);
@@ -393,30 +395,8 @@ export default function TemplatesPage() {
     const template = templates.find(t => t.id === templateId);
     if (!template) return;
     
-    try {
-      if (template.actions?.behavior === "wizard" && template.actions.path) {
-        const url = new URL(template.actions.path, window.location.origin);
-        url.searchParams.set("templateId", template.id);
-        window.location.href = url.toString();
-        return;
-      }
-
-      if (template.actions?.behavior === "scaffold" && template.actions.api) {
-        const res = await fetch("/api/templates/use", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ templateId }),
-        });
-        const data = await res.json();
-        if (!res.ok || !data?.ok) {
-          throw new Error(data?.error || `Template usage failed (${res.status})`);
-        }
-        setScaffoldMsg("Project created successfully. Redirecting…");
-        if (data.next) window.location.href = data.next;
-      }
-    } catch (e: any) {
-      setScaffoldMsg(e?.message || "Scaffold failed");
-    }
+    // Navigate to the new setup wizard for all templates
+    navigate(`/templates/${templateId}/setup`);
   };
 
 
