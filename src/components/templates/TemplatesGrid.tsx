@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Eye, Play, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,44 +14,7 @@ interface TemplatesGridProps {
 }
 
 export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: TemplatesGridProps) {
-  const [loadingId, setLoadingId] = useState<string | null>(null);
-
-  const handleUseTemplate = async (id: string) => {
-    setLoadingId(id);
-    onScaffoldMessage("");
-    
-    const template = templates.find(t => t.id === id);
-    if (!template) return;
-    
-    try {
-      if (template.actions?.behavior === "wizard" && template.actions.path) {
-        // Navigate to setup with templateId
-        const url = new URL(template.actions.path, window.location.origin);
-        url.searchParams.set("templateId", template.id);
-        window.location.href = url.toString();
-        return;
-      }
-
-      if (template.actions?.behavior === "scaffold" && template.actions.api) {
-        const res = await fetch("/api/templates/use", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ templateId: id }),
-        });
-        const data = await res.json();
-        if (!res.ok || !data?.ok) {
-          throw new Error(data?.error || `Template usage failed (${res.status})`);
-        }
-        onScaffoldMessage("Project created successfully. Redirecting…");
-        // optional: redirect if API returns a route
-        if (data.next) window.location.href = data.next;
-      }
-    } catch (e: any) {
-      onScaffoldMessage(e?.message || "Scaffold failed");
-    } finally {
-      setLoadingId(null);
-    }
-  };
+  const navigate = useNavigate();
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -105,19 +69,10 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
                   </Button>
                   <Button 
                     size="sm" 
-                    onClick={(e) => { e.stopPropagation(); handleUseTemplate(t.id); }} 
-                    disabled={loadingId === t.id}
+                    onClick={(e) => { e.stopPropagation(); navigate(`/templates/${encodeURIComponent(t.id)}/setup`); }} 
                     className="btn-primary text-xs px-3 py-1 h-8"
                   >
-                    {loadingId === t.id ? (
-                      <>
-                        <Loader2 className="mr-1 h-3 w-3 animate-spin" /> Working…
-                      </>
-                    ) : (
-                      <>
-                        <Play className="mr-1 h-3 w-3" /> Use template
-                      </>
-                    )}
+                    <Play className="mr-1 h-3 w-3" /> Use template
                   </Button>
                 </div>
               </div>
