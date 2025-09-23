@@ -57,21 +57,14 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
       {templates.map((t) => (
         <motion.div key={t.id} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
           <Card className="template-card bg-zinc-900/60 border-zinc-800 overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-            <div className="relative h-40 w-full bg-muted">
-              {t.hero ? (
-                <img src={t.hero} alt={t.title} className="h-full w-full object-cover" />
-              ) : (
-                <div className="h-full w-full grid place-items-center text-muted-foreground">No image</div>
-              )}
-              <div className="absolute left-2 top-2 flex gap-2">
+            <CardHeader className="pb-2">
+              <div className="flex gap-2 mb-2">
                 {t.badges?.map((b) => (
-                  <Badge key={b} variant="secondary" className="backdrop-blur chip">
+                  <Badge key={b} variant="secondary" className="chip">
                     {b}
                   </Badge>
                 ))}
               </div>
-            </div>
-            <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center justify-between gap-2 title">
                 <span>{t.title}</span>
                 <Badge variant="outline" className={`text-[10px] ${
