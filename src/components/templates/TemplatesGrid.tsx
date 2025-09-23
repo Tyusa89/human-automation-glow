@@ -84,31 +84,50 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
               </CardTitle>
               <p className="text-sm text-muted-foreground line-clamp-2">{t.tagline}</p>
             </CardHeader>
-            <CardContent className="flex items-center justify-between gap-3">
-              <Button 
-                size="sm" 
-                variant="outline" 
-                onClick={() => onPreview(t.id)}
-                className="text-white bg-blue-900 border-blue-800 hover:bg-blue-800 hover:border-blue-700 hover:text-white"
-              >
-                <Eye className="mr-1 h-4 w-4" /> Preview
-              </Button>
-              <Button 
-                size="sm" 
-                onClick={(e) => { e.stopPropagation(); handleUseTemplate(t.id); }} 
-                disabled={loadingId === t.id}
-                className="btn-primary"
-              >
-                {loadingId === t.id ? (
-                  <>
-                    <Loader2 className="mr-1 h-4 w-4 animate-spin" /> Working…
-                  </>
-                ) : (
-                  <>
-                    <Play className="mr-1 h-4 w-4" /> Use template
-                  </>
-                )}
-              </Button>
+            <CardContent className="space-y-3">
+              {/* Technology tags */}
+              {t.technologies && t.technologies.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {t.technologies.map((tech, i) => (
+                    <Badge key={i} variant="secondary" className="text-xs bg-blue-500/20 text-blue-300 border-blue-500/30">
+                      {tech}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              
+              {/* Setup time and buttons */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="text-xs text-muted-foreground">
+                  {t.setupTime && `Setup: ${t.setupTime}`}
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => onPreview(t.id)}
+                    className="text-xs px-3 py-1 h-8 text-white bg-blue-900 border-blue-800 hover:bg-blue-800 hover:border-blue-700 hover:text-white"
+                  >
+                    Preview
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={(e) => { e.stopPropagation(); handleUseTemplate(t.id); }} 
+                    disabled={loadingId === t.id}
+                    className="btn-primary text-xs px-3 py-1 h-8"
+                  >
+                    {loadingId === t.id ? (
+                      <>
+                        <Loader2 className="mr-1 h-3 w-3 animate-spin" /> Working…
+                      </>
+                    ) : (
+                      <>
+                        <Play className="mr-1 h-3 w-3" /> Use template
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
