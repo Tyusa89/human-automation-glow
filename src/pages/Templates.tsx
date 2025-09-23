@@ -320,16 +320,16 @@ export default function TemplatesPage() {
       }
 
       if (template.actions?.behavior === "scaffold" && template.actions.api) {
-        const res = await fetch(template.actions.api, {
+        const res = await fetch("/api/templates/use", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ templateId: template.templateId }),
+          body: JSON.stringify({ templateId: id }),
         });
         const data = await res.json();
         if (!res.ok || !data?.ok) {
-          throw new Error(data?.error || `Scaffold failed (${res.status})`);
+          throw new Error(data?.error || `Template usage failed (${res.status})`);
         }
-        setScaffoldMsg("Project scaffolded successfully. Redirecting…");
+        setScaffoldMsg("Project created successfully. Redirecting…");
         // optional: redirect if API returns a route
         if (data.next) window.location.href = data.next;
       }

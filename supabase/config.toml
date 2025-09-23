@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.scaffold]
 verify_jwt = false
+
+[functions.templates-use]
+verify_jwt = false
