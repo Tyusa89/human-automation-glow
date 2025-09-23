@@ -1,0 +1,30 @@
+/* VSCode-dark-ish theme for templates */
+.templates-theme .template-card {
+  /* VSCode-dark-ish blues */
+  @apply bg-[#0E1A2F] border-[#1A3763] text-[#E6ECFF];
+}
+.templates-theme .template-card h3,
+.templates-theme .template-card .title {
+  @apply text-[#EAF2FF];
+}
+.templates-theme .template-card .chip,
+.templates-theme .template-card .badge {
+  @apply bg-[#132544] text-[#CFE0FF] ring-1 ring-[#264A86];
+}
+.templates-theme .template-card .pill-easy     { @apply bg-emerald-500/20 text-emerald-300 ring-emerald-500/30; }
+.templates-theme .template-card .pill-inter    { @apply bg-amber-500/20 text-amber-300 ring-amber-500/30; }
+.templates-theme .template-card .pill-advanced { @apply bg-sky-500/20   text-sky-300   ring-sky-500/30; }
+
+.templates-theme .template-card .btn-primary {
+  @apply bg-[#2BB673] hover:bg-[#22a364] text-white;
+}
+
+/* PREVIEW MODAL */
+.templates-theme .template-modal {
+  @apply bg-[#0E1A2F] text-[#E6ECFF] border border-[#1A3763];
+}
+.templates-theme .template-modal .modal-title { @apply text-[#EAF2FF]; }
+.templates-theme .template-modal .dot { @apply text-[#2BB673]; }  /* bullet/circle accent */
+.templates-theme .template-modal .btn-primary {
+  @apply bg-[#2BB673] hover:bg-[#22a364] text-white;
+}
