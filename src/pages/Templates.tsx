@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import { Search, Filter, Sparkles, Eye, Play, CheckCircle2, X, Loader2 } from "lucide-react";
+import { Search, Filter, Sparkles, CheckCircle2, X, Play, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TemplatesGrid } from "@/components/templates/TemplatesGrid";
 import "../styles/templates.css";
 
 // ---- Types ---------------------------------------------------------------
@@ -258,13 +257,11 @@ export default function TemplatesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [templates, setTemplates] = useState<Template[]>(fallbackRegistry);
-  const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string>("All");
 
   const [preview, setPreview] = useState<Template | null>(null);
-  const [scaffolding, setScaffolding] = useState(false);
   const [scaffoldMsg, setScaffoldMsg] = useState<string | null>(null);
 
   // Fetch from API (parity with VSCode data source)
@@ -304,16 +301,14 @@ export default function TemplatesPage() {
     });
   }, [templates, q, cat]);
 
-  const handleUseTemplate = async (id: string) => {
-    setLoadingId(id);
-    setScaffoldMsg(null);
+  const handleModalUseTemplate = async (templateId: string) => {
+    setScaffoldMsg("");
     
-    const template = templates.find(t => t.templateId === id);
+    const template = templates.find(t => t.templateId === templateId);
     if (!template) return;
     
     try {
       if (template.actions?.behavior === "wizard" && template.actions.path) {
-        // Navigate to setup with templateId
         const url = new URL(template.actions.path, window.location.origin);
         url.searchParams.set("templateId", template.templateId);
         window.location.href = url.toString();
@@ -324,22 +319,20 @@ export default function TemplatesPage() {
         const res = await fetch("/api/templates/use", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ templateId: id }),
+          body: JSON.stringify({ templateId }),
         });
         const data = await res.json();
         if (!res.ok || !data?.ok) {
           throw new Error(data?.error || `Template usage failed (${res.status})`);
         }
         setScaffoldMsg("Project created successfully. Redirecting…");
-        // optional: redirect if API returns a route
         if (data.next) window.location.href = data.next;
       }
     } catch (e: any) {
       setScaffoldMsg(e?.message || "Scaffold failed");
-    } finally {
-      setLoadingId(null);
     }
   };
+
 
   return (
     <div className="templates-theme">
@@ -403,67 +396,11 @@ export default function TemplatesPage() {
       )}
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((t) => (
-          <motion.div key={t.templateId} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
-            <Card className="template-card bg-zinc-900/60 border-zinc-800 overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-              <div className="relative h-40 w-full bg-muted">
-                {t.hero ? (
-                  <img src={t.hero} alt={t.name} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="h-full w-full grid place-items-center text-muted-foreground">No image</div>
-                )}
-                <div className="absolute left-2 top-2 flex gap-2">
-                  {t.badges?.map((b) => (
-                    <Badge key={b} variant="secondary" className="backdrop-blur">
-                      {b}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base flex items-center justify-between gap-2 title">
-                  <span>{t.name}</span>
-                  <Badge variant="outline" className={`text-[10px] ${
-                    t.difficulty === "Beginner" ? "pill-easy" : 
-                    t.difficulty === "Intermediate" ? "pill-inter" : 
-                    "pill-advanced"
-                  }`}>
-                    {t.difficulty || ""}
-                  </Badge>
-                </CardTitle>
-                <p className="text-sm text-muted-foreground line-clamp-2">{t.tagline}</p>
-              </CardHeader>
-              <CardContent className="flex items-center justify-between gap-3">
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  onClick={() => setPreview(t)}
-                  className="text-white bg-blue-900 border-blue-800 hover:bg-blue-800 hover:border-blue-700 hover:text-white"
-                >
-                  <Eye className="mr-1 h-4 w-4" /> Preview
-                </Button>
-                <Button 
-                  size="sm" 
-                  onClick={(e) => { e.stopPropagation(); handleUseTemplate(t.templateId); }} 
-                  disabled={loadingId === t.templateId}
-                  className="btn-primary"
-                >
-                  {loadingId === t.templateId ? (
-                    <>
-                      <Loader2 className="mr-1 h-4 w-4 animate-spin" /> Working…
-                    </>
-                  ) : (
-                    <>
-                      <Play className="mr-1 h-4 w-4" /> Use template
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </div>
+      <TemplatesGrid 
+        templates={filtered} 
+        onPreview={setPreview}
+        onScaffoldMessage={setScaffoldMsg}
+      />
 
       {scaffoldMsg && (
         <div className="flex items-center gap-2 text-sm">
@@ -500,7 +437,7 @@ export default function TemplatesPage() {
                 <X className="mr-1 h-4 w-4" /> Close
               </Button>
               {preview && (
-                <Button onClick={() => handleUseTemplate(preview.templateId)} className="btn-primary">
+                <Button onClick={() => handleModalUseTemplate(preview.templateId)} className="btn-primary">
                   <Play className="mr-1 h-4 w-4" /> Use this template
                 </Button>
               )}
