@@ -439,7 +439,7 @@ export default function TemplatesPage() {
                 </Button>
                 <Button 
                   size="sm" 
-                  onClick={() => handleUseTemplate(t.templateId)} 
+                  onClick={(e) => { e.stopPropagation(); handleUseTemplate(t.templateId); }} 
                   disabled={scaffolding}
                   className="text-white bg-blue-900 border-blue-800 hover:bg-blue-800 hover:border-blue-700 hover:text-white"
                 >
