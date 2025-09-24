@@ -109,6 +109,25 @@ export const registry: TemplateMeta[] = [
       { title: "Review", fields: [ { kind: "review" } ]},
     ],
   },
+  {
+    id: "inventory-manager",
+    name: "Inventory Manager",
+    type: "data-sync",
+    steps: [
+      { title: "Basics", fields: [
+        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Inventory" },
+        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
+      ]},
+      { title: "Inventory", fields: [
+        { kind: "checkboxes", key: "features", label: "Features", options: ["Stock tracking","Low stock alerts","Barcode scanning","Multi-location"], default: ["Stock tracking","Low stock alerts"] },
+        { kind: "select", key: "stockMethod", label: "Stock method", options: ["FIFO","LIFO","Average cost"], default: "FIFO" },
+      ]},
+      { title: "Integrations", fields: [
+        { kind: "checkboxes", key: "integrations", label: "Integrations", options: ["Shopify","WooCommerce","QuickBooks","Xero"], default: [] },
+      ]},
+      { title: "Review", fields: [{ kind: "review" }] },
+    ],
+  },
 ];
 
 export function getTemplateById(id: string): TemplateMeta | undefined {
