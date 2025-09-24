@@ -15,6 +15,58 @@ export type TemplateMeta = {
   steps: SetupStep[];    // 👈 per-template steps
 };
 
+// --- Analytics Dashboard ---
+const analyticsDashboard: TemplateMeta = {
+  id: "analytics-dashboard",
+  name: "Analytics Dashboard",
+  type: "analytics",
+  steps: [
+    { title: "Basics", fields: [
+      { kind: "text",   key: "projectName", label: "Project name", default: "EcoNest Analytics" },
+      { kind: "select", key: "environment", label: "Environment",
+        options: ["Development","Staging","Production"], default: "Development" },
+    ]},
+    { title: "Data Source", fields: [
+      { kind: "select", key: "database", label: "Database",
+        options: ["Postgres (Supabase)","MySQL","SQLite"], default: "Postgres (Supabase)" },
+      { kind: "checkboxes", key: "charts", label: "Charts",
+        options: ["KPI Cards","Line","Bar","Pie"], default: ["KPI Cards","Line"] },
+    ]},
+    { title: "Auth", fields: [
+      { kind: "checkboxes", key: "authProviders", label: "Providers",
+        options: ["Email+Password","Magic link","SMS"], default: ["Email+Password"] },
+    ]},
+    { title: "Review", fields: [ { kind: "review" } ]},
+  ],
+};
+
+// --- Inventory Manager ---
+const inventoryManager: TemplateMeta = {
+  id: "inventory-manager",
+  name: "Inventory Manager",
+  type: "data-sync",
+  steps: [
+    { title: "Basics", fields: [
+      { kind: "text",   key: "projectName", label: "Project name", default: "EcoNest Inventory" },
+      { kind: "select", key: "environment", label: "Environment",
+        options: ["Development","Staging","Production"], default: "Development" },
+    ]},
+    { title: "Storage", fields: [
+      { kind: "select", key: "db", label: "Database",
+        options: ["Postgres/Supabase","MySQL"], default: "Postgres/Supabase" },
+      { kind: "checkboxes", key: "tables", label: "Include tables",
+        options: ["products","locations","stock_levels","transactions"], default: ["products","stock_levels"] },
+    ]},
+    { title: "Alerts", fields: [
+      { kind: "select", key: "notifyVia", label: "Notification channel",
+        options: ["Email","Slack","Both"], default: "Email" },
+      { kind: "select", key: "reorderRule", label: "Reorder rule",
+        options: ["Below threshold","7-day forecast"], default: "Below threshold" },
+    ]},
+    { title: "Review", fields: [ { kind: "review" } ]},
+  ],
+};
+
 export const registry: TemplateMeta[] = [
   {
     id: "email-campaign-builder",
@@ -34,25 +86,7 @@ export const registry: TemplateMeta[] = [
       { title: "Review", fields: [{ kind: "review" }] },
     ],
   },
-  {
-    id: "analytics-dashboard",
-    name: "Analytics Dashboard",
-    type: "analytics",
-    steps: [
-      { title: "Basics", fields: [
-        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Project" },
-        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
-      ]},
-      { title: "Data source", fields: [
-        { kind: "select", key: "db", label: "Database", options: ["Postgres","MySQL","SQLite"], default: "Postgres" },
-        { kind: "checkboxes", key: "charts", label: "Charts", options: ["Line","Bar","Pie"] , default: ["Line"] },
-      ]},
-      { title: "Auth", fields: [
-        { kind: "checkboxes", key: "auth", label: "Providers", options: ["Email","Magic link","SMS"], default: ["Email"] },
-      ]},
-      { title: "Review", fields: [ { kind: "review" } ]},
-    ],
-  },
+  analyticsDashboard,
   {
     id: "data-sync-tool",
     name: "Data Sync Tool",
@@ -109,25 +143,7 @@ export const registry: TemplateMeta[] = [
       { title: "Review", fields: [ { kind: "review" } ]},
     ],
   },
-  {
-    id: "inventory-manager",
-    name: "Inventory Manager",
-    type: "data-sync",
-    steps: [
-      { title: "Basics", fields: [
-        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Inventory" },
-        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
-      ]},
-      { title: "Inventory", fields: [
-        { kind: "checkboxes", key: "features", label: "Features", options: ["Stock tracking","Low stock alerts","Barcode scanning","Multi-location"], default: ["Stock tracking","Low stock alerts"] },
-        { kind: "select", key: "stockMethod", label: "Stock method", options: ["FIFO","LIFO","Average cost"], default: "FIFO" },
-      ]},
-      { title: "Integrations", fields: [
-        { kind: "checkboxes", key: "integrations", label: "Integrations", options: ["Shopify","WooCommerce","QuickBooks","Xero"], default: [] },
-      ]},
-      { title: "Review", fields: [{ kind: "review" }] },
-    ],
-  },
+  inventoryManager,
 ];
 
 export function getTemplateById(id: string): TemplateMeta | undefined {
