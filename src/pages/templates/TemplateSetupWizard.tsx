@@ -72,6 +72,8 @@ export default function TemplateSetupWizard() {
         nav("/demo/email-campaign-builder");
       } else if (tpl.id === "inventory-manager") {
         nav("/demo/inventory-manager");
+      } else if (tpl.id === "analytics-dashboard") {
+        nav("/demo/analytics-dashboard");
       } else {
         // For other templates, show success message
         nav("/templates");
