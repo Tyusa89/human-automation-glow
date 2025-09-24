@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 import { Template } from '@/lib/templates';
+import { normalizeId } from '@/lib/utils/ids';
 
 export type Difficulty = "Easy" | "Medium" | "Advanced";
 
@@ -71,7 +72,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
               asChild
               className="bg-indigo-600 hover:bg-indigo-500 text-white"
             >
-              <Link to={`/templates/${template.id}/setup`}>
+              <Link to={`/templates/${encodeURIComponent(template.id ? normalizeId(template.id) : normalizeId(template.name))}/setup`}>
                 Use template <ChevronRight className="ml-1.5 h-4 w-4" />
               </Link>
             </Button>

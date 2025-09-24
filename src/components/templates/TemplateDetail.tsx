@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { getTemplateById } from '@/lib/templates';
+import { normalizeId } from '@/lib/utils/ids';
 
 export const TemplateDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,7 +15,8 @@ export const TemplateDetail: React.FC = () => {
 
   const handleUseTemplate = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/templates/${template?.id}/setup`);
+    const id = template?.id ? normalizeId(template.id) : template?.name ? normalizeId(template.name) : '';
+    navigate(`/templates/${encodeURIComponent(id)}/setup`);
   };
 
   if (!template) {
