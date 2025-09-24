@@ -68,6 +68,8 @@ export default function TemplateSetupWizard() {
         nav("/demo/zapier-intercom");
       } else if (tpl.id === "social-media-scheduler") {
         nav("/demo/social-media-scheduler");
+      } else if (tpl.id === "email-campaign-builder") {
+        nav("/demo/email-campaign-builder");
       } else {
         // For other templates, show success message
         nav("/templates");

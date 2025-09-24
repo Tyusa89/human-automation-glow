@@ -29,6 +29,7 @@ import { TemplateDetail } from '@/components/templates/TemplateDetail';
 import TemplateSetupWizard from '@/pages/templates/TemplateSetupWizard';
 import ZapierIntercomIntegration from '@/pages/templates/ZapierIntercomIntegration';
 import SocialMediaScheduler from '@/pages/templates/SocialMediaScheduler';
+import EmailCampaignBuilder from '@/pages/templates/EmailCampaignBuilder';
 import CustomerServiceWidget from '@/components/CustomerServiceWidget';
 
 const queryClient = new QueryClient();
@@ -55,6 +56,7 @@ const App = () => {
                 <Route path="/templates/:templateId/setup" element={<TemplateSetupWizard />} />
                 <Route path="/demo/zapier-intercom" element={<ZapierIntercomIntegration />} />
                 <Route path="/demo/social-media-scheduler" element={<SocialMediaScheduler />} />
+                <Route path="/demo/email-campaign-builder" element={<EmailCampaignBuilder />} />
                 <Route path="/templates/:slug" element={<TemplateDetail />} />
                 <Route path="/integrations" element={<IntegrationsPage />} />
                 <Route path="/docs" element={<DocsPage />} />
