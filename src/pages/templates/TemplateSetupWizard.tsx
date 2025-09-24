@@ -35,7 +35,51 @@ export default function TemplateSetupWizard() {
   }
 
   const [step, setStep] = useState(0);
+  const [formState, setFormState] = useState<Record<string, any>>(() => {
+    // Initialize form state with defaults
+    const initialState: Record<string, any> = {};
+    tpl.steps.forEach(step => {
+      step.fields.forEach(field => {
+        if (field.kind !== "review" && field.default !== undefined) {
+          initialState[field.key] = field.default;
+        }
+      });
+    });
+    return initialState;
+  });
+  const [isGenerating, setIsGenerating] = useState(false);
+
   const current = tpl.steps[step];
+
+  const updateFormValue = (key: string, value: any) => {
+    setFormState(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    try {
+      const response = await fetch("/api/templates/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ templateId: tpl.id, ...formState }),
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Project generated:", result);
+        // Handle success - maybe navigate to the generated project or show success message
+      } else {
+        console.error("Generation failed:", await response.text());
+      }
+    } catch (error) {
+      console.error("Error generating project:", error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const isLastStep = step === tpl.steps.length - 1;
+  const isReviewStep = current.fields.some(f => f.kind === "review");
 
   return (
     <div className="min-h-screen bg-[#0B1220] text-white">
@@ -53,21 +97,33 @@ export default function TemplateSetupWizard() {
             {current.fields.map((field, i) => (
               <div key={i} className="text-zinc-300">
                 {field.kind === "review" ? (
-                  <div>Review your configuration...</div>
+                  <div className="space-y-4">
+                    <div className="text-lg font-semibold mb-4">Review your configuration:</div>
+                    {Object.entries(formState).map(([key, value]) => (
+                      <div key={key} className="flex justify-between py-2 border-b border-zinc-700">
+                        <span className="font-medium">{key}:</span>
+                        <span className="text-zinc-400">
+                          {Array.isArray(value) ? value.join(", ") : String(value)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   <div>
-                    <label className="block mb-2">{field.label}</label>
+                    <label className="block mb-2 font-medium">{field.label}</label>
                     {field.kind === "text" && (
                       <input 
                         type="text" 
-                        defaultValue={field.default}
-                        className="w-full p-2 bg-zinc-800 rounded border border-zinc-600"
+                        value={formState[field.key] || ""}
+                        onChange={(e) => updateFormValue(field.key, e.target.value)}
+                        className="w-full p-3 bg-zinc-800 rounded border border-zinc-600 text-white focus:border-blue-500 focus:outline-none"
                       />
                     )}
                     {field.kind === "select" && (
                       <select 
-                        defaultValue={field.default}
-                        className="w-full p-2 bg-zinc-800 rounded border border-zinc-600"
+                        value={formState[field.key] || ""}
+                        onChange={(e) => updateFormValue(field.key, e.target.value)}
+                        className="w-full p-3 bg-zinc-800 rounded border border-zinc-600 text-white focus:border-blue-500 focus:outline-none"
                       >
                         {field.options.map(opt => (
                           <option key={opt} value={opt}>{opt}</option>
@@ -77,13 +133,20 @@ export default function TemplateSetupWizard() {
                     {field.kind === "checkboxes" && (
                       <div className="space-y-2">
                         {field.options.map(opt => (
-                          <label key={opt} className="flex items-center">
+                          <label key={opt} className="flex items-center cursor-pointer">
                             <input 
                               type="checkbox" 
-                              defaultChecked={field.default?.includes(opt)}
-                              className="mr-2"
+                              checked={(formState[field.key] || []).includes(opt)}
+                              onChange={(e) => {
+                                const current = formState[field.key] || [];
+                                const updated = e.target.checked 
+                                  ? [...current, opt]
+                                  : current.filter((item: string) => item !== opt);
+                                updateFormValue(field.key, updated);
+                              }}
+                              className="mr-3 w-4 h-4"
                             />
-                            {opt}
+                            <span>{opt}</span>
                           </label>
                         ))}
                       </div>
@@ -98,17 +161,28 @@ export default function TemplateSetupWizard() {
             <button 
               onClick={() => setStep(Math.max(0, step - 1))}
               disabled={step === 0}
-              className="px-4 py-2 bg-zinc-700 rounded disabled:opacity-50"
+              className="px-6 py-3 bg-zinc-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-600 transition-colors"
             >
               Previous
             </button>
-            <button 
-              onClick={() => setStep(Math.min(tpl.steps.length - 1, step + 1))}
-              disabled={step === tpl.steps.length - 1}
-              className="px-4 py-2 bg-blue-600 rounded disabled:opacity-50"
-            >
-              {step === tpl.steps.length - 1 ? "Complete" : "Next"}
-            </button>
+            
+            {isLastStep && isReviewStep ? (
+              <button 
+                onClick={handleGenerate}
+                disabled={isGenerating}
+                className="px-6 py-3 bg-green-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-500 transition-colors"
+              >
+                {isGenerating ? "Generating..." : "Generate Project"}
+              </button>
+            ) : (
+              <button 
+                onClick={() => setStep(Math.min(tpl.steps.length - 1, step + 1))}
+                disabled={step === tpl.steps.length - 1}
+                className="px-6 py-3 bg-blue-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-500 transition-colors"
+              >
+                Next
+              </button>
+            )}
           </div>
         </div>
       </div>
