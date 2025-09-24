@@ -1,10 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { registry } from "@/lib/registry";
+import { normalizeId } from "@/lib/utils/ids";
 
 export default function TemplateSetupWizard() {
-  const { templateId } = useParams();
+  const { templateId: raw } = useParams();
   const navigate = useNavigate();
+  const templateId = normalizeId(raw || "");
 
   const tpl = useMemo(
     () => registry.find(r => r.id === templateId),
@@ -12,7 +14,23 @@ export default function TemplateSetupWizard() {
   );
 
   // Guard if bad id
-  if (!tpl) return <div className="p-6 text-red-300">Unknown template: {templateId}</div>;
+  if (!tpl) {
+    return (
+      <div className="min-h-screen bg-[#0B1220] text-white flex items-center justify-center">
+        <div className="p-6 text-red-300 text-center">
+          <div className="text-xl font-semibold mb-2">Unknown template: {raw}</div>
+          <div className="mt-4">
+            <button 
+              className="rounded-lg border border-white/10 px-3 py-2 hover:bg-white/5 transition-colors"
+              onClick={() => navigate("/templates")}
+            >
+              Back to Templates
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Build initial form state from step defaults (per template)
   const initial = useMemo(() => {
