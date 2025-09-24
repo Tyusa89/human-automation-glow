@@ -64,7 +64,7 @@ export default function TemplateSetupWizard() {
       console.log("Project generated:", { templateId: tpl.id, ...formState });
       
       // Redirect based on template
-      if (tpl.id === "integration") {
+      if (tpl.id === "integration" || tpl.id === "zapier-intercom-integration") {
         nav("/demo/zapier-intercom");
       } else {
         // For other templates, show success message

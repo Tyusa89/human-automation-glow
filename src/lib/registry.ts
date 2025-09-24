@@ -125,6 +125,25 @@ export const registry: TemplateMeta[] = [
     ],
   },
   {
+    id: "zapier-intercom-integration",
+    name: "Zapier × Intercom Integration",
+    type: "integration",
+    steps: [
+      { title: "Basics", fields: [
+        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Project" },
+        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
+        { kind: "select", key: "variantId", label: "Template variant", options: ["Zapier × Intercom","Slack × Zendesk","Shopify × Klaviyo"], default: "Zapier × Intercom" },
+      ]},
+      { title: "Integrations", fields: [
+        { kind: "checkboxes", key: "integrations", label: "Integrations", options: ["Zapier","Intercom","Zendesk","Slack"] },
+      ]},
+      { title: "Channels", fields: [
+        { kind: "checkboxes", key: "channels", label: "Channels", options: ["Web","Email","Slack"], default: ["Web"] },
+      ]},
+      { title: "Review", fields: [ { kind: "review" } ]},
+    ],
+  },
+  {
     id: "integration",
     name: "Integration",
     type: "integration",
