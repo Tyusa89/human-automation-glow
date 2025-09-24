@@ -23,14 +23,14 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
           <Card className="template-card bg-zinc-900/60 border-zinc-800 overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
             <CardHeader className="pb-2">
               <div className="flex gap-2 mb-2">
-                {t.badges?.map((b) => (
-                  <Badge key={b} variant="secondary" className="chip">
+                {t.badges?.map((b, index) => (
+                  <Badge key={`${t.id}-${b}-${index}`} variant="secondary" className="chip">
                     {b}
                   </Badge>
                 ))}
               </div>
-              <CardTitle className="text-base flex items-center justify-between gap-2 title">
-                <span>{t.title}</span>
+              <CardTitle className="text-base flex items-center justify-between gap-2 title text-foreground">
+                <span className="text-foreground">{t.title}</span>
                 <Badge variant="outline" className={`text-[10px] ${
                   t.difficulty === "Beginner" ? "pill-easy" : 
                   t.difficulty === "Intermediate" ? "pill-inter" : 
