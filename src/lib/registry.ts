@@ -69,6 +69,28 @@ const inventoryManager: TemplateMeta = {
 
 export const registry: TemplateMeta[] = [
   {
+    id: "social-media-scheduler",
+    name: "Social Media Scheduler",
+    type: "marketing",
+    steps: [
+      { title: "Basics", fields: [
+        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Project" },
+        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
+        { kind: "select", key: "accounts", label: "Accounts", options: ["X / Twitter","Instagram","Facebook","LinkedIn"], default: "X / Twitter" },
+        { kind: "select", key: "defaultTimezone", label: "Default timezone", options: ["UTC","EST","PST","GMT"], default: "UTC" },
+        { kind: "text", key: "postingWindowStart", label: "Posting window start (HH:MM)", default: "09:00" },
+        { kind: "text", key: "postingWindowEnd", label: "Posting window end (HH:MM)", default: "18:00" },
+      ]},
+      { title: "Integrations", fields: [
+        { kind: "checkboxes", key: "integrations", label: "Integrations", options: ["Twitter/X","Instagram/Facebook","LinkedIn","Scheduler (cron)"], default: ["Twitter/X"] },
+      ]},
+      { title: "Channels", fields: [
+        { kind: "checkboxes", key: "channels", label: "Channels", options: ["Web","Email","Slack"], default: ["Web"] },
+      ]},
+      { title: "Review", fields: [{ kind: "review" }] },
+    ],
+  },
+  {
     id: "email-campaign-builder",
     name: "Email Campaign Builder",
     type: "campaigns",

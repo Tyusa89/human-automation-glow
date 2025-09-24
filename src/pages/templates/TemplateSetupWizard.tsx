@@ -66,6 +66,8 @@ export default function TemplateSetupWizard() {
       // Redirect based on template
       if (tpl.id === "integration" || tpl.id === "zapier-intercom-integration") {
         nav("/demo/zapier-intercom");
+      } else if (tpl.id === "social-media-scheduler") {
+        nav("/demo/social-media-scheduler");
       } else {
         // For other templates, show success message
         nav("/templates");
