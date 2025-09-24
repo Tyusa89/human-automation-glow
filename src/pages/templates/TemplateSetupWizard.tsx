@@ -70,6 +70,8 @@ export default function TemplateSetupWizard() {
         nav("/demo/social-media-scheduler");
       } else if (tpl.id === "email-campaign-builder") {
         nav("/demo/email-campaign-builder");
+      } else if (tpl.id === "inventory-manager") {
+        nav("/demo/inventory-manager");
       } else {
         // For other templates, show success message
         nav("/templates");
