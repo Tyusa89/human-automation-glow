@@ -32,6 +32,7 @@ import SocialMediaScheduler from '@/pages/templates/SocialMediaScheduler';
 import EmailCampaignBuilder from '@/pages/templates/EmailCampaignBuilder';
 import InventoryManager from '@/pages/templates/InventoryManager';
 import DataSyncTool from '@/pages/templates/DataSyncTool';
+import ReportGenerator from '@/pages/templates/ReportGenerator';
 import AnalyticsDashboard from '@/pages/templates/AnalyticsDashboard';
 import CustomerServiceWidget from '@/components/CustomerServiceWidget';
 
@@ -62,6 +63,7 @@ const App = () => {
                 <Route path="/demo/email-campaign-builder" element={<EmailCampaignBuilder />} />
             <Route path="/demo/inventory-manager" element={<InventoryManager />} />
             <Route path="/demo/data-sync-tool" element={<DataSyncTool />} />
+            <Route path="/demo/report-generator" element={<ReportGenerator />} />
                 <Route path="/demo/analytics-dashboard" element={<AnalyticsDashboard />} />
                 <Route path="/templates/:slug" element={<TemplateDetail />} />
                 <Route path="/integrations" element={<IntegrationsPage />} />

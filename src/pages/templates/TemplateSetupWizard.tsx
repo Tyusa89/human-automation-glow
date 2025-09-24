@@ -76,6 +76,8 @@ export default function TemplateSetupWizard() {
         nav("/demo/analytics-dashboard");
       } else if (tpl.id === "data-sync-tool") {
         nav("/demo/data-sync-tool");
+      } else if (tpl.id === "report-generator") {
+        nav("/demo/report-generator");
       } else {
         // For other templates, show success message
         nav("/templates");
