@@ -29,8 +29,8 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
                   </Badge>
                 ))}
               </div>
-              <CardTitle className="text-base flex items-center justify-between gap-2 title text-foreground">
-                <span className="text-foreground">{t.title}</span>
+              <CardTitle className="text-lg font-semibold flex items-center justify-between gap-2 text-white mb-1">
+                <span className="text-white">{t.title}</span>
                 <Badge variant="outline" className={`text-[10px] ${
                   t.difficulty === "Beginner" ? "pill-easy" : 
                   t.difficulty === "Intermediate" ? "pill-inter" : 

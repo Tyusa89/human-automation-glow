@@ -4,8 +4,9 @@
   @apply bg-[#0E1A2F] border-[#1A3763] text-[#E6ECFF];
 }
 .templates-theme .template-card h3,
-.templates-theme .template-card .title {
-  @apply text-[#EAF2FF];
+.templates-theme .template-card .title,
+.templates-theme .template-card .card-title {
+  @apply text-white font-semibold !important;
 }
 .templates-theme .template-card .chip,
 .templates-theme .template-card .badge {
