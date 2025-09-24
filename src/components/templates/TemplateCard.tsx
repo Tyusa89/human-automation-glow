@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,8 +20,21 @@ const diffTone = {
 } as const;
 
 export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
+  const navigate = useNavigate();
   const bullets = template.features?.slice(0, 3) || [template.description];
   const chips = template.features?.slice(3) || [];
+
+  const templateId = (template.id && template.id.length > 0) ? template.id : normalizeId(template.name);
+
+  const openSetup = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/templates/${encodeURIComponent(templateId)}/setup`);
+  };
+
+  const openPreview = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/templates/${encodeURIComponent(templateId)}/preview`);
+  };
   
   return (
     <Card className="bg-zinc-900/60 border-zinc-800 hover:border-indigo-500/40 transition-all duration-300 rounded-2xl shadow-lg">
@@ -69,12 +82,18 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
 
           <div className="flex items-center gap-2">
             <Button
-              asChild
+              variant="outline"
+              size="sm"
+              onClick={openPreview}
+              className="text-zinc-300 border-zinc-700 hover:bg-zinc-800"
+            >
+              Preview
+            </Button>
+            <Button
+              onClick={openSetup}
               className="bg-indigo-600 hover:bg-indigo-500 text-white"
             >
-              <Link to={`/templates/${encodeURIComponent(template.id ? normalizeId(template.id) : normalizeId(template.name))}/setup`}>
-                Use template <ChevronRight className="ml-1.5 h-4 w-4" />
-              </Link>
+              Use template <ChevronRight className="ml-1.5 h-4 w-4" />
             </Button>
           </div>
         </div>
