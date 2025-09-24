@@ -11,32 +11,27 @@ export type SetupStep = { title: string; fields: StepField[] };
 export type TemplateMeta = {
   id: string;            // route id (e.g., "analytics-dashboard")
   name: string;
-  type: "analytics" | "data-sync" | "report" | "integration" | "marketing";
+  type: "analytics" | "data-sync" | "report" | "integration" | "marketing" | "campaigns";
   steps: SetupStep[];    // 👈 per-template steps
 };
 
 export const registry: TemplateMeta[] = [
   {
-    id: normalizeId("Email Campaign Builder"), // "email-campaign-builder"
+    id: "email-campaign-builder",
     name: "Email Campaign Builder",
-    type: "marketing",
+    type: "campaigns",
     steps: [
       { title: "Basics", fields: [
-        { kind: "text", key: "projectName", label: "Project name", default: "Email Campaign Builder" },
+        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Campaigns" },
         { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
       ]},
-      { title: "Campaign", fields: [
-        { kind: "select", key: "campaignType", label: "Campaign Type", options: ["Newsletter","Promotional","Welcome Series","Drip Campaign"], default: "Newsletter" },
-        { kind: "select", key: "template", label: "Email Template", options: ["Modern","Classic","Minimal","Bold"], default: "Modern" },
-      ]},
       { title: "Audience", fields: [
-        { kind: "checkboxes", key: "segmentation", label: "Audience Segments", options: ["New Subscribers","Active Users","Inactive Users","VIP Customers"], default: ["New Subscribers"] },
-        { kind: "select", key: "frequency", label: "Send Frequency", options: ["Daily","Weekly","Bi-weekly","Monthly"], default: "Weekly" },
+        { kind: "select", key: "audienceSource", label: "Audience source", options: ["CSV Upload","Supabase Table","HubSpot List"], default: "Supabase Table" },
       ]},
-      { title: "Integration", fields: [
-        { kind: "checkboxes", key: "providers", label: "Email Providers", options: ["Mailchimp","SendGrid","Klaviyo","ConvertKit"], default: ["SendGrid"] },
+      { title: "Composer", fields: [
+        { kind: "checkboxes", key: "features", label: "Features", options: ["AI subject lines","A/B test","Track opens","Track clicks"], default: ["Track opens","Track clicks"] },
       ]},
-      { title: "Review", fields: [ { kind: "review" } ]},
+      { title: "Review", fields: [{ kind: "review" }] },
     ],
   },
   {
