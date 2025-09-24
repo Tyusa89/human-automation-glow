@@ -58,18 +58,17 @@ export default function TemplateSetupWizard() {
   const handleGenerate = async () => {
     setIsGenerating(true);
     try {
-      const response = await fetch("/api/templates/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ templateId: tpl.id, ...formState }),
-      });
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Project generated:", result);
-        // Handle success - maybe navigate to the generated project or show success message
+      console.log("Project generated:", { templateId: tpl.id, ...formState });
+      
+      // Redirect based on template
+      if (tpl.id === "integration") {
+        nav("/demo/zapier-intercom");
       } else {
-        console.error("Generation failed:", await response.text());
+        // For other templates, show success message
+        nav("/templates");
       }
     } catch (error) {
       console.error("Error generating project:", error);

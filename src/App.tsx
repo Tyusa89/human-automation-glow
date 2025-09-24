@@ -27,6 +27,7 @@ import NotFound from '@/pages/NotFound';
 import ErrorBoundary from "./components/ErrorBoundary";
 import { TemplateDetail } from '@/components/templates/TemplateDetail';
 import TemplateSetupWizard from '@/pages/templates/TemplateSetupWizard';
+import ZapierIntercomIntegration from '@/pages/templates/ZapierIntercomIntegration';
 import CustomerServiceWidget from '@/components/CustomerServiceWidget';
 
 const queryClient = new QueryClient();
@@ -51,6 +52,7 @@ const App = () => {
                 <Route path="/solutions" element={<SolutionsPage />} />
                 <Route path="/templates" element={<TemplatesPage />} />
                 <Route path="/templates/:templateId/setup" element={<TemplateSetupWizard />} />
+                <Route path="/demo/zapier-intercom" element={<ZapierIntercomIntegration />} />
                 <Route path="/templates/:slug" element={<TemplateDetail />} />
                 <Route path="/integrations" element={<IntegrationsPage />} />
                 <Route path="/docs" element={<DocsPage />} />
