@@ -74,6 +74,8 @@ export default function TemplateSetupWizard() {
         nav("/demo/inventory-manager");
       } else if (tpl.id === "analytics-dashboard") {
         nav("/demo/analytics-dashboard");
+      } else if (tpl.id === "data-sync-tool") {
+        nav("/demo/data-sync-tool");
       } else {
         // For other templates, show success message
         nav("/templates");
