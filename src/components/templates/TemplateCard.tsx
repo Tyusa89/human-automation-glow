@@ -28,6 +28,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
 
   const openSetup = (e: React.MouseEvent) => {
     e.stopPropagation();
+    console.debug("Template button click", { id: template.id, name: template.name, computed: templateId });
     navigate(`/templates/${encodeURIComponent(templateId)}/setup`);
   };
 
