@@ -316,8 +316,8 @@ export default function TemplatesPage() {
           throw new Error("Malformed template payload");
         }
       } catch (e: any) {
-        setError(e?.message || "Unable to load templates");
-        // keep fallback registry
+        console.warn("Templates API unavailable, using fallback registry:", e?.message);
+        // Silently fall back to local registry - no need to show error to users
       } finally {
         if (alive) setLoading(false);
       }
@@ -401,11 +401,6 @@ export default function TemplatesPage() {
       {loading && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" /> Loading templates…
-        </div>
-      )}
-      {error && (
-        <div className="text-sm text-amber-600">
-          {error} — showing fallback registry
         </div>
       )}
 
