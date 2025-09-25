@@ -8,9 +8,14 @@
 .templates-theme .template-card .card-title {
   @apply text-white font-semibold !important;
 }
+.templates-theme .template-card p,
+.templates-theme .template-card .card-content,
+.templates-theme .template-card .description {
+  @apply text-[#E6ECFF] !important;
+}
 .templates-theme .template-card .chip,
 .templates-theme .template-card .badge {
-  @apply bg-[#132544] text-[#CFE0FF] ring-1 ring-[#264A86];
+  @apply bg-[#132544] text-[#CFE0FF] ring-1 ring-[#264A86] !important;
 }
 .templates-theme .template-card .pill-easy     { @apply bg-emerald-500/20 text-emerald-300 ring-emerald-500/30; }
 .templates-theme .template-card .pill-inter    { @apply bg-amber-500/20 text-amber-300 ring-amber-500/30; }
