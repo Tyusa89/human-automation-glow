@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
-import { Template } from '@/lib/templates';
+import { Template } from '@/pages/Templates';
 import { normalizeId } from '@/lib/utils/ids';
 
 export type Difficulty = "Easy" | "Medium" | "Advanced";
@@ -21,14 +21,14 @@ const diffTone = {
 
 export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
   const navigate = useNavigate();
-  const bullets = template.features?.slice(0, 3) || [template.description];
-  const chips = template.features?.slice(3) || [];
+  const bullets = template.bullets?.slice(0, 3) || [template.description || ''];
+  const chips = template.technologies?.slice(0, 3) || [];
 
-  const templateId = (template.id && template.id.length > 0) ? template.id : normalizeId(template.name);
+  const templateId = (template.id && template.id.length > 0) ? template.id : normalizeId(template.title);
 
   const openSetup = (e: React.MouseEvent) => {
     e.stopPropagation();
-    console.debug("Template button click", { id: template.id, name: template.name, computed: templateId });
+    console.debug("Template button click", { id: template.id, title: template.title, computed: templateId });
     navigate(`/templates/${encodeURIComponent(templateId)}/setup`);
   };
 
@@ -50,7 +50,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
 
         {/* Title */}
         <h3 className="mt-4 text-2xl font-semibold tracking-tight text-white">
-          {template.name}
+          {template.title}
         </h3>
 
         {/* Bullets */}

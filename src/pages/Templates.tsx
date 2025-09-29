@@ -277,6 +277,10 @@ function classNames(...xs: Array<string | false | null | undefined>) {
   return xs.filter(Boolean).join(" ");
 }
 
+export function getTemplateById(id: string): Template | undefined {
+  return fallbackRegistry.find(template => template.id === id);
+}
+
 const categories: Array<Template["category"]> = [
   "Bots",
   "Dashboards",
