@@ -20,6 +20,7 @@ import ServicesPage from '@/pages/Services';
 import PricingPage from '@/pages/Pricing';
 import DocsPage from '@/pages/Docs';
 import TrustPage from '@/pages/Trust';
+import HelpPage from '@/pages/Help';
 import ContactPage from '@/pages/ContactPage';
 import CreateProfile from '@/pages/CreateProfile';
 import SetupPage from '@/pages/Setup';
@@ -68,6 +69,7 @@ const App = () => {
                 <Route path="/templates/:slug" element={<TemplateDetail />} />
                 <Route path="/integrations" element={<IntegrationsPage />} />
                 <Route path="/docs" element={<DocsPage />} />
+                <Route path="/help" element={<HelpPage />} />
                 <Route path="/trust" element={<TrustPage />} />
                 <Route path="/services" element={<ServicesPage />} />
                 <Route path="/pricing" element={<PricingPage />} />

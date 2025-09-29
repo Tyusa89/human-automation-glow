@@ -41,6 +41,7 @@ export default function AppHeader() {
         <Link to="/" className="hover:text-primary transition-colors text-foreground">Home</Link>
         <Link to="/services" className="hover:text-primary transition-colors text-foreground">Services</Link>
         <Link to="/pricing" className="hover:text-primary transition-colors text-foreground">Pricing</Link>
+        <Link to="/help" className="hover:text-primary transition-colors text-foreground">Help</Link>
         <Link to="/contact" className="hover:text-primary transition-colors text-foreground">Contact</Link>
         
         {authed && (

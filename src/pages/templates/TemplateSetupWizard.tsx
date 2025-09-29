@@ -107,9 +107,7 @@ export default function TemplateSetupWizard() {
             <h1 className="mt-1 text-4xl font-extrabold">Template Setup</h1>
           </div>
           <a 
-            href="https://docs.lovable.dev/user-guides/quickstart"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/help"
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white font-medium transition-colors"
           >
             <BookOpen size={16} />
