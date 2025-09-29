@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { registry } from "@/lib/registry";
 
 export default function TemplateSetupWizard() {
@@ -7,7 +7,27 @@ export default function TemplateSetupWizard() {
   const { templateId: raw } = useParams();
   const templateId = (raw ?? "").toLowerCase();
   
+  // Initialize hooks at the top to avoid conditional hook calls
+  const [step, setStep] = useState(0);
+  const [formState, setFormState] = useState<Record<string, any>>({});
+  const [isGenerating, setIsGenerating] = useState(false);
+  
   const tpl = registry.find(r => r.id === templateId);
+
+  // Initialize form state when template is found
+  useEffect(() => {
+    if (tpl?.steps) {
+      const initialState: Record<string, any> = {};
+      tpl.steps.forEach(step => {
+        step.fields.forEach(field => {
+          if (field.kind !== "review" && field.default !== undefined) {
+            initialState[field.key] = field.default;
+          }
+        });
+      });
+      setFormState(initialState);
+    }
+  }, [tpl]);
 
   if (!tpl) {
     // visible error instead of blank page
@@ -33,21 +53,6 @@ export default function TemplateSetupWizard() {
       </div>
     );
   }
-
-  const [step, setStep] = useState(0);
-  const [formState, setFormState] = useState<Record<string, any>>(() => {
-    // Initialize form state with defaults
-    const initialState: Record<string, any> = {};
-    tpl.steps.forEach(step => {
-      step.fields.forEach(field => {
-        if (field.kind !== "review" && field.default !== undefined) {
-          initialState[field.key] = field.default;
-        }
-      });
-    });
-    return initialState;
-  });
-  const [isGenerating, setIsGenerating] = useState(false);
 
   const current = tpl.steps[step];
 

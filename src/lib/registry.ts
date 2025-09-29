@@ -221,6 +221,115 @@ export const registry: TemplateMeta[] = [
       { title: "Review", fields: [ { kind: "review" } ]},
     ],
   },
+  {
+    id: "appointment-booker",
+    name: "Appointment Booker",
+    type: "data-sync",
+    steps: [
+      { title: "Basics", fields: [
+        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Appointments" },
+        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
+      ]},
+      { title: "Calendar", fields: [
+        { kind: "select", key: "calendar", label: "Calendar Integration", options: ["Google Calendar","Outlook","CalDAV"], default: "Google Calendar" },
+        { kind: "select", key: "timezone", label: "Default Timezone", options: ["UTC","EST","PST","CST"], default: "UTC" },
+      ]},
+      { title: "Notifications", fields: [
+        { kind: "checkboxes", key: "notifications", label: "Notification Methods", options: ["Email Reminders","SMS Alerts","Push Notifications"], default: ["Email Reminders"] },
+      ]},
+      { title: "Review", fields: [ { kind: "review" } ]},
+    ],
+  },
+  {
+    id: "customer-support-widget",
+    name: "Customer Support Widget",
+    type: "data-sync",
+    steps: [
+      { title: "Basics", fields: [
+        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Support" },
+        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
+      ]},
+      { title: "Configuration", fields: [
+        { kind: "checkboxes", key: "features", label: "Features", options: ["AI Chat","Ticket Management","Live Chat","FAQ Search"], default: ["AI Chat","FAQ Search"] },
+      ]},
+      { title: "Review", fields: [ { kind: "review" } ]},
+    ],
+  },
+  {
+    id: "lead-qualification-bot",
+    name: "Lead Qualification Bot",
+    type: "data-sync",
+    steps: [
+      { title: "Basics", fields: [
+        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Leads" },
+        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
+      ]},
+      { title: "Scoring", fields: [
+        { kind: "checkboxes", key: "criteria", label: "Qualification Criteria", options: ["Budget","Authority","Need","Timeline","Company Size"], default: ["Budget","Need","Timeline"] },
+      ]},
+      { title: "Review", fields: [ { kind: "review" } ]},
+    ],
+  },
+  {
+    id: "customer-support-bot",
+    name: "Customer Support Bot",
+    type: "data-sync",
+    steps: [
+      { title: "Basics", fields: [
+        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Support Bot" },
+        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
+      ]},
+      { title: "Knowledge Base", fields: [
+        { kind: "select", key: "knowledgeSource", label: "Knowledge Source", options: ["Manual FAQ","Notion","Google Docs"], default: "Manual FAQ" },
+      ]},
+      { title: "Review", fields: [ { kind: "review" } ]},
+    ],
+  },
+  {
+    id: "agent-support-bot",
+    name: "Agent + Support Bot",
+    type: "data-sync",
+    steps: [
+      { title: "Basics", fields: [
+        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Agent Bot" },
+        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
+      ]},
+      { title: "Features", fields: [
+        { kind: "checkboxes", key: "features", label: "Features", options: ["Memory","Tool Integration","Human Escalation","Transcript Logging"], default: ["Memory","Human Escalation","Transcript Logging"] },
+      ]},
+      { title: "Review", fields: [ { kind: "review" } ]},
+    ],
+  },
+  {
+    id: "bio-lead-qualifier",
+    name: "Flow + Lead Qualifier",
+    type: "data-sync",
+    steps: [
+      { title: "Basics", fields: [
+        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Lead Qualifier" },
+        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
+      ]},
+      { title: "CRM", fields: [
+        { kind: "select", key: "crm", label: "CRM Integration", options: ["HubSpot","Salesforce","Pipedrive"], default: "HubSpot" },
+      ]},
+      { title: "Review", fields: [ { kind: "review" } ]},
+    ],
+  },
+  {
+    id: "data-doc-sync",
+    name: "Data + Docs Sync",
+    type: "data-sync",
+    steps: [
+      { title: "Basics", fields: [
+        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Docs Sync" },
+        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
+      ]},
+      { title: "Sources", fields: [
+        { kind: "checkboxes", key: "sources", label: "Data Sources", options: ["GitHub","GitLab","Notion","Google Docs"], default: ["GitHub","Notion"] },
+      ]},
+      { title: "Review", fields: [ { kind: "review" } ]},
+    ],
+  },
 ];
 
 export function getTemplateById(id: string): TemplateMeta | undefined {
