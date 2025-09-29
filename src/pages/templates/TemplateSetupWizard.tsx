@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { registry } from "@/lib/registry";
+import { ExternalLink, BookOpen } from "lucide-react";
 
 export default function TemplateSetupWizard() {
   const nav = useNavigate();
@@ -100,8 +101,22 @@ export default function TemplateSetupWizard() {
   return (
     <div className="min-h-screen bg-[#0B1220] text-white">
       <div className="mx-auto max-w-5xl px-6 py-10">
-        <div className="text-xs text-zinc-400">TEMPLATE • {tpl.name}</div>
-        <h1 className="mt-1 text-4xl font-extrabold">Template Setup</h1>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <div className="text-xs text-zinc-400">TEMPLATE • {tpl.name}</div>
+            <h1 className="mt-1 text-4xl font-extrabold">Template Setup</h1>
+          </div>
+          <a 
+            href={`https://docs.lovable.dev/templates/${tpl.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white font-medium transition-colors"
+          >
+            <BookOpen size={16} />
+            Learn More
+            <ExternalLink size={14} />
+          </a>
+        </div>
         
         <div className="mt-8">
           <div className="text-sm text-zinc-400 mb-2">
