@@ -185,6 +185,24 @@ export const registry: TemplateMeta[] = [
     ],
   },
   inventoryManager,
+  {
+    id: "workflow-automation",
+    name: "Workflow Automation",
+    type: "data-sync",
+    steps: [
+      { title: "Basics", fields: [
+        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Workflows" },
+        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
+      ]},
+      { title: "Triggers", fields: [
+        { kind: "checkboxes", key: "triggers", label: "Trigger types", options: ["Webhook","Schedule","Database Change","Email"], default: ["Webhook"] },
+      ]},
+      { title: "Actions", fields: [
+        { kind: "checkboxes", key: "actions", label: "Available actions", options: ["Send Email","Update Database","Call API","Create Task"], default: ["Send Email","Update Database"] },
+      ]},
+      { title: "Review", fields: [ { kind: "review" } ]},
+    ],
+  },
 ];
 
 export function getTemplateById(id: string): TemplateMeta | undefined {
