@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
-import { Template } from '@/pages/Templates';
+import { Template } from '@/lib/templates';
 import { normalizeId } from '@/lib/utils/ids';
 
 export type Difficulty = "Easy" | "Medium" | "Advanced";

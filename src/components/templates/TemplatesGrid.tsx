@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Template } from "@/pages/Templates";
+import { Template } from '@/lib/templates';
 
 interface TemplatesGridProps {
   templates: Template[];

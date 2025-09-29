@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Modal from "./Modal";
-import { TEMPLATES, Template } from "@/lib/templates";
+import { fallbackRegistry, Template } from "@/lib/templates";
 
 export default function TemplatePreview() {
   const [active, setActive] = useState<Template | null>(null);
@@ -16,12 +16,12 @@ export default function TemplatePreview() {
   };
 
   const diffTone = (d: Template["difficulty"]) =>
-    d === "Easy" ? "green" : d === "Medium" ? "yellow" : "red";
+    d === "Beginner" ? "green" : d === "Intermediate" ? "yellow" : "red";
 
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {TEMPLATES.map((t) => (
+        {fallbackRegistry.map((t) => (
           <div
             key={t.id}
             className="rounded-2xl border bg-white p-5 shadow hover:shadow-lg transition"
@@ -31,13 +31,13 @@ export default function TemplatePreview() {
               {badge(t.difficulty, diffTone(t.difficulty))}
             </div>
 
-            <h3 className="text-lg font-semibold">{t.name}</h3>
+            <h3 className="text-lg font-semibold">{t.title}</h3>
             <p className="mt-1 text-sm text-gray-600">{t.description}</p>
 
             <ul className="mt-3 list-disc pl-5 text-sm text-gray-700">
-              {t.features.map((f, i) => (
+              {t.bullets?.map((f, i) => (
                 <li key={i}>{f}</li>
-              ))}
+              )) || []}
             </ul>
 
             <div className="mt-5">
@@ -53,7 +53,7 @@ export default function TemplatePreview() {
       </div>
 
       {/* Modal Preview */}
-      <Modal open={!!active} onClose={() => setActive(null)} title={active?.name}>
+      <Modal open={!!active} onClose={() => setActive(null)} title={active?.title}>
         {active && (
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -64,9 +64,9 @@ export default function TemplatePreview() {
             <div>
               <h4 className="font-medium">What's included</h4>
               <ul className="mt-2 list-disc pl-5 text-gray-700">
-                {active.features.map((f, i) => (
+                {active.bullets?.map((f, i) => (
                   <li key={i}>{f}</li>
-                ))}
+                )) || []}
               </ul>
             </div>
 

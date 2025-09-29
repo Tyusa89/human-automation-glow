@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { getTemplateById, Template } from '@/pages/Templates';
+import { getTemplateById, Template } from '@/lib/templates';
 import { normalizeId } from '@/lib/utils/ids';
 
 export const TemplateDetail: React.FC = () => {
