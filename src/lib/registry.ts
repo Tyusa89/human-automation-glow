@@ -203,6 +203,24 @@ export const registry: TemplateMeta[] = [
       { title: "Review", fields: [ { kind: "review" } ]},
     ],
   },
+  {
+    id: "expense-tracker",
+    name: "Expense Tracker",
+    type: "data-sync",
+    steps: [
+      { title: "Basics", fields: [
+        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Expenses" },
+        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
+      ]},
+      { title: "Features", fields: [
+        { kind: "checkboxes", key: "features", label: "Features", options: ["Receipt Scanning","Expense Categories","Monthly Reports","Mileage Tracking"], default: ["Receipt Scanning","Expense Categories"] },
+      ]},
+      { title: "Integrations", fields: [
+        { kind: "checkboxes", key: "integrations", label: "Integrations", options: ["QuickBooks","Xero","Google Drive","Dropbox"], default: ["Google Drive"] },
+      ]},
+      { title: "Review", fields: [ { kind: "review" } ]},
+    ],
+  },
 ];
 
 export function getTemplateById(id: string): TemplateMeta | undefined {
