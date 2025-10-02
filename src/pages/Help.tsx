@@ -111,62 +111,432 @@ export default function Help() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BookOpen className="w-5 h-5" />
-                  Template Setup Guide
+                  Template Setup Guides
                 </CardTitle>
                 <CardDescription>
-                  Learn how to configure and customize EcoNest AI templates
+                  Comprehensive step-by-step guides for setting up each EcoNest AI template
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid gap-6">
-                  <div className="border rounded-lg p-4">
-                    <h3 className="text-lg font-semibold mb-3">Analytics Dashboard Template</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Create comprehensive analytics dashboards with real-time data visualization and reporting capabilities.
-                    </p>
-                    <div className="space-y-2">
-                      <h4 className="font-medium">Setup Steps:</h4>
-                      <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                        <li>Configure data sources and connections</li>
-                        <li>Select visualization types and metrics</li>
-                        <li>Set up automated reporting schedules</li>
-                        <li>Customize dashboard layout and branding</li>
-                      </ul>
-                    </div>
-                  </div>
+              <CardContent>
+                <Accordion type="single" collapsible className="w-full">
+                  {/* Analytics Dashboard Template */}
+                  <AccordionItem value="analytics">
+                    <AccordionTrigger className="text-lg font-semibold">
+                      Analytics Dashboard Template
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-4">
+                      <div className="space-y-6">
+                        <div>
+                          <h4 className="font-semibold mb-2">Who it's for</h4>
+                          <p className="text-muted-foreground">Teams that need real-time KPIs, reports, and shareable dashboards without building chart plumbing from scratch.</p>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold mb-2">Time to complete</h4>
+                            <p className="text-muted-foreground">10–15 minutes (first run)</p>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold mb-2">What you'll build</h4>
+                            <p className="text-muted-foreground">A live dashboard with at least three visualizations, a date filter, and an auto-refresh interval.</p>
+                          </div>
+                        </div>
 
-                  <div className="border rounded-lg p-4">
-                    <h3 className="text-lg font-semibold mb-3">Data Sync Tool Template</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Automate data synchronization between multiple systems and platforms.
-                    </p>
-                    <div className="space-y-2">
-                      <h4 className="font-medium">Setup Steps:</h4>
-                      <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                        <li>Select source and destination systems</li>
-                        <li>Configure data mapping and transformations</li>
-                        <li>Set synchronization frequency</li>
-                        <li>Test and validate data flow</li>
-                      </ul>
-                    </div>
-                  </div>
+                        <div>
+                          <h4 className="font-semibold mb-2">Prerequisites</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li>Data source credentials (PostgreSQL/MySQL/Supabase, CSV, or API)</li>
+                            <li>API key(s) for any services you intend to visualize</li>
+                            <li>An EcoNest project with an environment selected (Dev/Prod)</li>
+                          </ul>
+                        </div>
 
-                  <div className="border rounded-lg p-4">
-                    <h3 className="text-lg font-semibold mb-3">Workflow Automation Template</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Build automated workflows to streamline business processes and improve efficiency.
-                    </p>
-                    <div className="space-y-2">
-                      <h4 className="font-medium">Setup Steps:</h4>
-                      <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                        <li>Define workflow triggers and conditions</li>
-                        <li>Configure automated actions and responses</li>
-                        <li>Set up notifications and alerts</li>
-                        <li>Test workflow execution and performance</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
+                        <div>
+                          <h4 className="font-semibold mb-2">Setup Steps</h4>
+                          <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+                            <li><strong>Connect a data source:</strong> Settings → Integrations → Add Source. Choose DB/API/CSV. Test connection.</li>
+                            <li><strong>Define metrics:</strong> Templates → Analytics Dashboard → Metrics. Add metrics (e.g., active_users, mrr, orders_today).</li>
+                            <li><strong>Create visualizations:</strong> Select chart type for each metric (line, area, bar, pie, stat). Give each a title and y-axis unit.</li>
+                            <li><strong>Add filters:</strong> Enable global filters (date range, product, region). Pick defaults.</li>
+                            <li><strong>Schedule reports (optional):</strong> Enable a report schedule (daily/weekly) to email a PDF or link.</li>
+                            <li><strong>Branding:</strong> Add logo, theme color, and choose layout (1–3 columns).</li>
+                            <li><strong>Save & preview:</strong> Use Preview to verify data loads within 3–5s. Adjust refresh interval.</li>
+                          </ol>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Sample Configuration</h4>
+                          <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
+{`{
+  "datasource": "supabase",
+  "refreshSeconds": 60,
+  "filters": [
+    {"id": "date", "type": "daterange", "default": "last_30_days"},
+    {"id": "region", "type": "select", "options": ["NA","EU","APAC"]}
+  ],
+  "widgets": [
+    {"type": "stat", "title": "Active Users", "metric": "active_users"},
+    {"type": "line", "title": "MRR", "metric": "mrr", "yUnit": "$"},
+    {"type": "bar", "title": "Orders by Day", "metric": "orders_daily"}
+  ]
+}`}
+                          </pre>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">API Endpoints</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li><code className="bg-muted px-2 py-1 rounded">GET /api/analytics/widgets</code> – list widgets</li>
+                            <li><code className="bg-muted px-2 py-1 rounded">POST /api/analytics/query</code> – run metric query</li>
+                            <li><code className="bg-muted px-2 py-1 rounded">POST /api/analytics/schedule</code> – create a report schedule</li>
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Common Errors & Fixes</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li><strong>Charts blank:</strong> Check metric query returns fields the widget expects (timestamp, value).</li>
+                            <li><strong>Slow loads:</strong> Add a date filter & reduce default window; add DB index on created_at.</li>
+                            <li><strong>Unauthorized:</strong> Verify project environment keys on server are set.</li>
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Troubleshooting</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li>Use Preview → Network to confirm API calls return 200 in &lt;2s.</li>
+                            <li>Toggle Mock data to test layout before live credentials.</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Data Sync Tool Template */}
+                  <AccordionItem value="data-sync">
+                    <AccordionTrigger className="text-lg font-semibold">
+                      Data Sync Tool Template
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-4">
+                      <div className="space-y-6">
+                        <div>
+                          <h4 className="font-semibold mb-2">Who it's for</h4>
+                          <p className="text-muted-foreground">Ops teams moving data between apps/DBs on a schedule with mapping/transformations.</p>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold mb-2">Time to complete</h4>
+                            <p className="text-muted-foreground">8–12 minutes</p>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold mb-2">What you'll build</h4>
+                            <p className="text-muted-foreground">A scheduled sync with mapping, optional transforms, and alerting on failures.</p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Prerequisites</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li>Source & destination credentials (e.g., HubSpot → Postgres, Shopify → BigQuery)</li>
+                            <li>Clear mapping of source fields → destination fields</li>
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Setup Steps</h4>
+                          <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+                            <li><strong>Choose connectors:</strong> Select Source and Destination. Authenticate both.</li>
+                            <li><strong>Pick objects/tables:</strong> e.g., contacts → crm_contacts.</li>
+                            <li><strong>Field mapping:</strong> Map source→destination. Enable auto-create for new columns (optional).</li>
+                            <li><strong>Transformations (optional):</strong> Add transforms (trim strings, parse dates, currency to cents, etc.).</li>
+                            <li><strong>De-duplication & upsert:</strong> Choose unique key(s) (email, external_id). Pick insert only or upsert.</li>
+                            <li><strong>Schedule & alerts:</strong> Set frequency (5m/15m/hourly/daily). Add email/webhook alerts on error.</li>
+                            <li><strong>Test run & validate:</strong> Run a dry run (10 records). Review summary. Start the sync.</li>
+                          </ol>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Sample Mapping</h4>
+                          <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
+{`source: hubspot.contacts
+destination: postgres.public.crm_contacts
+unique_key: email
+mode: upsert
+transforms:
+  - field: phone
+    op: normalize_phone
+  - field: created_at
+    op: parse_date
+schedule: "*/15 * * * *"  # every 15 minutes`}
+                          </pre>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">API Endpoints</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li><code className="bg-muted px-2 py-1 rounded">POST /api/syncs</code> – create a sync job</li>
+                            <li><code className="bg-muted px-2 py-1 rounded">POST /api/syncs/:id/run</code> – trigger now</li>
+                            <li><code className="bg-muted px-2 py-1 rounded">GET /api/syncs/:id/logs</code> – fetch last runs</li>
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Common Errors & Fixes</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li><strong>404 instantiate:</strong> Ensure templateId = data-sync-tool and path /api/templates/:id/instantiate.</li>
+                            <li><strong>Mapping mismatch:</strong> Destination column missing; enable auto-create or add migration.</li>
+                            <li><strong>Rate limits:</strong> Reduce batch size; add backoff (e.g., 100ms).</li>
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Troubleshooting</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li>Compare counts: source_processed == destination_upserted + skipped.</li>
+                            <li>Enable verbose logs for first full run.</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Workflow Automation Template */}
+                  <AccordionItem value="workflow">
+                    <AccordionTrigger className="text-lg font-semibold">
+                      Workflow Automation Template
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-4">
+                      <div className="space-y-6">
+                        <div>
+                          <h4 className="font-semibold mb-2">Who it's for</h4>
+                          <p className="text-muted-foreground">Teams automating repetitive tasks with triggers/conditions and multi-step actions.</p>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold mb-2">Time to complete</h4>
+                            <p className="text-muted-foreground">7–10 minutes</p>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold mb-2">What you'll build</h4>
+                            <p className="text-muted-foreground">A trigger → condition → action pipeline with notifications.</p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Prerequisites</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li>Access tokens for any third-party actions (Slack, Email, Twilio, etc.)</li>
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Setup Steps</h4>
+                          <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+                            <li><strong>Define trigger:</strong> Choose event (webhook received, row inserted, API threshold crossed).</li>
+                            <li><strong>Add conditions:</strong> e.g., priority == "high" and region in ["NA","EU"].</li>
+                            <li><strong>Add actions:</strong> Send Slack/Email, call API, write to DB, enqueue task.</li>
+                            <li><strong>Retry & timeout:</strong> Configure exponential backoff and per-step timeout.</li>
+                            <li><strong>Notifications:</strong> On success/failure, send alert to channel.</li>
+                            <li><strong>Test:</strong> Fire a sample event; view execution log with step timings.</li>
+                          </ol>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Sample Flow</h4>
+                          <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
+{`{
+  "trigger": {"type": "webhook", "path": "/events/ticket"},
+  "conditions": [{"left": "payload.priority", "op": "==", "right": "high"}],
+  "actions": [
+    {"type": "slack.post", "channel": "#support", "text": "New high-priority ticket"},
+    {"type": "db.insert", "table": "tickets", "record": {"from": "payload"}}
+  ],
+  "notify": {"on": ["failed"], "email": "ops@company.com"}
+}`}
+                          </pre>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">API Endpoints</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li><code className="bg-muted px-2 py-1 rounded">POST /api/flows</code> – create/update a flow</li>
+                            <li><code className="bg-muted px-2 py-1 rounded">POST /api/flows/:id/test</code> – run with sample payload</li>
+                            <li><code className="bg-muted px-2 py-1 rounded">GET /api/flows/:id/runs</code> – execution history</li>
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Common Errors & Fixes</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li><strong>Action timeout:</strong> Increase per-step timeout; verify external API reachability.</li>
+                            <li><strong>Condition never matches:</strong> Log payload, verify paths (e.g., payload.priority).</li>
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Troubleshooting</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li>Enable step tracing to see where time is spent.</li>
+                            <li>Use sandbox mode to run actions against mocks before going live.</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Customer Support Widget */}
+                  <AccordionItem value="support-widget">
+                    <AccordionTrigger className="text-lg font-semibold">
+                      Customer Support Widget (Beta)
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-4">
+                      <div className="space-y-6">
+                        <div>
+                          <h4 className="font-semibold mb-2">Who it's for</h4>
+                          <p className="text-muted-foreground">Teams embedding a guided support widget on their site/app to deflect tickets and collect context before escalation.</p>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold mb-2">Time to complete</h4>
+                            <p className="text-muted-foreground">6–9 minutes</p>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold mb-2">What you'll build</h4>
+                            <p className="text-muted-foreground">An embeddable widget with branded UI, suggested prompts, KB search, and human-handoff.</p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Prerequisites</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li>Site/app where you can paste a script tag</li>
+                            <li>Optional: Knowledge base URL(s) or FAQ CSV</li>
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Setup Steps</h4>
+                          <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+                            <li><strong>Branding & prompts:</strong> Choose color, logo, and 3–5 starter prompts.</li>
+                            <li><strong>Knowledge sources:</strong> Add URLs/CSV for articles; enable crawling or upload.</li>
+                            <li><strong>Escalation:</strong> Choose handoff: email form, Zendesk, or Slack channel.</li>
+                            <li><strong>Behavior:</strong> Set default open/closed, position, and language.</li>
+                            <li><strong>Install:</strong> Paste the generated &lt;script&gt; before &lt;/body&gt; or install via NPM.</li>
+                            <li><strong>Test:</strong> Use preview, verify search, and trigger escalation.</li>
+                          </ol>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Embed Snippet</h4>
+                          <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
+{`<script 
+  src="https://cdn.econest.ai/widget.js" 
+  data-project="YOUR_PROJECT_ID" 
+  data-theme="navy">
+</script>`}
+                          </pre>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">API Endpoints</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li><code className="bg-muted px-2 py-1 rounded">POST /api/widget/session</code> – start session</li>
+                            <li><code className="bg-muted px-2 py-1 rounded">POST /api/widget/search</code> – query KB</li>
+                            <li><code className="bg-muted px-2 py-1 rounded">POST /api/widget/handoff</code> – escalate</li>
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Common Errors & Fixes</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li><strong>Widget not loading:</strong> Script blocked; check CSP or ad-blocker. Ensure data-project is correct.</li>
+                            <li><strong>KB empty:</strong> Add at least one source or enable mock content.</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Lead Qualification Bot */}
+                  <AccordionItem value="lead-bot">
+                    <AccordionTrigger className="text-lg font-semibold">
+                      Lead Qualification Bot
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-4">
+                      <div className="space-y-6">
+                        <div>
+                          <h4 className="font-semibold mb-2">Who it's for</h4>
+                          <p className="text-muted-foreground">Sales/marketing teams qualifying inbound leads 24/7 and routing high-intent prospects.</p>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold mb-2">Time to complete</h4>
+                            <p className="text-muted-foreground">9–12 minutes</p>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold mb-2">What you'll build</h4>
+                            <p className="text-muted-foreground">A conversational bot that captures contact info, scores leads, and routes hot leads.</p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Prerequisites</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li>Destination for qualified leads (CRM table/API)</li>
+                            <li>Your qualification criteria (budget, need, timeline, authority)</li>
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Setup Steps</h4>
+                          <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+                            <li><strong>Conversation script:</strong> Start from the BANT template; edit tone and questions.</li>
+                            <li><strong>Scoring:</strong> Assign points per answer; set a threshold for "qualified".</li>
+                            <li><strong>Data capture:</strong> Map name, email, company, use case → CRM fields.</li>
+                            <li><strong>Routing:</strong> Choose action for qualified: create CRM record + Slack alert; unqualified: send nurture email.</li>
+                            <li><strong>Embed or share:</strong> Use hosted link or embed on landing page.</li>
+                            <li><strong>Test:</strong> Run 3 sample conversations; confirm records created and scores correct.</li>
+                          </ol>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Sample Scoring</h4>
+                          <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
+{`{
+  "threshold": 70,
+  "rules": [
+    {"field": "budget", "values": {"$gte": 1000}, "score": 25},
+    {"field": "timeline", "values": ["now","this_quarter"], "score": 20},
+    {"field": "authority", "values": ["decision_maker"], "score": 25}
+  ]
+}`}
+                          </pre>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">API Endpoints</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li><code className="bg-muted px-2 py-1 rounded">POST /api/leads/score</code> – calculate score</li>
+                            <li><code className="bg-muted px-2 py-1 rounded">POST /api/leads/submit</code> – persist & route</li>
+                            <li><code className="bg-muted px-2 py-1 rounded">GET /api/leads/:id</code> – status</li>
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Common Errors & Fixes</h4>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li><strong>Unknown templateId:</strong> Ensure templateId exactly matches lead-qualification-bot when instantiating.</li>
+                            <li><strong>Missing consent:</strong> Add consent checkbox to form step if required by region.</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </CardContent>
             </Card>
           </TabsContent>
