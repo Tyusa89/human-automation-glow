@@ -39,34 +39,41 @@ export const SiteHeader: React.FC = () => {
           </Link>
         </div>
 
-        {/* Mobile Menu */}
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild className="md:hidden">
-            <Button variant="ghost" size="icon">
-              <Menu className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-[300px]">
-            <nav className="flex flex-col gap-4 mt-8">
-              <Link to="/product" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Product</Link>
-              <Link to="/solutions" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Solutions</Link>
-              <Link to="/templates" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Templates</Link>
-              <Link to="/integrations" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Integrations</Link>
-              <Link to="/pricing" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Pricing</Link>
-              <Link to="/docs" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Docs</Link>
-              <Link to="/trust" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Security</Link>
-              <Link to="/contact" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Contact</Link>
-              <div className="flex flex-col gap-2 mt-4 pt-4 border-t">
-                <Link to="/auth" onClick={() => setOpen(false)}>
-                  <Button variant="ghost" className="w-full">Sign in</Button>
-                </Link>
-                <Link to="/create-profile" onClick={() => setOpen(false)}>
-                  <Button variant="default" className="w-full">Start free</Button>
-                </Link>
-              </div>
-            </nav>
-          </SheetContent>
-        </Sheet>
+        {/* Mobile: Menu button and Start free */}
+        <div className="flex md:hidden items-center gap-2">
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px]">
+              <nav className="flex flex-col gap-4 mt-8">
+                <Link to="/product" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Product</Link>
+                <Link to="/solutions" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Solutions</Link>
+                <Link to="/templates" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Templates</Link>
+                <Link to="/integrations" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Integrations</Link>
+                <Link to="/pricing" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Pricing</Link>
+                <Link to="/docs" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Docs</Link>
+                <Link to="/trust" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Security</Link>
+                <Link to="/contact" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Contact</Link>
+                <div className="flex flex-col gap-2 mt-4 pt-4 border-t">
+                  <Link to="/auth" onClick={() => setOpen(false)}>
+                    <Button variant="ghost" className="w-full">Sign in</Button>
+                  </Link>
+                  <Link to="/create-profile" onClick={() => setOpen(false)}>
+                    <Button variant="default" className="w-full">Start free</Button>
+                  </Link>
+                </div>
+              </nav>
+            </SheetContent>
+          </Sheet>
+          
+          <Link to="/create-profile">
+            <Button variant="default" size="sm">Start free</Button>
+          </Link>
+        </div>
       </div>
     </header>
   );
