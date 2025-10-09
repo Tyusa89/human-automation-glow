@@ -8,3 +8,18 @@ verify_jwt = false
 
 [functions.templates-use]
 verify_jwt = false
+
+[functions.integration-connect]
+verify_jwt = true
+
+[functions.integration-callback]
+verify_jwt = false
+
+[functions.integration-disconnect]
+verify_jwt = true
+
+[functions.integration-sync]
+verify_jwt = true
+
+[functions.integration-test]
+verify_jwt = true
