@@ -25,6 +25,7 @@ import ContactPage from '@/pages/ContactPage';
 import CreateProfile from '@/pages/CreateProfile';
 import SetupPage from '@/pages/Setup';
 import PaymentTerms from '@/pages/PaymentTerms';
+import TermsAcceptance from '@/pages/TermsAcceptance';
 import NotFound from '@/pages/NotFound';
 import ErrorBoundary from "./components/ErrorBoundary";
 import { TemplateDetail } from '@/components/templates/TemplateDetail';
@@ -75,7 +76,8 @@ const App = () => {
                 <Route path="/services" element={<ServicesPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/contact" element={<ContactPage />} />
-                <Route path="/payment-terms" element={<PaymentTerms />} />
+          <Route path="/payment-terms" element={<PaymentTerms />} />
+          <Route path="/terms-acceptance" element={<TermsAcceptance />} />
                 <Route path="/setup" element={<SetupPage />} />
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/create-profile" element={<CreateProfile />} />

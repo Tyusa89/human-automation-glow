@@ -141,6 +141,10 @@ export default function AuthPage() {
         role: null,
         preferences: {}
       }).select().maybeSingle();
+      
+      // Redirect new users to terms acceptance
+      window.location.replace('/terms-acceptance');
+      return;
     }
     
     window.location.replace('/dashboard');
