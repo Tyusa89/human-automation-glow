@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Linkedin, Twitter, Instagram, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const socialLinks = [
@@ -69,10 +70,18 @@ const Footer = () => {
         
         {/* Divider */}
         <div className="mt-8 pt-8 border-t border-primary-foreground/20">
-          <div className="text-center">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-xs text-primary-foreground/60">
               Automation That Feels Human
             </p>
+            <div className="flex gap-4 text-xs">
+              <Link 
+                to="/payment-terms" 
+                className="text-primary-foreground/60 hover:text-primary-foreground transition-colors"
+              >
+                Payment Terms
+              </Link>
+            </div>
           </div>
         </div>
       </div>
