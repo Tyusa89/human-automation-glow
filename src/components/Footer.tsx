@@ -74,10 +74,10 @@ const Footer = () => {
             <p className="text-xs text-primary-foreground/60">
               Automation That Feels Human
             </p>
-            <div className="flex gap-4 text-xs">
+            <div className="flex gap-4 text-sm">
               <Link 
                 to="/payment-terms" 
-                className="text-primary-foreground/60 hover:text-primary-foreground transition-colors"
+                className="text-primary-foreground/80 hover:text-primary-foreground transition-colors underline underline-offset-4"
               >
                 Payment Terms
               </Link>
