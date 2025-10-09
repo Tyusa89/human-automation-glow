@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
+// Terms acceptance page with electronic signature
 export default function TermsAcceptance() {
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement>(null);
