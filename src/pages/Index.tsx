@@ -200,6 +200,7 @@ function Footer() {
               <li><Link to="/trust" className="hover:text-foreground">Trust</Link></li>
               <li><Link to="/docs" className="hover:text-foreground">Docs</Link></li>
               <li><Link to="/pricing" className="hover:text-foreground">Pricing</Link></li>
+              <li><Link to="/payment-terms" className="hover:text-foreground">Payment Terms</Link></li>
             </ul>
           </nav>
         </div>
