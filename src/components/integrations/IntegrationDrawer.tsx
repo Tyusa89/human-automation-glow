@@ -37,8 +37,8 @@ export function IntegrationDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-[500px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle className="text-2xl">{provider.name} Integration</SheetTitle>
-          <SheetDescription className="text-base pt-2">
+          <SheetTitle className="text-2xl text-foreground">{provider.name} Integration</SheetTitle>
+          <SheetDescription className="text-base pt-2 text-foreground/80">
             {provider.description}
           </SheetDescription>
         </SheetHeader>
@@ -46,10 +46,10 @@ export function IntegrationDrawer({
         <div className="space-y-6 py-6">
           {/* Key Features */}
           <div>
-            <h4 className="font-semibold mb-3">Key Features</h4>
+            <h4 className="font-semibold mb-3 text-foreground">Key Features</h4>
             <ul className="space-y-2">
               {provider.features.map((feature, idx) => (
-                <li key={idx} className="flex items-start gap-2 text-sm">
+                <li key={idx} className="flex items-start gap-2 text-sm text-foreground/90">
                   <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                   <span>{feature}</span>
                 </li>
@@ -59,8 +59,8 @@ export function IntegrationDrawer({
 
           {/* What We Sync */}
           <div>
-            <h4 className="font-semibold mb-3">What We Sync</h4>
-            <p className="text-sm text-muted-foreground mb-2">
+            <h4 className="font-semibold mb-3 text-foreground">What We Sync</h4>
+            <p className="text-sm text-foreground/80 mb-2">
               This integration syncs data bidirectionally to keep your systems in sync.
             </p>
             {provider.scopes && provider.scopes.length > 0 && (
@@ -77,7 +77,7 @@ export function IntegrationDrawer({
 
           {/* Data Flow */}
           <div>
-            <h4 className="font-semibold mb-3">Data Flow</h4>
+            <h4 className="font-semibold mb-3 text-foreground">Data Flow</h4>
             <div className="bg-muted rounded-lg p-4 text-sm">
               <div className="flex items-center gap-2 mb-2">
                 <div className="h-2 w-2 rounded-full bg-primary"></div>
@@ -93,7 +93,7 @@ export function IntegrationDrawer({
           {/* Connection Status */}
           {integration && (
             <div>
-              <h4 className="font-semibold mb-3">Connection Status</h4>
+              <h4 className="font-semibold mb-3 text-foreground">Connection Status</h4>
               <div className="bg-muted rounded-lg p-3">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm">Status</span>
@@ -117,8 +117,8 @@ export function IntegrationDrawer({
 
           {/* Troubleshooting */}
           <div>
-            <h4 className="font-semibold mb-3">Troubleshooting</h4>
-            <p className="text-sm text-muted-foreground mb-3">
+            <h4 className="font-semibold mb-3 text-foreground">Troubleshooting</h4>
+            <p className="text-sm text-foreground/80 mb-3">
               If you're experiencing issues, try testing the connection or reconnecting.
             </p>
             {isConnected && (
