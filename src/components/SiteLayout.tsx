@@ -4,6 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { brand } from "@/components/Brand";
+import ProductMegaMenu from "@/components/ProductMegaMenu";
+import SolutionsMegaMenu from "@/components/SolutionsMegaMenu";
+import TemplatesMegaMenu from "@/components/TemplatesMegaMenu";
+import IntegrationsMegaMenu from "@/components/IntegrationsMegaMenu";
 
 // Shared site header
 export const SiteHeader: React.FC = () => {
@@ -18,15 +22,14 @@ export const SiteHeader: React.FC = () => {
         </Link>
         
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6 text-sm">
-          <Link to="/product" className="hover:text-muted-foreground">Product</Link>
-          <Link to="/solutions" className="hover:text-muted-foreground">Solutions</Link>
-          <Link to="/templates" className="hover:text-muted-foreground">Templates</Link>
-          <Link to="/integrations" className="hover:text-muted-foreground">Integrations</Link>
-          <Link to="/pricing" className="hover:text-muted-foreground">Pricing</Link>
-          <Link to="/docs" className="hover:text-muted-foreground">Docs</Link>
-          <Link to="/trust" className="hover:text-muted-foreground">Security</Link>
-          <Link to="/contact" className="hover:text-muted-foreground">Contact</Link>
+        <nav className="hidden md:flex items-center gap-2 text-sm">
+          <ProductMegaMenu />
+          <SolutionsMegaMenu />
+          <TemplatesMegaMenu />
+          <IntegrationsMegaMenu />
+          <Link to="/pricing" className="hover:text-muted-foreground px-2">Pricing</Link>
+          <Link to="/docs" className="hover:text-muted-foreground px-2">Docs</Link>
+          <Link to="/trust" className="hover:text-muted-foreground px-2">Security</Link>
         </nav>
 
         {/* Desktop Auth Buttons */}
