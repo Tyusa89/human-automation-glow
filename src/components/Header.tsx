@@ -3,7 +3,10 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useRole, isAdminLike } from '@/hooks/useRole';
 import { Button } from '@/components/ui/button';
-import ServicesMegaMenu from './ServicesMegaMenu';
+import ProductMegaMenu from './ProductMegaMenu';
+import SolutionsMegaMenu from './SolutionsMegaMenu';
+import TemplatesMegaMenu from './TemplatesMegaMenu';
+import IntegrationsMegaMenu from './IntegrationsMegaMenu';
 
 export default function AppHeader() {
   const navigate = useNavigate();
@@ -38,12 +41,13 @@ export default function AppHeader() {
         EcoNest AI
       </Link>
       
-      <nav className="flex items-center gap-4">
-        <Link to="/" className="hover:text-primary transition-colors text-foreground">Home</Link>
-        <ServicesMegaMenu />
-        <Link to="/pricing" className="hover:text-primary transition-colors text-foreground">Pricing</Link>
-        <Link to="/help" className="hover:text-primary transition-colors text-foreground">Help</Link>
-        <Link to="/contact" className="hover:text-primary transition-colors text-foreground">Contact</Link>
+      <nav className="flex items-center gap-2">
+        <Link to="/" className="hover:text-primary transition-colors text-foreground px-2">Home</Link>
+        <ProductMegaMenu />
+        <SolutionsMegaMenu />
+        <TemplatesMegaMenu />
+        <IntegrationsMegaMenu />
+        <Link to="/pricing" className="hover:text-primary transition-colors text-foreground px-2">Pricing</Link>
         
         {authed && (
           <>
