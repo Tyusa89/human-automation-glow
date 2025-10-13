@@ -22,12 +22,12 @@ const Section: React.FC<{ id: string; title: string; eyebrow?: string; children:
 
 const Feature: React.FC<{ icon: React.ReactNode; title: string; copy: string; onGetQuote: () => void }>
   = ({ icon, title, copy, onGetQuote }) => (
-  <div className="flex gap-4 p-4 rounded-2xl border border-slate-200 bg-white shadow-sm">
-    <div className="shrink-0 p-2 rounded-xl bg-slate-50 border border-slate-200">{icon}</div>
+  <div className="flex gap-4 p-4 rounded-2xl border border-border/60 bg-card shadow-sm">
+    <div className="shrink-0 p-2 rounded-xl bg-muted border border-border">{icon}</div>
     <div className="flex-1">
-      <h3 className="font-semibold text-slate-900">{title}</h3>
-      <p className="text-slate-600 text-sm leading-relaxed mb-3">{copy}</p>
-      <Button size="sm" variant="default" className="text-white">
+      <h3 className="font-semibold text-foreground mb-1">{title}</h3>
+      <p className="text-muted-foreground text-sm leading-relaxed mb-3">{copy}</p>
+      <Button size="sm" onClick={onGetQuote} className="bg-primary hover:bg-primary/90">
         Get Requirements Form
       </Button>
     </div>
@@ -73,7 +73,7 @@ export default function ProductPage() {
 
       {activeForm && (
         <ProductForm 
-          productType={activeForm as any}
+          serviceType={activeForm as any}
           onClose={() => setActiveForm(null)}
         />
       )}
