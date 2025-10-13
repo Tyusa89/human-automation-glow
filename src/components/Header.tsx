@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useRole, isAdminLike } from '@/hooks/useRole';
 import { Button } from '@/components/ui/button';
+import ServicesMegaMenu from './ServicesMegaMenu';
 
 export default function AppHeader() {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ export default function AppHeader() {
       
       <nav className="flex items-center gap-4">
         <Link to="/" className="hover:text-primary transition-colors text-foreground">Home</Link>
-        <Link to="/services" className="hover:text-primary transition-colors text-foreground">Services</Link>
+        <ServicesMegaMenu />
         <Link to="/pricing" className="hover:text-primary transition-colors text-foreground">Pricing</Link>
         <Link to="/help" className="hover:text-primary transition-colors text-foreground">Help</Link>
         <Link to="/contact" className="hover:text-primary transition-colors text-foreground">Contact</Link>
