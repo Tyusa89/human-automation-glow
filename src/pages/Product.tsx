@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Bot, Workflow, Database, Shield, Check } from "lucide-react";
+import { Layout, PenTool, Share2, ShoppingBag, Mail, Bot, Palette, Code2, Megaphone, Sparkles, MessageSquare } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ProductForm } from "@/components/ProductForm";
@@ -41,47 +41,33 @@ export default function ProductPage() {
     setActiveForm(productType);
   };
 
+  const services = [
+    { icon: <Layout className="h-5 w-5" />, title: "Web Design", copy: "Modern, fast, conversion‑focused websites built for your business goals." },
+    { icon: <PenTool className="h-5 w-5" />, title: "Creative", copy: "Brand visuals, content creation, and advertising that captures attention." },
+    { icon: <Share2 className="h-5 w-5" />, title: "Social Media Marketing", copy: "Planning, UGC pipelines, and scheduling to grow your social presence." },
+    { icon: <ShoppingBag className="h-5 w-5" />, title: "eCommerce", copy: "Complete online stores, sales funnels, and product operations." },
+    { icon: <Mail className="h-5 w-5" />, title: "Email Marketing", copy: "Newsletters, drip sequences, and automated email campaigns." },
+    { icon: <Sparkles className="h-5 w-5" />, title: "AI Marketing", copy: "Personalized content generation and intelligent targeting strategies." },
+    { icon: <Palette className="h-5 w-5" />, title: "Branding", copy: "Brand identity development, voice guidelines, and visual systems." },
+    { icon: <Code2 className="h-5 w-5" />, title: "Web Development", copy: "Custom applications, integrations, and technical solutions." },
+    { icon: <Megaphone className="h-5 w-5" />, title: "Influencer Marketing", copy: "Creator partnerships, strategy development, and outreach campaigns." },
+    { icon: <Bot className="h-5 w-5" />, title: "AI Agents", copy: "Intelligent automation workflows powered by advanced AI technology." },
+    { icon: <MessageSquare className="h-5 w-5" />, title: "AI Chat bot", copy: "Website chat widgets for support, engagement, and lead capture." },
+  ];
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-16">
-      <Section id="product" title="Product" eyebrow="Overview">
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="space-y-4">
+      <Section id="product" title="Our Services" eyebrow="What We Offer">
+        <div className="grid md:grid-cols-2 gap-6">
+          {services.map((service) => (
             <Feature 
-              icon={<Workflow className="h-5 w-5" />} 
-              title="Visual Flow Designer" 
-              copy="Snap together triggers, actions, conditions, and approvals. Reusable subflows keep things tidy." 
-              onGetQuote={() => handleGetQuote("Visual Flow Designer")}
+              key={service.title}
+              icon={service.icon} 
+              title={service.title} 
+              copy={service.copy} 
+              onGetQuote={() => handleGetQuote(service.title)}
             />
-            <Feature 
-              icon={<Bot className="h-5 w-5" />} 
-              title="Agent Studio" 
-              copy="Define goals, tools, retrieval sources, and evaluation. Preview chats and measure resolution." 
-              onGetQuote={() => handleGetQuote("Agent Studio")}
-            />
-            <Feature 
-              icon={<Database className="h-5 w-5" />} 
-              title="Data Hub" 
-              copy="Connect Supabase/Postgres, Notion, Sheets, or files. Control access with RLS and roles." 
-              onGetQuote={() => handleGetQuote("Data Hub")}
-            />
-            <Feature 
-              icon={<Shield className="h-5 w-5" />} 
-              title="Governance" 
-              copy="Workspaces, roles, audit logs, redaction, prompt shields, rate limits, and keys vault." 
-              onGetQuote={() => handleGetQuote("Governance")}
-            />
-          </div>
-          <Card className="border-dashed">
-            <CardHeader>
-              <CardTitle>Micro‑tour</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-slate-600 space-y-3">
-              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Create a <b>Lead‑Qual Agent</b> from a template</div>
-              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Wire to <b>Sheets</b> and <b>HubSpot</b></div>
-              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Add <b>scoring logic</b> and <b>booking</b></div>
-              <div className="flex items-center gap-2"><Check className="h-4 w-4"/>Publish to <b>website widget</b> and track outcomes</div>
-            </CardContent>
-          </Card>
+          ))}
         </div>
       </Section>
 
