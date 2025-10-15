@@ -44,6 +44,33 @@ export type Database = {
         }
         Relationships: []
       }
+      events: {
+        Row: {
+          actor: string | null
+          created_at: string | null
+          id: number
+          org_id: string | null
+          payload: Json | null
+          type: string | null
+        }
+        Insert: {
+          actor?: string | null
+          created_at?: string | null
+          id?: number
+          org_id?: string | null
+          payload?: Json | null
+          type?: string | null
+        }
+        Update: {
+          actor?: string | null
+          created_at?: string | null
+          id?: number
+          org_id?: string | null
+          payload?: Json | null
+          type?: string | null
+        }
+        Relationships: []
+      }
       integration_configs: {
         Row: {
           config_key: string
@@ -158,7 +185,9 @@ export type Database = {
         Row: {
           company: string | null
           created_at: string
+          crm_deal_url: string | null
           email: string
+          enrichment: Json | null
           id: string
           name: string | null
           notes: string | null
@@ -169,7 +198,9 @@ export type Database = {
         Insert: {
           company?: string | null
           created_at?: string
+          crm_deal_url?: string | null
           email: string
+          enrichment?: Json | null
           id?: string
           name?: string | null
           notes?: string | null
@@ -180,7 +211,9 @@ export type Database = {
         Update: {
           company?: string | null
           created_at?: string
+          crm_deal_url?: string | null
           email?: string
+          enrichment?: Json | null
           id?: string
           name?: string | null
           notes?: string | null
@@ -259,6 +292,30 @@ export type Database = {
           lead_email?: string | null
           tags?: string[] | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      org_integrations: {
+        Row: {
+          enabled: boolean | null
+          n8n_callback_secret: string | null
+          n8n_webhook_url: string | null
+          org_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          enabled?: boolean | null
+          n8n_callback_secret?: string | null
+          n8n_webhook_url?: string | null
+          org_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          enabled?: boolean | null
+          n8n_callback_secret?: string | null
+          n8n_webhook_url?: string | null
+          org_id?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
