@@ -23,3 +23,6 @@ verify_jwt = true
 
 [functions.integration-test]
 verify_jwt = true
+
+[functions.customer-service-ai]
+verify_jwt = true

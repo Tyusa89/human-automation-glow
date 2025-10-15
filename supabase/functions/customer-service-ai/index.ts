@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -147,9 +148,92 @@ serve(async (req) => {
   }
 
   try {
+    // Initialize Supabase client with service role for rate limiting
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Get authenticated user from JWT
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'Missing authorization header' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
+
+    if (authError || !user) {
+      console.error('Authentication error:', authError);
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    console.log('Authenticated user:', user.id);
+
+    // Rate limiting: 10 requests per minute per user
+    const RATE_LIMIT = 10;
+    const WINDOW_MINUTES = 1;
+    const endpoint = 'customer-service-ai';
+    
+    // Calculate current window start (round down to the minute)
+    const now = new Date();
+    const windowStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 
+                                  now.getHours(), now.getMinutes(), 0, 0);
+
+    // Check and update rate limit
+    const { data: rateLimitData, error: rateLimitError } = await supabaseAdmin
+      .from('api_rate_limits')
+      .select('request_count')
+      .eq('user_id', user.id)
+      .eq('endpoint', endpoint)
+      .gte('window_start', windowStart.toISOString())
+      .maybeSingle();
+
+    if (rateLimitError && rateLimitError.code !== 'PGRST116') {
+      console.error('Rate limit check error:', rateLimitError);
+    }
+
+    if (rateLimitData && rateLimitData.request_count >= RATE_LIMIT) {
+      console.log('Rate limit exceeded for user:', user.id);
+      return new Response(JSON.stringify({ 
+        error: 'Rate limit exceeded. Please wait a moment before trying again.',
+        retryAfter: 60 
+      }), {
+        status: 429,
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json',
+          'Retry-After': '60'
+        },
+      });
+    }
+
+    // Update or insert rate limit record
+    if (rateLimitData) {
+      await supabaseAdmin
+        .from('api_rate_limits')
+        .update({ request_count: rateLimitData.request_count + 1 })
+        .eq('user_id', user.id)
+        .eq('endpoint', endpoint)
+        .gte('window_start', windowStart.toISOString());
+    } else {
+      await supabaseAdmin
+        .from('api_rate_limits')
+        .insert({
+          user_id: user.id,
+          endpoint: endpoint,
+          request_count: 1,
+          window_start: windowStart.toISOString()
+        });
+    }
+
     const { message, conversationHistory = [] } = await req.json();
-    console.log('Received customer service request:', { message, historyLength: conversationHistory.length });
-    console.log('Function deployment check - timestamp:', new Date().toISOString());
+    console.log('Received customer service request:', { userId: user.id, historyLength: conversationHistory.length });
 
     if (!message) {
       throw new Error('Message is required');
@@ -198,11 +282,11 @@ serve(async (req) => {
 
     const aiResponse = data.choices[0].message.content;
 
-    // Log the interaction for analytics
+    // Log the interaction for analytics (no PII)
     console.log('Customer service interaction:', {
-      userMessage: message,
-      aiResponse: aiResponse.substring(0, 100) + '...',
-      timestamp: new Date().toISOString()
+      userId: user.id,
+      timestamp: new Date().toISOString(),
+      responseLength: aiResponse.length
     });
 
     return new Response(JSON.stringify({ 
