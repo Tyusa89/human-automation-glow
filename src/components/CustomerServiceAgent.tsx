@@ -103,10 +103,66 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
       });
 
       if (error) {
+        // Handle specific error types
+        if (error.message.includes('401') || error.message.includes('Authentication required')) {
+          toast({
+            title: "Authentication Required",
+            description: "Please log in to use the customer service chat.",
+            variant: "destructive",
+          });
+          
+          const authErrorMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: 'I apologize, but you need to be logged in to use this service. Please sign in to continue our conversation.',
+            timestamp: new Date()
+          };
+          setTextMessages(prev => [...prev, authErrorMessage]);
+          setIsLoading(false);
+          return;
+        }
+        
+        if (error.message.includes('429') || error.message.includes('Rate limit')) {
+          toast({
+            title: "Rate Limit Reached",
+            description: "You've sent too many messages. Please wait a moment before trying again.",
+            variant: "destructive",
+          });
+          
+          const rateLimitMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: 'I apologize, but you\'ve reached the rate limit for messages. Please wait about a minute before sending another message.',
+            timestamp: new Date()
+          };
+          setTextMessages(prev => [...prev, rateLimitMessage]);
+          setIsLoading(false);
+          return;
+        }
+        
         throw error;
       }
 
       if (data.error) {
+        // Handle server-side errors with specific messages
+        if (data.error.includes('Rate limit')) {
+          toast({
+            title: "Rate Limit Reached",
+            description: data.retryAfter ? `Please wait ${data.retryAfter} seconds before trying again.` : "Please wait a moment before trying again.",
+            variant: "destructive",
+          });
+          
+          const rateLimitMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: `I apologize, but you've reached the rate limit. ${data.retryAfter ? `Please wait ${data.retryAfter} seconds before sending another message.` : 'Please wait about a minute before sending another message.'}`,
+            timestamp: new Date()
+          };
+          setTextMessages(prev => [...prev, rateLimitMessage]);
+          setIsLoading(false);
+          return;
+        }
+        
         throw new Error(data.error);
       }
 

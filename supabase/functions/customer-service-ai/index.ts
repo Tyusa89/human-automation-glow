@@ -1,11 +1,15 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Rate limiting configuration
+const RATE_LIMIT_WINDOW_MINUTES = 1; // 1 minute window
+const MAX_REQUESTS_PER_WINDOW = 10; // 10 requests per minute
 
 const SYSTEM_PROMPT = `You are EcoNest AI's expert customer service agent. You're knowledgeable, helpful, and can assist with all aspects of EcoNest's AI automation platform.
 
@@ -149,25 +153,31 @@ serve(async (req) => {
 
   try {
     // Initialize Supabase client with service role for rate limiting
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
-    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get authenticated user from JWT
-    const authHeader = req.headers.get('Authorization');
+    // Extract and verify authorization header
+    const authHeader = req.headers.get('authorization');
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Missing authorization header' }), {
+      console.error('No authorization header provided');
+      return new Response(JSON.stringify({ 
+        error: 'Authentication required. Please log in to use this service.' 
+      }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
+    // Verify user authentication
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
-
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
     if (authError || !user) {
-      console.error('Authentication error:', authError);
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      console.error('Authentication failed:', authError?.message);
+      return new Response(JSON.stringify({ 
+        error: 'Invalid or expired authentication token. Please log in again.' 
+      }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -175,75 +185,77 @@ serve(async (req) => {
 
     console.log('Authenticated user:', user.id);
 
-    // Rate limiting: 10 requests per minute per user
-    const RATE_LIMIT = 10;
-    const WINDOW_MINUTES = 1;
-    const endpoint = 'customer-service-ai';
-    
-    // Calculate current window start (round down to the minute)
+    // Check rate limiting
     const now = new Date();
-    const windowStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 
-                                  now.getHours(), now.getMinutes(), 0, 0);
-
-    // Check and update rate limit
-    const { data: rateLimitData, error: rateLimitError } = await supabaseAdmin
+    const windowStart = new Date(now.getTime() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000);
+    
+    // Check current request count in the window
+    const { data: rateLimitData, error: rateLimitError } = await supabase
       .from('api_rate_limits')
-      .select('request_count')
+      .select('request_count, window_start')
       .eq('user_id', user.id)
-      .eq('endpoint', endpoint)
+      .eq('endpoint', 'customer-service-ai')
       .gte('window_start', windowStart.toISOString())
       .maybeSingle();
 
-    if (rateLimitError && rateLimitError.code !== 'PGRST116') {
+    if (rateLimitError) {
       console.error('Rate limit check error:', rateLimitError);
     }
 
-    if (rateLimitData && rateLimitData.request_count >= RATE_LIMIT) {
+    if (rateLimitData && rateLimitData.request_count >= MAX_REQUESTS_PER_WINDOW) {
+      const resetTime = new Date(new Date(rateLimitData.window_start).getTime() + RATE_LIMIT_WINDOW_MINUTES * 60 * 1000);
+      const secondsUntilReset = Math.ceil((resetTime.getTime() - now.getTime()) / 1000);
+      
       console.log('Rate limit exceeded for user:', user.id);
       return new Response(JSON.stringify({ 
-        error: 'Rate limit exceeded. Please wait a moment before trying again.',
-        retryAfter: 60 
+        error: 'Rate limit exceeded. Please try again in a moment.',
+        retryAfter: secondsUntilReset,
+        limit: MAX_REQUESTS_PER_WINDOW,
+        window: `${RATE_LIMIT_WINDOW_MINUTES} minute(s)`
       }), {
         status: 429,
         headers: { 
           ...corsHeaders, 
           'Content-Type': 'application/json',
-          'Retry-After': '60'
+          'Retry-After': String(secondsUntilReset)
         },
       });
     }
 
-    // Update or insert rate limit record
+    // Update rate limit counter
     if (rateLimitData) {
-      await supabaseAdmin
+      await supabase
         .from('api_rate_limits')
-        .update({ request_count: rateLimitData.request_count + 1 })
+        .update({ 
+          request_count: rateLimitData.request_count + 1,
+          updated_at: now.toISOString()
+        })
         .eq('user_id', user.id)
-        .eq('endpoint', endpoint)
+        .eq('endpoint', 'customer-service-ai')
         .gte('window_start', windowStart.toISOString());
     } else {
-      await supabaseAdmin
+      await supabase
         .from('api_rate_limits')
-        .insert({
+        .insert({ 
           user_id: user.id,
-          endpoint: endpoint,
+          endpoint: 'customer-service-ai',
           request_count: 1,
-          window_start: windowStart.toISOString()
+          window_start: now.toISOString()
         });
     }
 
     const { message, conversationHistory = [] } = await req.json();
-    console.log('Received customer service request:', { userId: user.id, historyLength: conversationHistory.length });
+    console.log('Received customer service request:', { 
+      userId: user.id, 
+      messageLength: message?.length || 0, 
+      historyLength: conversationHistory.length 
+    });
 
     if (!message) {
       throw new Error('Message is required');
     }
 
-    console.log('All environment variables:', Object.keys(Deno.env.toObject()));
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    console.log('Checking for OpenAI API key:', openAIApiKey ? 'Found' : 'Not found');
-    console.log('API key length:', openAIApiKey?.length || 0);
-    
     if (!openAIApiKey) {
       console.error('OpenAI API key not found in environment variables');
       throw new Error('OpenAI API key not configured');
@@ -273,8 +285,8 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errorData = await response.text();
-      console.error('OpenAI API error:', errorData);
-      throw new Error(`OpenAI API error: ${response.status} ${errorData}`);
+      console.error('OpenAI API error:', response.status, errorData);
+      throw new Error(`OpenAI API error: ${response.status}`);
     }
 
     const data = await response.json();
@@ -282,11 +294,12 @@ serve(async (req) => {
 
     const aiResponse = data.choices[0].message.content;
 
-    // Log the interaction for analytics (no PII)
+    // Log the interaction for analytics (sanitized - no PII)
     console.log('Customer service interaction:', {
       userId: user.id,
-      timestamp: new Date().toISOString(),
-      responseLength: aiResponse.length
+      messageLength: message.length,
+      responseLength: aiResponse.length,
+      timestamp: new Date().toISOString()
     });
 
     return new Response(JSON.stringify({ 
@@ -300,7 +313,7 @@ serve(async (req) => {
     console.error('Error in customer service AI function:', error);
     return new Response(JSON.stringify({ 
       error: 'Unable to process your request at the moment. Please try again or contact our support team.',
-      details: error.message 
+      details: error instanceof Error ? error.message : 'Unknown error'
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
