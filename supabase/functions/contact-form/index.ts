@@ -57,6 +57,13 @@ serve(async (req) => {
 
     // Rate limiting check - prevent spam (basic implementation)
     const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown'
+    
+    console.log('Contact form submission received', {
+      timestamp: new Date().toISOString(),
+      hasIP: !!clientIP
+      // Don't log: email, name, message, IP address
+    })
+    
     const { data: recentSubmissions } = await supabase
       .from('contact_submissions')
       .select('submitted_at')
@@ -83,7 +90,11 @@ serve(async (req) => {
       })
 
     if (dbError) {
-      console.error('Database error:', dbError)
+      console.error('Database error:', {
+        code: dbError.code,
+        timestamp: new Date().toISOString()
+        // Don't log: dbError.message, dbError.details
+      })
       return new Response(
         JSON.stringify({ error: 'Failed to save submission' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -120,11 +131,12 @@ Website: https://econestai.com
 `
 
     // You'll need to configure email sending through Supabase Edge Functions
-    // For now, we'll just log the auto-reply (you can integrate with SendGrid, Resend, etc.)
-    console.log('Auto-reply email would be sent:')
-    console.log('To:', sanitizedEmail)
-    console.log('Subject:', autoReplySubject)
-    console.log('Body:', autoReplyBody)
+    // For now, we'll just log that auto-reply would be sent (you can integrate with SendGrid, Resend, etc.)
+    console.log('Auto-reply prepared', {
+      timestamp: new Date().toISOString(),
+      hasRecipient: !!sanitizedEmail
+      // Don't log: email, subject, body content
+    })
 
     return new Response(
       JSON.stringify({ 

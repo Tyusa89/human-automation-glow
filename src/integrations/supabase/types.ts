@@ -44,6 +44,42 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_submissions: {
+        Row: {
+          client_ip: string | null
+          created_at: string | null
+          email: string
+          id: string
+          message: string
+          name: string
+          processed: boolean | null
+          submitted_at: string
+          updated_at: string | null
+        }
+        Insert: {
+          client_ip?: string | null
+          created_at?: string | null
+          email: string
+          id?: string
+          message: string
+          name: string
+          processed?: boolean | null
+          submitted_at?: string
+          updated_at?: string | null
+        }
+        Update: {
+          client_ip?: string | null
+          created_at?: string | null
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          processed?: boolean | null
+          submitted_at?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       customer_notes: {
         Row: {
           content: string
