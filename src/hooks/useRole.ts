@@ -8,24 +8,14 @@ export async function fetchRole(): Promise<Role> {
   const uid = u?.user?.id;
   if (!uid || e0) return null;
 
-  // try user_id first, then id (covers both schema styles)
-  let { data, error } = await supabase
-    .from('profiles')
+  // Query the secure user_roles table
+  const { data, error } = await supabase
+    .from('user_roles')
     .select('role')
     .eq('user_id', uid)
     .maybeSingle();
 
-  if ((error || !data) as any) {
-    const fallback = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', uid)
-      .maybeSingle();
-    data = fallback.data;
-    error = fallback.error;
-  }
-
-  if (error || !data?.role) return null;   // don't fake 'user' on error
+  if (error || !data?.role) return null;
   return data.role as Role;
 }
 
