@@ -138,7 +138,6 @@ export default function AuthPage() {
         email: email,
         full_name: null,
         company: null,
-        role: null,
         preferences: {}
       }).select().maybeSingle();
       
