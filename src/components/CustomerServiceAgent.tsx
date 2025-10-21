@@ -35,7 +35,11 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [conversationHistory, setConversationHistory] = useState<Array<{role: string, content: string}>>([]);
   const [useVoiceMode, setUseVoiceMode] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
   // Initialize realtime chat hook
@@ -70,6 +74,49 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Dragging handlers
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    setDragOffset({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+    setIsDragging(true);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      
+      const newX = e.clientX - dragOffset.x;
+      const newY = e.clientY - dragOffset.y;
+      
+      // Keep within viewport bounds
+      const maxX = window.innerWidth - 384; // 384px = w-96
+      const maxY = window.innerHeight - 600; // 600px = h-[600px]
+      
+      setPosition({
+        x: Math.max(0, Math.min(newX, maxX)),
+        y: Math.max(0, Math.min(newY, maxY))
+      });
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragOffset]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -240,8 +287,21 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
   }
 
   return (
-    <Card className="fixed bottom-4 right-4 w-96 h-[600px] z-50 shadow-xl border-emerald-200 flex flex-col">
-      <CardHeader className="pb-3 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-t-lg">
+    <Card 
+      ref={cardRef}
+      className="fixed w-96 h-[600px] z-50 shadow-xl border-emerald-200 flex flex-col"
+      style={{
+        left: position.x || 'auto',
+        top: position.y || 'auto',
+        right: position.x === 0 ? '1rem' : 'auto',
+        bottom: position.y === 0 ? '1rem' : 'auto',
+        cursor: isDragging ? 'grabbing' : 'default'
+      }}
+    >
+      <CardHeader 
+        className="pb-3 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-t-lg cursor-grab active:cursor-grabbing"
+        onMouseDown={handleMouseDown}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">

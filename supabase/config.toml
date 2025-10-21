@@ -25,4 +25,4 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.customer-service-ai]
-verify_jwt = true
+verify_jwt = false

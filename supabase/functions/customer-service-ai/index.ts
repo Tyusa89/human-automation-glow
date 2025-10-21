@@ -152,66 +152,46 @@ serve(async (req) => {
   }
 
   try {
-    // Initialize Supabase client with service role for rate limiting
+    // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Extract and verify authorization header
+    // Optional authentication - check if user is logged in
     const authHeader = req.headers.get('authorization');
-    if (!authHeader) {
-      console.error('No authorization header provided');
-      return new Response(JSON.stringify({ 
-        error: 'Authentication required. Please log in to use this service.' 
-      }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Verify user authentication
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    let userId = 'anonymous';
     
-    if (authError || !user) {
-      console.error('Authentication failed:', authError?.message);
-      return new Response(JSON.stringify({ 
-        error: 'Invalid or expired authentication token. Please log in again.' 
-      }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    if (authHeader) {
+      const token = authHeader.replace('Bearer ', '');
+      const { data: { user } } = await supabase.auth.getUser(token);
+      if (user) {
+        userId = user.id;
+      }
     }
 
-    console.log('Authenticated user:', user.id);
+    console.log('Customer service request from:', userId);
 
-    // Check rate limiting
+    // Simple rate limiting based on user/IP
     const now = new Date();
     const windowStart = new Date(now.getTime() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000);
     
     // Check current request count in the window
-    const { data: rateLimitData, error: rateLimitError } = await supabase
+    const { data: rateLimitData } = await supabase
       .from('api_rate_limits')
       .select('request_count, window_start')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .eq('endpoint', 'customer-service-ai')
       .gte('window_start', windowStart.toISOString())
       .maybeSingle();
-
-    if (rateLimitError) {
-      console.error('Rate limit check error:', rateLimitError);
-    }
 
     if (rateLimitData && rateLimitData.request_count >= MAX_REQUESTS_PER_WINDOW) {
       const resetTime = new Date(new Date(rateLimitData.window_start).getTime() + RATE_LIMIT_WINDOW_MINUTES * 60 * 1000);
       const secondsUntilReset = Math.ceil((resetTime.getTime() - now.getTime()) / 1000);
       
-      console.log('Rate limit exceeded for user:', user.id);
+      console.log('Rate limit exceeded for:', userId);
       return new Response(JSON.stringify({ 
         error: 'Rate limit exceeded. Please try again in a moment.',
-        retryAfter: secondsUntilReset,
-        limit: MAX_REQUESTS_PER_WINDOW,
-        window: `${RATE_LIMIT_WINDOW_MINUTES} minute(s)`
+        retryAfter: secondsUntilReset
       }), {
         status: 429,
         headers: { 
@@ -230,14 +210,14 @@ serve(async (req) => {
           request_count: rateLimitData.request_count + 1,
           updated_at: now.toISOString()
         })
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .eq('endpoint', 'customer-service-ai')
         .gte('window_start', windowStart.toISOString());
     } else {
       await supabase
         .from('api_rate_limits')
         .insert({ 
-          user_id: user.id,
+          user_id: userId,
           endpoint: 'customer-service-ai',
           request_count: 1,
           window_start: now.toISOString()
@@ -296,7 +276,7 @@ serve(async (req) => {
 
     // Log the interaction for analytics (sanitized - no PII)
     console.log('Customer service interaction:', {
-      userId: user.id,
+      userId: userId,
       messageLength: message.length,
       responseLength: aiResponse.length,
       timestamp: new Date().toISOString()
