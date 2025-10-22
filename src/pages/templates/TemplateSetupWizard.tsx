@@ -2,6 +2,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { registry } from "@/lib/registry";
 import { ExternalLink, BookOpen } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export default function TemplateSetupWizard() {
   const nav = useNavigate();
@@ -64,10 +66,14 @@ export default function TemplateSetupWizard() {
   const handleGenerate = async () => {
     setIsGenerating(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const { data, error } = await supabase.functions.invoke('templates-use', {
+        body: { templateId: tpl.id, formData: formState }
+      });
       
-      console.log("Project generated:", { templateId: tpl.id, ...formState });
+      if (error) throw error;
+      
+      console.log("Project generated:", data);
+      toast.success("Template generated successfully!");
       
       // Redirect based on template
       if (tpl.id === "integration" || tpl.id === "zapier-intercom-integration") {
@@ -85,11 +91,11 @@ export default function TemplateSetupWizard() {
       } else if (tpl.id === "report-generator") {
         nav("/demo/report-generator");
       } else {
-        // For other templates, show success message
         nav("/templates");
       }
     } catch (error) {
       console.error("Error generating project:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to generate template");
     } finally {
       setIsGenerating(false);
     }
