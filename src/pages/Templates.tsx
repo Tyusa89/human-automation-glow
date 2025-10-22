@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { TemplatesGrid } from "@/components/templates/TemplatesGrid";
 import "../styles/templates.css";
+import { supabase } from "@/integrations/supabase/client";
 
 import { Template, fallbackRegistry } from '@/lib/templates';
 
@@ -39,16 +40,18 @@ export default function TemplatesPage() {
   const selected = templates.find(t => t.id === selectedId) ?? null;
   const [scaffoldMsg, setScaffoldMsg] = useState<string | null>(null);
 
-  // Fetch from API (parity with VSCode data source)
+  // Fetch from API using Supabase client
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch("/api/templates");
-        if (!res.ok) throw new Error(`Failed to load templates: ${res.status}`);
-        const data = (await res.json()) as { ok: boolean; data: Template[] };
+        
+        const { data, error } = await supabase.functions.invoke('templates');
+        
+        if (error) throw error;
+        
         if (data?.ok && Array.isArray(data.data)) {
           if (alive) setTemplates(data.data);
         } else {
