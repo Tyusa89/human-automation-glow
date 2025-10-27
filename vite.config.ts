@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/templates/, ''),
         headers: {
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxbGR1bHZrd3p2cm1jdnd0dGVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI5NzgzMzMsImV4cCI6MjA0ODU1NDMzM30.lu2hZFsEPLrHXPksXqxGR4K5zaIUbJ5bcXQncoh52dQ'
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxbGR1bHZrd3p2cm1jdnd0dGVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExOTI1OTMsImV4cCI6MjA3Njc2ODU5M30._yLYTkxlGHpO-qZzEfLwKHBOp6rXDsDJlzVmuSIDhJs'
         }
       },
       '/api/scaffold': {
@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => ({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/scaffold/, ''),
         headers: {
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxbGR1bHZrd3p2cm1jdnd0dGVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI5NzgzMzMsImV4cCI6MjA0ODU1NDMzM30.lu2hZFsEPLrHXPksXqxGR4K5zaIUbJ5bcXQncoh52dQ'
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxbGR1bHZrd3p2cm1jdnd0dGVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExOTI1OTMsImV4cCI6MjA3Njc2ODU5M30._yLYTkxlGHpO-qZzEfLwKHBOp6rXDsDJlzVmuSIDhJs'
         }
       }
     }
