@@ -128,6 +128,25 @@ export const registry: TemplateMeta[] = [
     ],
   },
   {
+    id: "data-sync-warehouse",
+    name: "Data Sync Warehouse",
+    type: "data-sync",
+    steps: [
+      { title: "Basics", fields: [
+        { kind: "text", key: "projectName", label: "Project name", default: "EcoNest Warehouse" },
+        { kind: "select", key: "environment", label: "Environment", options: ["Development","Staging","Production"], default: "Development" },
+      ]},
+      { title: "Data Sources", fields: [
+        { kind: "checkboxes", key: "sources", label: "Data Sources", options: ["PostgreSQL","MySQL","MongoDB","BigQuery","Snowflake"], default: ["PostgreSQL"] },
+      ]},
+      { title: "Warehouse Config", fields: [
+        { kind: "select", key: "warehouse", label: "Target Warehouse", options: ["Snowflake","BigQuery","Redshift","Databricks"], default: "Snowflake" },
+        { kind: "select", key: "syncFrequency", label: "Sync Frequency", options: ["Real-time","Hourly","Daily","Weekly"], default: "Daily" },
+      ]},
+      { title: "Review", fields: [ { kind: "review" } ]},
+    ],
+  },
+  {
     id: "report-generator",
     name: "Report Generator",
     type: "report",
