@@ -75,8 +75,10 @@ export default function TemplateSetupWizard() {
       console.log("Project generated:", data);
       toast.success("Template generated successfully!");
       
-      // Redirect based on template
-      if (tpl.id === "integration" || tpl.id === "zapier-intercom-integration") {
+      // Use the 'next' URL from the API response, or fall back to demo routes
+      if (data?.next) {
+        nav(data.next);
+      } else if (tpl.id === "integration" || tpl.id === "zapier-intercom-integration") {
         nav("/demo/zapier-intercom");
       } else if (tpl.id === "social-media-scheduler") {
         nav("/demo/social-media-scheduler");
@@ -91,7 +93,7 @@ export default function TemplateSetupWizard() {
       } else if (tpl.id === "report-generator") {
         nav("/demo/report-generator");
       } else {
-        nav("/templates");
+        nav(`/dashboard?template=${tpl.id}`);
       }
     } catch (error) {
       console.error("Error generating project:", error);
