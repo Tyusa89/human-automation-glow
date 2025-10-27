@@ -100,8 +100,23 @@ Deno.serve(async (req) => {
 
     console.log('Lead score:', score, 'Route:', route);
 
+    // Fetch the updated lead with all fields
+    const { data: fullLead } = await supabase
+      .from('leads')
+      .select('*')
+      .eq('id', leadId)
+      .single();
+
     const context: WorkflowContext = {
-      lead: { id: leadId, name, email: normalizedEmail, source, company, score },
+      lead: { 
+        ...fullLead,
+        id: leadId, 
+        name, 
+        email: normalizedEmail, 
+        source, 
+        company, 
+        score 
+      },
       route,
       score,
     };
@@ -113,15 +128,17 @@ Deno.serve(async (req) => {
       await handleHighPriorityRoute(supabase, context);
     }
 
+    // Prepare standardized response
+    const response = {
+      leadId,
+      crmDealUrl: context.lead.crm_deal_url || null,
+      enrichment: context.lead.enrichment || { company: company || null },
+      status: context.lead.status,
+      step: route === 'high' ? 'lead_qualified' : 'lead_enriched',
+    };
+
     return new Response(
-      JSON.stringify({
-        success: true,
-        leadId,
-        route,
-        score,
-        isNew,
-        message: `Lead ${isNew ? 'created' : 'updated'} and routed to ${route} priority`,
-      }),
+      JSON.stringify(response),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
@@ -165,13 +182,28 @@ function calculateLeadScore(lead: LeadData): number {
 async function handleStandardRoute(supabase: any, context: WorkflowContext) {
   console.log('Executing standard route actions');
 
-  // Update lead with nurture tag
-  await supabase
+  // Update lead with nurture tag and enrichment
+  const enrichment = {
+    company: context.lead.company || null,
+    score: context.score,
+    route: 'standard',
+    processed_at: new Date().toISOString(),
+  };
+
+  const { data: updated } = await supabase
     .from('leads')
     .update({
       status: 'nurture',
+      enrichment,
     })
-    .eq('id', context.lead.id);
+    .eq('id', context.lead.id)
+    .select()
+    .single();
+
+  if (updated) {
+    context.lead.status = updated.status;
+    context.lead.enrichment = updated.enrichment;
+  }
 
   // Send Slack notification (if webhook configured)
   const slackWebhook = Deno.env.get('SLACK_WEBHOOK_URL');
@@ -213,13 +245,33 @@ async function handleStandardRoute(supabase: any, context: WorkflowContext) {
 async function handleHighPriorityRoute(supabase: any, context: WorkflowContext) {
   console.log('Executing high priority route actions');
 
-  // Update lead status
-  await supabase
+  // Generate mock CRM deal URL (replace with actual CRM integration)
+  const crmDealUrl = `https://crm.example.com/deals/${context.lead.id}`;
+
+  // Update lead status with enrichment and CRM link
+  const enrichment = {
+    company: context.lead.company || null,
+    score: context.score,
+    route: 'high_priority',
+    qualified_at: new Date().toISOString(),
+  };
+
+  const { data: updated } = await supabase
     .from('leads')
     .update({
       status: 'qualified',
+      crm_deal_url: crmDealUrl,
+      enrichment,
     })
-    .eq('id', context.lead.id);
+    .eq('id', context.lead.id)
+    .select()
+    .single();
+
+  if (updated) {
+    context.lead.status = updated.status;
+    context.lead.crm_deal_url = updated.crm_deal_url;
+    context.lead.enrichment = updated.enrichment;
+  }
 
   // Send priority Slack notification
   const slackWebhook = Deno.env.get('SLACK_WEBHOOK_URL');
