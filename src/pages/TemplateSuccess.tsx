@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { CheckCircle2, ArrowRight, Home, Eye } from 'lucide-react';
 import { getTemplateById } from '@/lib/templates';
 
-// Map template IDs to their demo routes
+// Map template IDs to their demo routes (only for templates with working demos)
 const templateDemoRoutes: Record<string, string> = {
   'analytics-dashboard': '/demo/analytics-dashboard',
   'data-sync-tool': '/demo/data-sync-tool',
@@ -13,7 +13,7 @@ const templateDemoRoutes: Record<string, string> = {
   'email-campaign-builder': '/demo/email-campaign-builder',
   'social-media-scheduler': '/demo/social-media-scheduler',
   'report-generator': '/demo/report-generator',
-  'zapier-intercom': '/demo/zapier-intercom',
+  'zapier-intercom-integration': '/demo/zapier-intercom',
 };
 
 export default function TemplateSuccess() {
