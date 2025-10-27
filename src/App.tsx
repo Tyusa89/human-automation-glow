@@ -38,6 +38,7 @@ import DataSyncTool from '@/pages/templates/DataSyncTool';
 import ReportGenerator from '@/pages/templates/ReportGenerator';
 import AnalyticsDashboard from '@/pages/templates/AnalyticsDashboard';
 import CustomerServiceWidget from '@/components/CustomerServiceWidget';
+import TemplateSuccess from '@/pages/TemplateSuccess';
 
 const queryClient = new QueryClient();
 
@@ -61,6 +62,7 @@ const App = () => {
                 <Route path="/solutions" element={<SolutionsPage />} />
                 <Route path="/templates" element={<TemplatesPage />} />
                 <Route path="/templates/:templateId/setup" element={<TemplateSetupWizard />} />
+                <Route path="/template-success" element={<TemplateSuccess />} />
                 <Route path="/demo/zapier-intercom" element={<ZapierIntercomIntegration />} />
                 <Route path="/demo/social-media-scheduler" element={<SocialMediaScheduler />} />
                 <Route path="/demo/email-campaign-builder" element={<EmailCampaignBuilder />} />

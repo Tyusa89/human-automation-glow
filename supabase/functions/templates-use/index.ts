@@ -50,7 +50,7 @@ serve(async (req) => {
         message: 'Template used successfully',
         templateId,
         formData,
-        next: `/dashboard?template=${templateId}`
+        next: `/template-success?template=${templateId}`
       }),
       { 
         status: 200, 
