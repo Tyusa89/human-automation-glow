@@ -29,6 +29,14 @@ export default function TemplateSuccess() {
     }
   }, [templateId]);
 
+  // Format template ID for display if template not found in registry
+  const formatTemplateId = (id: string) => {
+    return id
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-900 flex items-center justify-center p-6">
       <Card className="w-full max-w-2xl border-2 shadow-2xl">
@@ -38,8 +46,8 @@ export default function TemplateSuccess() {
           </div>
           <CardTitle className="text-3xl font-bold">Template Generated Successfully!</CardTitle>
           <CardDescription className="text-lg">
-            {template ? (
-              <>Your <span className="font-semibold text-foreground">{template.title}</span> template has been configured and is ready to use.</>
+            {templateId ? (
+              <>Your <span className="font-semibold text-foreground">{template?.title || formatTemplateId(templateId)}</span> template has been configured and is ready to use.</>
             ) : (
               'Your template has been configured and is ready to use.'
             )}
@@ -47,19 +55,21 @@ export default function TemplateSuccess() {
         </CardHeader>
         
         <CardContent className="space-y-6">
-          {template && (
+          {templateId && (
             <div className="bg-muted/50 rounded-lg p-4 space-y-3">
               <h3 className="font-semibold text-lg">Template Details</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Template:</span>
-                  <span className="font-medium">{template.title}</span>
+                  <span className="font-medium">{template?.title || formatTemplateId(templateId)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Category:</span>
-                  <span className="font-medium">{template.category}</span>
-                </div>
-                {template.difficulty && (
+                {template?.category && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Category:</span>
+                    <span className="font-medium">{template.category}</span>
+                  </div>
+                )}
+                {template?.difficulty && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Difficulty:</span>
                     <span className="font-medium">{template.difficulty}</span>
