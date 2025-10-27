@@ -2,14 +2,26 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle2, ArrowRight, Home } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Home, Eye } from 'lucide-react';
 import { getTemplateById } from '@/lib/templates';
+
+// Map template IDs to their demo routes
+const templateDemoRoutes: Record<string, string> = {
+  'analytics-dashboard': '/demo/analytics-dashboard',
+  'data-sync-tool': '/demo/data-sync-tool',
+  'inventory-manager': '/demo/inventory-manager',
+  'email-campaign-builder': '/demo/email-campaign-builder',
+  'social-media-scheduler': '/demo/social-media-scheduler',
+  'report-generator': '/demo/report-generator',
+  'zapier-intercom': '/demo/zapier-intercom',
+};
 
 export default function TemplateSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const templateId = searchParams.get('template');
   const [template, setTemplate] = useState(getTemplateById(templateId || ''));
+  const demoRoute = templateId ? templateDemoRoutes[templateId] : null;
 
   useEffect(() => {
     if (templateId) {
@@ -75,22 +87,35 @@ export default function TemplateSuccess() {
             </ul>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button 
-              onClick={() => navigate('/templates')} 
-              variant="outline"
-              className="flex-1"
-            >
-              <Home className="mr-2 h-4 w-4" />
-              Browse Templates
-            </Button>
-            <Button 
-              onClick={() => navigate('/auth')} 
-              className="flex-1"
-            >
-              Sign In to Dashboard
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+          <div className="flex flex-col gap-3 pt-4">
+            {demoRoute && (
+              <Button 
+                onClick={() => navigate(demoRoute)} 
+                size="lg"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold"
+              >
+                <Eye className="mr-2 h-5 w-5" />
+                View Dashboard Demo
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            )}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button 
+                onClick={() => navigate('/templates')} 
+                variant="outline"
+                className="flex-1"
+              >
+                <Home className="mr-2 h-4 w-4" />
+                Browse Templates
+              </Button>
+              <Button 
+                onClick={() => navigate('/auth')} 
+                className="flex-1"
+              >
+                Sign In to Dashboard
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
