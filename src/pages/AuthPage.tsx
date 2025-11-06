@@ -31,6 +31,7 @@ export default function AuthPage() {
 
   // password flow
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [error, setError] = useState<string>('');
@@ -102,6 +103,12 @@ export default function AuthPage() {
     // Pre-flight validation for signup
     if (isSignUp && passwordErrors.length > 0) {
       setError('Please fix password requirements before continuing.');
+      return;
+    }
+    
+    // Check if passwords match
+    if (isSignUp && password !== confirmPassword) {
+      setError('Passwords do not match.');
       return;
     }
     
@@ -314,6 +321,23 @@ export default function AuthPage() {
                 required
               />
             </div>
+            
+            {/* Confirm password field for signup */}
+            {isSignUp && (
+              <div className="space-y-2">
+                <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
+                  Confirm Password
+                </label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="Re-enter password"
+                  value={confirmPassword}
+                  onChange={(e)=>setConfirmPassword(e.target.value)}
+                  required
+                />
+              </div>
+            )}
             
             {/* Password requirements for signup */}
             {isSignUp && passwordErrors.length > 0 && (
