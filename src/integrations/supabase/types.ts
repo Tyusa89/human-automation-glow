@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.4"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
@@ -41,6 +41,33 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
           window_start?: string
+        }
+        Relationships: []
+      }
+      automation_runs: {
+        Row: {
+          created_at: string | null
+          id: string
+          payload: Json | null
+          preset_id: string
+          result: Json | null
+          status: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          payload?: Json | null
+          preset_id: string
+          result?: Json | null
+          status: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          payload?: Json | null
+          preset_id?: string
+          result?: Json | null
+          status?: string
         }
         Relationships: []
       }
@@ -605,6 +632,42 @@ export type Database = {
         }
         Relationships: []
       }
+      templates: {
+        Row: {
+          config: Json | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+          updated_at: string | null
+          version: string | null
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          slug: string
+          updated_at?: string | null
+          version?: string | null
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          updated_at?: string | null
+          version?: string | null
+        }
+        Relationships: []
+      }
       terms_acceptance: {
         Row: {
           accepted_at: string
@@ -704,18 +767,9 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_admin_or_owner: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_owner: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      profile_auth_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      is_admin_or_owner: { Args: never; Returns: boolean }
+      is_owner: { Args: never; Returns: boolean }
+      profile_auth_id: { Args: never; Returns: string }
     }
     Enums: {
       app_role: "admin" | "owner" | "user"
