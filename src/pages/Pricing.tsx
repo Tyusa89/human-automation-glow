@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,16 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { pricing, addOns, faqItems } from "@/lib/site-data";
 
 export default function PricingPage() {
+  const navigate = useNavigate();
   const [isYearly, setIsYearly] = useState(false);
+
+  const handleSelectPlan = (tierName: string, price: string | number) => {
+    if (tierName === "Starter") {
+      navigate("/auth");
+    } else {
+      navigate(`/payment?plan=${tierName}&billing=${isYearly ? "yearly" : "monthly"}&price=${price}`);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
@@ -97,6 +107,7 @@ export default function PricingPage() {
                 <div className="pt-4">
                   <Button 
                     variant={tier.buttonVariant as "default" | "outline"}
+                    onClick={() => handleSelectPlan(tier.name, isYearly ? tier.yearlyPrice : tier.monthlyPrice)}
                     className={`w-full ${
                       tier.popular 
                         ? "bg-primary hover:bg-primary/90 text-white" 

@@ -18,6 +18,7 @@ import TemplatesPage from '@/pages/Templates';
 import IntegrationsPage from '@/pages/Integrations';
 import ServicesPage from '@/pages/Services';
 import PricingPage from '@/pages/Pricing';
+import PaymentPage from '@/pages/Payment';
 import DocsPage from '@/pages/Docs';
 import TrustPage from '@/pages/Trust';
 import HelpPage from '@/pages/Help';
@@ -77,6 +78,7 @@ const App = () => {
                 <Route path="/trust" element={<TrustPage />} />
                 <Route path="/services" element={<ServicesPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/payment" element={<PaymentPage />} />
                 <Route path="/contact" element={<ContactPage />} />
           <Route path="/payment-terms" element={<PaymentTerms />} />
           <Route path="/terms-acceptance" element={<TermsAcceptance />} />
