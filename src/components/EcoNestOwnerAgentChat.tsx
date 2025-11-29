@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
+import { supabase } from "@/integrations/supabase/client";
 
-const CHATKIT_SESSION_ENDPOINT = "https://rqldulvkwzvrmcvwttep.supabase.co/functions/v1/chatkit-session";
+const CHATKIT_SESSION_ENDPOINT =
+  import.meta.env.VITE_CHATKIT_SESSION_ENDPOINT || "https://rqldulvkwzvrmcvwttep.supabase.co/functions/v1/chatkit-session";
 
 export function EcoNestOwnerAgentChat() {
   const [isConnecting, setIsConnecting] = useState(false);
@@ -12,19 +14,29 @@ export function EcoNestOwnerAgentChat() {
       async getClientSecret(existing) {
         setIsConnecting(true);
         setConnectionError(null);
-        
+
         try {
+          const {
+            data: { session },
+          } = await supabase.auth.getSession();
+
+          const accessToken = session?.access_token;
+          if (!accessToken) {
+            throw new Error("You must be signed in to use the EcoNest Agent.");
+          }
+
           const res = await fetch(CHATKIT_SESSION_ENDPOINT, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
             },
-            credentials: "include",
             body: JSON.stringify({}),
           });
 
           if (!res.ok) {
-            console.error("Failed to get ChatKit client_secret", res.status);
+            const text = await res.text();
+            console.error("Failed to get ChatKit client_secret", res.status, text);
             throw new Error("Unable to create EcoNest agent session");
           }
 
