@@ -22,11 +22,37 @@ export async function fetchRole(): Promise<Role> {
 export function useRole(): { role: Role; loading: boolean } {
   const [role, setRole] = useState<Role>(null);
   const [loading, setLoading] = useState(true);
+  
   useEffect(() => {
     let mounted = true;
-    fetchRole().then(r => { if (mounted) { setRole(r); setLoading(false); } });
-    return () => { mounted = false; };
+    
+    // Initial fetch
+    fetchRole().then(r => { 
+      if (mounted) { 
+        setRole(r); 
+        setLoading(false); 
+      } 
+    });
+    
+    // Listen for auth changes and refetch role
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (mounted) {
+        if (session) {
+          // User logged in, fetch their role
+          fetchRole().then(r => { if (mounted) setRole(r); });
+        } else {
+          // User logged out, clear role
+          setRole(null);
+        }
+      }
+    });
+    
+    return () => { 
+      mounted = false; 
+      subscription.unsubscribe();
+    };
   }, []);
+  
   return { role, loading };
 }
 
