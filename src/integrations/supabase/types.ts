@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_events: {
+        Row: {
+          created_at: string
+          id: string
+          payload: Json
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          payload: Json
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          payload?: Json
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       api_rate_limits: {
         Row: {
           created_at: string
@@ -134,6 +158,27 @@ export type Database = {
           id?: string
           is_private?: boolean
           updated_at?: string
+        }
+        Relationships: []
+      }
+      env_vars: {
+        Row: {
+          created_at: string | null
+          id: string
+          key: string
+          value: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          key: string
+          value: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          key?: string
+          value?: string
         }
         Relationships: []
       }
@@ -284,6 +329,7 @@ export type Database = {
           id: string
           name: string | null
           notes: string | null
+          owner_id: string | null
           source: string | null
           status: string | null
           updated_at: string
@@ -297,6 +343,7 @@ export type Database = {
           id?: string
           name?: string | null
           notes?: string | null
+          owner_id?: string | null
           source?: string | null
           status?: string | null
           updated_at?: string
@@ -310,6 +357,7 @@ export type Database = {
           id?: string
           name?: string | null
           notes?: string | null
+          owner_id?: string | null
           source?: string | null
           status?: string | null
           updated_at?: string
@@ -409,6 +457,30 @@ export type Database = {
           n8n_webhook_url?: string | null
           org_id?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      owned_products: {
+        Row: {
+          id: string
+          metadata: Json | null
+          product_sku: string
+          purchased_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          metadata?: Json | null
+          product_sku: string
+          purchased_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          metadata?: Json | null
+          product_sku?: string
+          purchased_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -634,8 +706,11 @@ export type Database = {
       }
       templates: {
         Row: {
+          category: string | null
           config: Json | null
           created_at: string | null
+          demo_image_url: string | null
+          demo_video_url: string | null
           description: string | null
           id: string
           is_active: boolean
@@ -645,8 +720,11 @@ export type Database = {
           version: string | null
         }
         Insert: {
+          category?: string | null
           config?: Json | null
           created_at?: string | null
+          demo_image_url?: string | null
+          demo_video_url?: string | null
           description?: string | null
           id?: string
           is_active?: boolean
@@ -656,8 +734,11 @@ export type Database = {
           version?: string | null
         }
         Update: {
+          category?: string | null
           config?: Json | null
           created_at?: string | null
+          demo_image_url?: string | null
+          demo_video_url?: string | null
           description?: string | null
           id?: string
           is_active?: boolean
@@ -754,6 +835,62 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_templates: {
+        Row: {
+          agent_config_override: Json | null
+          created_at: string
+          id: string
+          is_active: boolean
+          last_used_at: string | null
+          purchased_at: string
+          source: string | null
+          stripe_checkout_session_id: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          template_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent_config_override?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_used_at?: string | null
+          purchased_at?: string
+          source?: string | null
+          stripe_checkout_session_id?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          template_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent_config_override?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_used_at?: string | null
+          purchased_at?: string
+          source?: string | null
+          stripe_checkout_session_id?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          template_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_templates_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
