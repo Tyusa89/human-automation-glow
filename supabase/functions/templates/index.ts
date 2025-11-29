@@ -237,7 +237,8 @@ serve(async (req) => {
   }
 
   try {
-    if (req.method === 'GET') {
+    // Accept both GET and POST requests (POST is used by supabase.functions.invoke)
+    if (req.method === 'GET' || req.method === 'POST') {
       return new Response(
         JSON.stringify({ ok: true, data: templates }),
         {
