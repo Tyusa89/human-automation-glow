@@ -3,7 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route } from "react-router-dom";
-import { Header, Footer } from '@/components/Chrome';
+import { Footer } from '@/components/Chrome';
+import AppHeader from '@/components/Header';
 import { CommandMenu } from '@/components/CommandMenu';
 import AuthPage from '@/pages/AuthPage';
 import RequireAuth from '@/components/RequireAuth';
@@ -55,7 +56,7 @@ const App = () => {
           <Sonner />
           <ErrorBoundary>
             <CommandMenu />
-            <Header />
+            <AppHeader />
             <main>
               <Routes>
                 {/* public */}
