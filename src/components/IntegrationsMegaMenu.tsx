@@ -11,16 +11,16 @@ import {
 import { PlugZap } from "lucide-react";
 
 const integrations = [
-  { label: "HubSpot", href: "/integrations/hubspot", desc: "Deals, contacts, activities" },
-  { label: "Slack", href: "/integrations/slack", desc: "Alerts, war rooms, approvals" },
-  { label: "Gmail", href: "/integrations/gmail", desc: "Sequences, summaries, send-as" },
-  { label: "Notion", href: "/integrations/notion", desc: "Docs, project pages, wiki" },
-  { label: "Google Drive", href: "/integrations/drive", desc: "Client folders, exports" },
-  { label: "Stripe", href: "/integrations/stripe", desc: "Invoices, dunning, products" },
-  { label: "Zendesk", href: "/integrations/zendesk", desc: "Tickets + sentiment" },
-  { label: "Twilio", href: "/integrations/twilio", desc: "SMS notifications, OTP" },
-  { label: "Supabase", href: "/integrations/supabase", desc: "Auth, RLS, storage, functions" },
-  { label: "GitHub", href: "/integrations/github", desc: "Issues, releases, webhooks" },
+  { label: "HubSpot", href: "/integrations", desc: "Deals, contacts, activities" },
+  { label: "Slack", href: "/integrations", desc: "Alerts, war rooms, approvals" },
+  { label: "Gmail", href: "/integrations", desc: "Sequences, summaries, send-as" },
+  { label: "Notion", href: "/integrations", desc: "Docs, project pages, wiki" },
+  { label: "Google Drive", href: "/integrations", desc: "Client folders, exports" },
+  { label: "Stripe", href: "/integrations", desc: "Invoices, dunning, products" },
+  { label: "Zendesk", href: "/integrations", desc: "Tickets + sentiment" },
+  { label: "Twilio", href: "/integrations", desc: "SMS notifications, OTP" },
+  { label: "Supabase", href: "/integrations", desc: "Auth, RLS, storage, functions" },
+  { label: "GitHub", href: "/integrations", desc: "Issues, releases, webhooks" },
 ];
 
 export default function IntegrationsMegaMenu({ className }: { className?: string }) {
