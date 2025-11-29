@@ -11,11 +11,11 @@ import {
 import { BadgeCheck, MessageSquare, Users, DollarSign, Zap } from "lucide-react";
 
 const solutions = [
-  { label: "Lead Intake & Qualification", href: "/solutions/lead-qualification", desc: "Forms → enrichment → CRM deal + alerts", icon: BadgeCheck },
-  { label: "AI Support Widget", href: "/solutions/ai-support", desc: "Chat + ticketing → Zendesk → summaries", icon: MessageSquare },
-  { label: "Onboarding Automation", href: "/solutions/onboarding", desc: "DocuSign, Notion, Drive, Slack in one click", icon: Users },
-  { label: "Revenue Ops / Dunning", href: "/solutions/revops", desc: "Stripe retries + sequences + status dashboards", icon: DollarSign },
-  { label: "Agent + Workflow Hybrid", href: "/solutions/agents", desc: "EcoNest agents call n8n flows for heavy lifting", icon: Zap },
+  { label: "Lead Intake & Qualification", href: "/solutions", desc: "Forms → enrichment → CRM deal + alerts", icon: BadgeCheck },
+  { label: "AI Support Widget", href: "/solutions", desc: "Chat + ticketing → Zendesk → summaries", icon: MessageSquare },
+  { label: "Onboarding Automation", href: "/solutions", desc: "DocuSign, Notion, Drive, Slack in one click", icon: Users },
+  { label: "Revenue Ops / Dunning", href: "/solutions", desc: "Stripe retries + sequences + status dashboards", icon: DollarSign },
+  { label: "Agent + Workflow Hybrid", href: "/solutions", desc: "EcoNest agents call n8n flows for heavy lifting", icon: Zap },
 ];
 
 export default function SolutionsMegaMenu({ className }: { className?: string }) {

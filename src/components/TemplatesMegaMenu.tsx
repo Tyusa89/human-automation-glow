@@ -11,11 +11,11 @@ import {
 import { Boxes, Database, MessageCircle, BarChart3, Mail, Users } from "lucide-react";
 
 const templates = [
-  { label: "Data Sync Pipeline", href: "/templates/data-sync-tool", desc: "ETL + normalize + upsert to Supabase", tag: "Popular", icon: Database },
-  { label: "Customer Support Widget", href: "/templates/support-widget", desc: "Chat + FAQ + ticket handoff", icon: MessageCircle },
-  { label: "KPI Dashboard", href: "/templates/kpi-dashboard", desc: "Metrics by org with role-based views", icon: BarChart3 },
-  { label: "Outbound Sequences", href: "/templates/outbound-seq", desc: "3‑step email + Slack for speed‑to‑lead", icon: Mail },
-  { label: "Onboarding Pack", href: "/templates/onboarding-pack", desc: "Drive/Notion/Slack + checklist", icon: Users },
+  { label: "Data Sync Pipeline", href: "/templates", desc: "ETL + normalize + upsert to Supabase", tag: "Popular", icon: Database },
+  { label: "Customer Support Widget", href: "/templates", desc: "Chat + FAQ + ticket handoff", icon: MessageCircle },
+  { label: "KPI Dashboard", href: "/templates", desc: "Metrics by org with role-based views", icon: BarChart3 },
+  { label: "Outbound Sequences", href: "/templates", desc: "3‑step email + Slack for speed‑to‑lead", icon: Mail },
+  { label: "Onboarding Pack", href: "/templates", desc: "Drive/Notion/Slack + checklist", icon: Users },
 ];
 
 export default function TemplatesMegaMenu({ className }: { className?: string }) {

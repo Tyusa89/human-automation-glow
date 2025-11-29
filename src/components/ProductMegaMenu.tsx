@@ -11,17 +11,17 @@ import {
 import { Layout, PenTool, Share2, ShoppingBag, Mail, Bot, Palette, Code2, Megaphone, Sparkles, MessageSquare } from "lucide-react";
 
 const productItems = [
-  { label: "Web Design", href: "/services/web-design", desc: "Modern, fast, conversion‑focused sites", icon: Layout },
-  { label: "Creative", href: "/services/creative", desc: "Brand visuals, content, and ads", icon: PenTool },
-  { label: "Social Media Marketing", href: "/services/social-media", desc: "Planning, UGC pipelines, scheduling", icon: Share2 },
-  { label: "eCommerce", href: "/services/ecommerce", desc: "Stores, funnels, product ops", icon: ShoppingBag },
-  { label: "Email Marketing", href: "/services/email", desc: "Newsletters, sequences, automations", icon: Mail },
-  { label: "AI Marketing", href: "/services/ai-marketing", desc: "Personalized content & targeting", icon: Sparkles },
-  { label: "Branding", href: "/services/branding", desc: "Identity, voice, and guidelines", icon: Palette },
-  { label: "Web Development", href: "/services/web-dev", desc: "Custom apps & integrations", icon: Code2 },
-  { label: "Influencer Marketing", href: "/services/influencer", desc: "Creator strategy & outreach", icon: Megaphone },
-  { label: "AI Agents", href: "/services/ai-agents", desc: "Intelligent automation workflows", icon: Bot },
-  { label: "AI Chat bot", href: "/services/ai-chatbot", desc: "Site chat, support, lead capture", icon: MessageSquare },
+  { label: "Web Design", href: "/product", desc: "Modern, fast, conversion‑focused sites", icon: Layout },
+  { label: "Creative", href: "/product", desc: "Brand visuals, content, and ads", icon: PenTool },
+  { label: "Social Media Marketing", href: "/product", desc: "Planning, UGC pipelines, scheduling", icon: Share2 },
+  { label: "eCommerce", href: "/product", desc: "Stores, funnels, product ops", icon: ShoppingBag },
+  { label: "Email Marketing", href: "/product", desc: "Newsletters, sequences, automations", icon: Mail },
+  { label: "AI Marketing", href: "/product", desc: "Personalized content & targeting", icon: Sparkles },
+  { label: "Branding", href: "/product", desc: "Identity, voice, and guidelines", icon: Palette },
+  { label: "Web Development", href: "/product", desc: "Custom apps & integrations", icon: Code2 },
+  { label: "Influencer Marketing", href: "/product", desc: "Creator strategy & outreach", icon: Megaphone },
+  { label: "AI Agents", href: "/product", desc: "Intelligent automation workflows", icon: Bot },
+  { label: "AI Chat bot", href: "/product", desc: "Site chat, support, lead capture", icon: MessageSquare },
 ];
 
 export default function ProductMegaMenu({ className }: { className?: string }) {
