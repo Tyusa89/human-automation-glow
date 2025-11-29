@@ -29,7 +29,7 @@ export default function ProductMegaMenu({ className }: { className?: string }) {
     <NavigationMenu className={cn("", className)}>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="text-base bg-transparent hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent/50">
+          <NavigationMenuTrigger>
             Product
           </NavigationMenuTrigger>
           <NavigationMenuContent>
