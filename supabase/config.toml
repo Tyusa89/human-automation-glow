@@ -32,3 +32,12 @@ verify_jwt = false
 
 [functions.n8n-callback]
 verify_jwt = false
+
+[functions.agentkit-leads]
+verify_jwt = false
+
+[functions.agentkit-templates]
+verify_jwt = false
+
+[functions.agentkit-events]
+verify_jwt = false
