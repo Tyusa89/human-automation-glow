@@ -15,9 +15,6 @@ export default function AppHeader() {
 
   const [authed, setAuthed] = useState(false);
 
-  // Debug logging
-  console.log('Header - role:', role, 'loading:', roleLoading, 'authed:', authed);
-
   // watch auth state so we can show Login/Logout correctly
   useEffect(() => {
     let mounted = true;
