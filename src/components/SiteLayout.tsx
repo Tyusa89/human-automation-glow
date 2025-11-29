@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
@@ -8,10 +8,35 @@ import ProductMegaMenu from "@/components/ProductMegaMenu";
 import SolutionsMegaMenu from "@/components/SolutionsMegaMenu";
 import TemplatesMegaMenu from "@/components/TemplatesMegaMenu";
 import IntegrationsMegaMenu from "@/components/IntegrationsMegaMenu";
+import { supabase } from "@/integrations/supabase/client";
+import { useRole, isAdminLike } from "@/hooks/useRole";
 
 // Shared site header
 export const SiteHeader: React.FC = () => {
   const [open, setOpen] = useState(false);
+  const [authed, setAuthed] = useState(false);
+  const navigate = useNavigate();
+  const { role, loading: roleLoading } = useRole();
+  const adminLike = isAdminLike(role);
+
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (mounted) setAuthed(!!data.session);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (mounted) setAuthed(!!session);
+    });
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    navigate("/auth");
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/70 backdrop-blur">
@@ -30,13 +55,40 @@ export const SiteHeader: React.FC = () => {
           <Link to="/pricing" className="hover:text-muted-foreground px-2">Pricing</Link>
           <Link to="/docs" className="hover:text-muted-foreground px-2">Docs</Link>
           <Link to="/trust" className="hover:text-muted-foreground px-2">Security</Link>
+          {authed && (
+            <>
+              <Link to="/dashboard" className="hover:text-primary transition-colors px-2">Dashboard</Link>
+              {role === "owner" && (
+                <Link
+                  to="/owner-dashboard"
+                  className="hover:text-primary transition-colors px-2 text-emerald-500 font-medium"
+                >
+                  Owner Dashboard
+                </Link>
+              )}
+              {adminLike && (
+                <Link to="/admin" className="hover:text-primary transition-colors px-2 font-medium">
+                  Admin
+                </Link>
+              )}
+            </>
+          )}
+          {!roleLoading && role && (
+            <span className="px-2 py-0.5 text-xs rounded-full border border-border text-foreground/80">
+              {role.toUpperCase()}
+            </span>
+          )}
         </nav>
 
         {/* Desktop Auth Buttons */}
         <div className="hidden md:flex items-center gap-2">
-          <Link to="/auth">
-            <Button variant="ghost">Sign in</Button>
-          </Link>
+          {authed ? (
+            <Button variant="ghost" onClick={handleLogout}>Sign out</Button>
+          ) : (
+            <Link to="/auth">
+              <Button variant="ghost">Sign in</Button>
+            </Link>
+          )}
           <Link to="/create-profile">
             <Button variant="default">Start free</Button>
           </Link>
@@ -62,9 +114,22 @@ export const SiteHeader: React.FC = () => {
                 <Link to="/trust" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Security</Link>
                 <Link to="/contact" className="text-lg hover:text-primary" onClick={() => setOpen(false)}>Contact</Link>
                 <div className="flex flex-col gap-2 mt-4 pt-4 border-t">
-                  <Link to="/auth" onClick={() => setOpen(false)}>
-                    <Button variant="ghost" className="w-full">Sign in</Button>
-                  </Link>
+                  {authed ? (
+                    <Button
+                      variant="ghost"
+                      className="w-full"
+                      onClick={() => {
+                        setOpen(false);
+                        handleLogout();
+                      }}
+                    >
+                      Sign out
+                    </Button>
+                  ) : (
+                    <Link to="/auth" onClick={() => setOpen(false)}>
+                      <Button variant="ghost" className="w-full">Sign in</Button>
+                    </Link>
+                  )}
                   <Link to="/create-profile" onClick={() => setOpen(false)}>
                     <Button variant="default" className="w-full">Start free</Button>
                   </Link>
