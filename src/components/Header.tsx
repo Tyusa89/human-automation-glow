@@ -52,6 +52,9 @@ export default function AppHeader() {
         {authed && (
           <>
             <Link to="/dashboard" className="hover:text-primary transition-colors text-foreground">Dashboard</Link>
+            {role === 'owner' && (
+              <Link to="/owner-dashboard" className="hover:text-primary transition-colors font-medium text-emerald-600">Owner Dashboard</Link>
+            )}
             {admin && (
               <Link to="/admin" className="hover:text-primary transition-colors font-medium text-foreground">Admin</Link>
             )}
