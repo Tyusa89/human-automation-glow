@@ -31,8 +31,8 @@ export default function AppHeader() {
   }
 
   return (
-    <header className="flex items-center justify-between px-4 py-3 border-b bg-background">
-      <Link to="/" className="font-semibold text-foreground text-xl flex items-center gap-2">
+    <header className="flex items-center justify-between px-4 py-3 border-b bg-[hsl(220,91%,15%)]">
+      <Link to="/" className="font-semibold text-white text-xl flex items-center gap-2">
         <img 
           src="/lovable-uploads/22c32c18-97ea-4d61-b7cc-513f8c8daa5e.png" 
           alt="EcoNest AI" 
@@ -42,21 +42,21 @@ export default function AppHeader() {
       </Link>
       
       <nav className="flex items-center gap-2">
-        <Link to="/" className="hover:text-primary transition-colors text-foreground px-2">Home</Link>
+        <Link to="/" className="hover:text-emerald-400 transition-colors text-white px-2">Home</Link>
         <ProductMegaMenu />
         <SolutionsMegaMenu />
         <TemplatesMegaMenu />
         <IntegrationsMegaMenu />
-        <Link to="/pricing" className="hover:text-primary transition-colors text-foreground px-2">Pricing</Link>
+        <Link to="/pricing" className="hover:text-emerald-400 transition-colors text-white px-2">Pricing</Link>
         
         {authed && (
           <>
-            <Link to="/dashboard" className="hover:text-primary transition-colors text-foreground">Dashboard</Link>
+            <Link to="/dashboard" className="hover:text-emerald-400 transition-colors text-white px-2">Dashboard</Link>
             {role === 'owner' && (
-              <Link to="/owner-dashboard" className="hover:text-primary transition-colors font-medium text-emerald-600">Owner Dashboard</Link>
+              <Link to="/owner-dashboard" className="hover:text-emerald-300 transition-colors font-medium text-emerald-400 px-2">Owner Dashboard</Link>
             )}
             {admin && (
-              <Link to="/admin" className="hover:text-primary transition-colors font-medium text-foreground">Admin</Link>
+              <Link to="/admin" className="hover:text-emerald-400 transition-colors font-medium text-white px-2">Admin</Link>
             )}
           </>
         )}
@@ -66,10 +66,10 @@ export default function AppHeader() {
           <span
             className={`px-2 py-0.5 text-xs rounded-full border ${
               role === 'owner'
-                ? 'bg-green-100 text-green-700 border-green-300'
+                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                 : role === 'admin'
-                ? 'bg-blue-100 text-blue-700 border-blue-300'
-                : 'bg-gray-100 text-gray-700 border-gray-300'
+                ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                : 'bg-gray-500/20 text-gray-300 border-gray-500/40'
             }`}
           >
             {role.toUpperCase()}
@@ -78,12 +78,12 @@ export default function AppHeader() {
 
         {/* Auth buttons */}
         {authed ? (
-          <Button variant="ghost" onClick={handleLogout}>
+          <Button variant="ghost" onClick={handleLogout} className="text-white hover:text-emerald-400 hover:bg-white/10">
             Sign Out
           </Button>
         ) : (
           <Link to="/auth">
-            <Button variant="ghost">
+            <Button variant="ghost" className="text-white hover:text-emerald-400 hover:bg-white/10">
               Sign In
             </Button>
           </Link>
