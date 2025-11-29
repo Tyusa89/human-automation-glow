@@ -1,5 +1,8 @@
 project_id = "rqldulvkwzvrmcvwttep"
 
+[functions.chatkit-session]
+verify_jwt = true
+
 [functions.templates]
 verify_jwt = false
 
