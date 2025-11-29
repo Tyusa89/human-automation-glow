@@ -33,11 +33,11 @@ verify_jwt = false
 [functions.n8n-callback]
 verify_jwt = false
 
-[functions.agentkit-leads]
+[functions.econest-leads]
 verify_jwt = false
 
-[functions.agentkit-templates]
+[functions.econest-templates]
 verify_jwt = false
 
-[functions.agentkit-events]
+[functions.econest-events]
 verify_jwt = false
