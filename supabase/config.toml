@@ -3,6 +3,9 @@ project_id = "rqldulvkwzvrmcvwttep"
 [functions.chatkit-session]
 verify_jwt = true
 
+[functions.get_owner_dashboard_stats]
+verify_jwt = false
+
 [functions.templates]
 verify_jwt = false
 
