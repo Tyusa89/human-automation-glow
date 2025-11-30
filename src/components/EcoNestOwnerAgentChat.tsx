@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -9,49 +9,54 @@ export function EcoNestOwnerAgentChat() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
 
-  const { control } = useChatKit({
-    api: {
-      async getClientSecret(existing) {
-        setIsConnecting(true);
-        setConnectionError(null);
+  const getClientSecret = useCallback(async (existing?: string) => {
+    setIsConnecting(true);
+    setConnectionError(null);
 
-        try {
-          const {
-            data: { session },
-          } = await supabase.auth.getSession();
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-          const accessToken = session?.access_token;
-          if (!accessToken) {
-            throw new Error("You must be signed in to use the EcoNest Agent.");
-          }
+      const accessToken = session?.access_token;
+      if (!accessToken) {
+        throw new Error("You must be signed in to use the EcoNest Agent.");
+      }
 
-          const res = await fetch(CHATKIT_SESSION_ENDPOINT, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify({}),
-          });
+      const res = await fetch(CHATKIT_SESSION_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({}),
+      });
 
-          if (!res.ok) {
-            const text = await res.text();
-            console.error("Failed to get ChatKit client_secret", res.status, text);
-            throw new Error("Unable to create EcoNest agent session");
-          }
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Failed to get ChatKit client_secret", res.status, text);
+        throw new Error("Unable to create EcoNest agent session");
+      }
 
-          const data = await res.json();
-          setIsConnecting(false);
-          return data.client_secret;
-        } catch (err) {
-          const errorMsg = err instanceof Error ? err.message : String(err);
-          setConnectionError(errorMsg);
-          setIsConnecting(false);
-          throw err;
-        }
-      },
-    },
-  });
+      const data = await res.json();
+      setIsConnecting(false);
+      return data.client_secret;
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      setConnectionError(errorMsg);
+      setIsConnecting(false);
+      throw err;
+    }
+  }, []);
+
+  const chatKitConfig = useMemo(
+    () => ({
+      api: { getClientSecret },
+    }),
+    [getClientSecret]
+  );
+
+  const { control } = useChatKit(chatKitConfig);
 
   if (isConnecting) {
     return (
