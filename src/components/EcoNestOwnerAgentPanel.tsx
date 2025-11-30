@@ -1,80 +1,82 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-// Small helper so we don't blow up if ChatKit script isn't ready yet
-declare global {
-  interface Window {
-    ChatKit?: {
-      createChat: (options: {
-        // URL of your Supabase edge function
-        sessionEndpoint: string;
-        // DOM element to mount into
-        element: HTMLElement;
-        // Optional: theme, title, etc.
-        title?: string;
-      }) => { destroy: () => void };
-    };
-  }
-}
-
-const CHATKIT_SESSION_URL =
-  import.meta.env.VITE_CHATKIT_SESSION_URL ??
-  "https://YOUR_SUPABASE_PROJECT_ID.supabase.co/functions/v1/chatkit-session";
-
-export const EcoNestOwnerAgentPanel: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
+export const EcoNestOwnerAgentPanel = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
-  const [ready, setReady] = useState(false);
 
-  // 1) Load ChatKit script once
   useEffect(() => {
-    if (window.ChatKit) {
-      setReady(true);
-      return;
-    }
+    let cancelled = false;
 
-    const existing = document.querySelector<HTMLScriptElement>(
-      'script[data-econest-chatkit]'
-    );
-    if (existing) {
-      existing.addEventListener("load", () => setReady(true));
-      return;
-    }
+    // Load ChatKit script first
+    const loadScript = () => {
+      return new Promise<void>((resolve, reject) => {
+        if ((window as any).ChatKit) {
+          resolve();
+          return;
+        }
 
-    const script = document.createElement("script");
-    script.src = "https://chat.openai.com/chatkit.js";
-    script.async = true;
-    script.dataset.econestChatkit = "true";
-    script.onload = () => setReady(true);
-    script.onerror = () =>
-      setError("Couldn't load EcoNest Agent script. Check your network.");
-    document.body.appendChild(script);
+        const existing = document.querySelector<HTMLScriptElement>(
+          'script[data-econest-chatkit]'
+        );
+        
+        if (existing) {
+          existing.addEventListener("load", () => resolve());
+          return;
+        }
 
-    return () => {
-      script.onload = null;
-      script.onerror = null;
+        const script = document.createElement("script");
+        script.src = "https://chat.openai.com/chatkit.js";
+        script.async = true;
+        script.dataset.econestChatkit = "true";
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error("Failed to load ChatKit script"));
+        document.body.appendChild(script);
+      });
     };
+
+    async function init() {
+      try {
+        await loadScript();
+      } catch (e) {
+        if (!cancelled) {
+          setError("ChatKit failed to load.");
+        }
+        return;
+      }
+
+      // Wait for ChatKit to be available
+      for (let i = 0; i < 20; i++) {
+        if ((window as any).ChatKit) break;
+        await new Promise(r => setTimeout(r, 250));
+      }
+
+      if (cancelled) return;
+
+      if (!(window as any).ChatKit) {
+        setError("ChatKit failed to load.");
+        return;
+      }
+
+      const ChatKit = (window as any).ChatKit;
+
+      try {
+        ChatKit.mount({
+          element: containerRef.current,
+          sessionEndpoint: `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chatkit-session`,
+          title: "EcoNest Owner Assistant",
+          instructions: "You are the private EcoNest owner assistant.",
+        });
+      } catch (e) {
+        console.error(e);
+        if (!cancelled) {
+          setError("Failed to mount EcoNest Agent.");
+        }
+      }
+    }
+
+    init();
+    return () => { cancelled = true; };
   }, []);
-
-  // 2) Once script is ready + we have a div, create the chat
-  useEffect(() => {
-    if (!ready || !containerRef.current || !window.ChatKit) return;
-    if (!CHATKIT_SESSION_URL) {
-      setError("Missing VITE_CHATKIT_SESSION_URL env.");
-      return;
-    }
-
-    setError(null);
-
-    const chat = window.ChatKit.createChat({
-      sessionEndpoint: CHATKIT_SESSION_URL,
-      element: containerRef.current,
-      title: "EcoNest Agent (Owner Assistant)",
-    });
-
-    return () => {
-      chat?.destroy?.();
-    };
-  }, [ready]);
 
   return (
     <section className="mt-10 rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-slate-50 shadow-sm">
@@ -94,7 +96,7 @@ export const EcoNestOwnerAgentPanel: React.FC = () => {
 
       <div
         ref={containerRef}
-        className="min-h-[320px] rounded-xl border border-slate-800 bg-slate-950/80"
+        className="relative h-[480px] w-full rounded-xl border border-slate-800 bg-slate-950/80"
       />
     </section>
   );
