@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import EcoNestOwnerAgentChat from './EcoNestOwnerAgentChat';
+import { EcoNestOwnerAgentPanel } from './EcoNestOwnerAgentPanel';
 
 type LeadStatusCounts = {
   total: number;
@@ -343,17 +343,8 @@ export const EcoNestOwnerDashboard: React.FC = () => {
         )}
       </section>
 
-      {/* EcoNest Agent Chat */}
-      <section className="mt-8">
-        <h2 className="mb-2 text-xl font-semibold">
-          EcoNest Agent (Owner Assistant)
-        </h2>
-        <p className="mb-4 text-sm text-muted-foreground">
-          Chat with your EcoNest Agent to ask questions about leads, templates,
-          and recent automation activity.
-        </p>
-        <EcoNestOwnerAgentChat />
-      </section>
+      {/* EcoNest Agent Panel */}
+      <EcoNestOwnerAgentPanel />
     </div>
   );
 };
