@@ -90,7 +90,6 @@ When calling tools, ALWAYS:
         },
         body: JSON.stringify({
           model: "gpt-4o-realtime-preview",
-          workflow_id: WORKFLOW_ID,
           instructions,
         }),
       },
