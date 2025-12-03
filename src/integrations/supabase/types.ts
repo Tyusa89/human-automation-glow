@@ -68,6 +68,45 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_logs: {
+        Row: {
+          action_type: string
+          actor_id: string | null
+          actor_role: string
+          created_at: string | null
+          decision: string
+          id: number
+          metadata: Json | null
+          reason: string | null
+          resource: string
+          zone: number
+        }
+        Insert: {
+          action_type: string
+          actor_id?: string | null
+          actor_role: string
+          created_at?: string | null
+          decision: string
+          id?: number
+          metadata?: Json | null
+          reason?: string | null
+          resource: string
+          zone: number
+        }
+        Update: {
+          action_type?: string
+          actor_id?: string | null
+          actor_role?: string
+          created_at?: string | null
+          decision?: string
+          id?: number
+          metadata?: Json | null
+          reason?: string | null
+          resource?: string
+          zone?: number
+        }
+        Relationships: []
+      }
       automation_runs: {
         Row: {
           created_at: string | null
@@ -484,6 +523,63 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_approvals: {
+        Row: {
+          action_type: string
+          actor_id: string | null
+          actor_role: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          owner_id: string
+          reason: string | null
+          resolution_reason: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          resource: string
+          risk_level: string | null
+          status: string
+          updated_at: string | null
+          zone: number
+        }
+        Insert: {
+          action_type: string
+          actor_id?: string | null
+          actor_role: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          owner_id: string
+          reason?: string | null
+          resolution_reason?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          resource: string
+          risk_level?: string | null
+          status?: string
+          updated_at?: string | null
+          zone: number
+        }
+        Update: {
+          action_type?: string
+          actor_id?: string | null
+          actor_role?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          owner_id?: string
+          reason?: string | null
+          resolution_reason?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          resource?: string
+          risk_level?: string | null
+          status?: string
+          updated_at?: string | null
+          zone?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           company: string | null
@@ -891,6 +987,80 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      workflow_runs: {
+        Row: {
+          created_at: string | null
+          finished_at: string | null
+          id: string
+          owner_id: string
+          result_summary: Json | null
+          started_at: string | null
+          status: string
+          updated_at: string | null
+          workflow_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          finished_at?: string | null
+          id?: string
+          owner_id: string
+          result_summary?: Json | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string | null
+          workflow_id: string
+        }
+        Update: {
+          created_at?: string | null
+          finished_at?: string | null
+          id?: string
+          owner_id?: string
+          result_summary?: Json | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string | null
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_runs_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflows: {
+        Row: {
+          config: Json
+          created_at: string | null
+          id: string
+          name: string
+          owner_id: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          config: Json
+          created_at?: string | null
+          id?: string
+          name: string
+          owner_id: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          config?: Json
+          created_at?: string | null
+          id?: string
+          name?: string
+          owner_id?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
