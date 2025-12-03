@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/integrations/supabase/types';
 
 /**
  * Steward Authorization Request
@@ -18,6 +20,14 @@ export const StewardRequestSchema = z.object({
 export type StewardRequest = z.infer<typeof StewardRequestSchema>;
 
 /**
+ * Steward Decision outcomes
+ */
+export type StewardDecision =
+  | { decision: 'ALLOW' }
+  | { decision: 'DENY'; reason: string }
+  | { decision: 'REQUIRE_APPROVAL'; approvalId: string };
+
+/**
  * Zone risk levels:
  * 0 - Public/read-only data
  * 1 - User preferences, non-sensitive config
@@ -35,28 +45,90 @@ export const ZONE_LABELS: Record<number, string> = {
 
 /**
  * Check if an action requires human approval based on zone and actor role
+ * v1 - conservative and clear
  */
 export function requiresApproval(req: StewardRequest): boolean {
-  // Human principal can do anything
-  if (req.actorRole === 'human_principal') return false;
-  
-  // Zone 4 always requires approval for non-humans
-  if (req.zone === 4) return true;
-  
-  // Zone 3 requires approval for writes/config changes
-  if (req.zone === 3 && (req.actionType === 'write' || req.actionType === 'config_change')) {
+  // High-risk zones always require approval
+  if (req.zone >= 3) return true;
+
+  // Config changes are always gated unless human-triggered
+  if (
+    req.actionType === 'config_change' &&
+    req.actorRole !== 'human_principal'
+  ) {
     return true;
   }
-  
-  // Operators can only do zone 0-1 without approval
-  if (req.actorRole === 'operator' && req.zone > 1) return true;
-  
-  // Orchestrators need approval for zone 3+ writes
-  if (req.actorRole === 'orchestrator' && req.zone >= 3 && req.actionType !== 'read') {
-    return true;
-  }
-  
+
   return false;
+}
+
+/**
+ * Core Steward function - evaluates request and returns decision
+ */
+export async function stewardDecision(
+  supabase: SupabaseClient<Database>,
+  req: StewardRequest
+): Promise<StewardDecision> {
+  const escalationNeeded = requiresApproval(req);
+
+  // --- Case 1: Escalate to human ---
+  if (escalationNeeded) {
+    const { data, error } = await supabase
+      .from('pending_approvals')
+      .insert({
+        owner_id: req.ownerId,
+        actor_role: req.actorRole,
+        actor_id: req.actorId ?? null,
+        action_type: req.actionType,
+        zone: req.zone,
+        resource: req.resource,
+        status: 'pending',
+        risk_level: req.zone >= 4 ? 'critical' : 'high',
+        reason: req.reason,
+        metadata: req.metadata ?? {}
+      })
+      .select('id')
+      .single();
+
+    if (error) throw error;
+    if (!data) throw new Error('Failed to create pending approval');
+
+    // Audit the escalation
+    await supabase.from('audit_logs').insert({
+      actor_role: 'steward',
+      actor_id: 'steward_core',
+      action_type: req.actionType,
+      zone: req.zone,
+      resource: req.resource,
+      decision: 'escalated',
+      reason: req.reason,
+      metadata: {
+        owner_id: req.ownerId,
+        approval_id: data.id
+      }
+    });
+
+    return {
+      decision: 'REQUIRE_APPROVAL',
+      approvalId: data.id
+    };
+  }
+
+  // --- Case 2: Allowed ---
+  await supabase.from('audit_logs').insert({
+    actor_role: 'steward',
+    actor_id: 'steward_core',
+    action_type: req.actionType,
+    zone: req.zone,
+    resource: req.resource,
+    decision: 'allowed',
+    reason: req.reason,
+    metadata: {
+      owner_id: req.ownerId
+    }
+  });
+
+  return { decision: 'ALLOW' };
 }
 
 export function validateStewardRequest(data: unknown): StewardRequest {
