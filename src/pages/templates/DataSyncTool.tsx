@@ -283,8 +283,7 @@ export default function DataSyncTool() {
                           </div>
                           <Button 
                             size="sm" 
-                            variant={platform.connected ? "outline" : "default"} 
-                            className="w-full"
+                            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
                           >
                             {platform.connected ? "Configure" : "Connect"}
                           </Button>
