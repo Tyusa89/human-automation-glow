@@ -226,7 +226,7 @@ serve(async (req) => {
 
     const { message, conversationHistory = [] } = await req.json();
     console.log('Received customer service request:', { 
-      userId: user.id, 
+      userId, 
       messageLength: message?.length || 0, 
       historyLength: conversationHistory.length 
     });
