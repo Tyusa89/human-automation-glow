@@ -18,7 +18,7 @@ export default function SolutionsPage() {
 
       <ul className="mt-8 grid gap-4 md:grid-cols-2">
         {solutions.map((s) => (
-          <li key={s} className="rounded-xl border p-4 bg-background">
+          <li key={s} className="rounded-xl border p-4 bg-background text-foreground">
             {s}
           </li>
         ))}
