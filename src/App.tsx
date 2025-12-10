@@ -29,6 +29,7 @@ import SetupPage from '@/pages/Setup';
 import PaymentTerms from '@/pages/PaymentTerms';
 import TermsAcceptance from '@/pages/TermsAcceptance';
 import OwnerDashboard from '@/pages/OwnerDashboard';
+import OwnerApprovals from '@/pages/OwnerApprovals';
 import NotFound from '@/pages/NotFound';
 import ErrorBoundary from "./components/ErrorBoundary";
 import { TemplateDetail } from '@/components/templates/TemplateDetail';
@@ -85,6 +86,7 @@ const App = () => {
           <Route path="/payment-terms" element={<PaymentTerms />} />
           <Route path="/terms-acceptance" element={<TermsAcceptance />} />
           <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+          <Route path="/owner/approvals" element={<OwnerApprovals />} />
                 <Route path="/setup" element={<SetupPage />} />
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/create-profile" element={<CreateProfile />} />
