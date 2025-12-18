@@ -20,7 +20,12 @@ import IntegrationsPage from '@/pages/Integrations';
 import ServicesPage from '@/pages/Services';
 import PricingPage from '@/pages/Pricing';
 import PaymentPage from '@/pages/Payment';
-import DocsPage from '@/pages/Docs';
+import DocsHub from '@/pages/docs/DocsHub';
+import TemplatesGuide from '@/pages/docs/TemplatesGuide';
+import GettingStarted from '@/pages/docs/GettingStarted';
+import IntegrationsGuide from '@/pages/docs/IntegrationsGuide';
+import SolutionsGuide from '@/pages/docs/SolutionsGuide';
+import TroubleshootingGuide from '@/pages/docs/TroubleshootingGuide';
 import TrustPage from '@/pages/Trust';
 import HelpPage from '@/pages/Help';
 import ContactPage from '@/pages/ContactPage';
@@ -76,7 +81,12 @@ const App = () => {
                 <Route path="/demo/analytics-dashboard" element={<AnalyticsDashboard />} />
                 <Route path="/templates/:slug" element={<TemplateDetail />} />
                 <Route path="/integrations" element={<IntegrationsPage />} />
-                <Route path="/docs" element={<DocsPage />} />
+                <Route path="/docs" element={<DocsHub />} />
+                <Route path="/docs/getting-started" element={<GettingStarted />} />
+                <Route path="/docs/templates" element={<TemplatesGuide />} />
+                <Route path="/docs/integrations" element={<IntegrationsGuide />} />
+                <Route path="/docs/solutions" element={<SolutionsGuide />} />
+                <Route path="/docs/troubleshooting" element={<TroubleshootingGuide />} />
                 <Route path="/help" element={<HelpPage />} />
                 <Route path="/trust" element={<TrustPage />} />
                 <Route path="/services" element={<ServicesPage />} />
