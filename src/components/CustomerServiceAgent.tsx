@@ -289,7 +289,7 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
   return (
     <Card 
       ref={cardRef}
-      className="fixed w-96 h-[600px] z-50 shadow-xl border-emerald-200 flex flex-col"
+      className="fixed w-96 h-[700px] z-50 shadow-xl border-emerald-200 flex flex-col overflow-hidden"
       style={{
         left: position.x || 'auto',
         top: position.y || 'auto',
@@ -332,8 +332,8 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 flex flex-col p-0">
-        <ScrollArea className="flex-1 p-4">
+      <CardContent className="flex-1 flex flex-col p-0 min-h-0">
+        <ScrollArea className="flex-1 p-4 min-h-0">
           <div className="space-y-4">
             {messages.map((message) => (
               <div
@@ -396,10 +396,10 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
           <div ref={messagesEndRef} />
         </ScrollArea>
 
-        <div className="p-4 border-t bg-gray-50">
+        <div className="p-4 border-t bg-muted/50">
           {/* Voice Mode Toggle */}
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-white">
+            <span className="text-xs text-muted-foreground">
               {useVoiceMode ? 'Voice Mode' : 'Text Mode'}
             </span>
             <div className="flex items-center gap-2">
@@ -427,7 +427,7 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => setInput(action)}
-                className="text-xs h-6 px-2 text-white border-white/30 hover:bg-white/20 hover:text-white"
+                className="text-xs h-6 px-2"
                 disabled={isLoading}
               >
                 {action}
@@ -440,9 +440,9 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={useVoiceMode ? "Type or speak your message..." : "Type your message..."}
-              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
               disabled={isLoading}
-              className="text-sm text-white placeholder:text-white/70"
+              className="text-sm"
             />
             
             {/* Voice Controls */}

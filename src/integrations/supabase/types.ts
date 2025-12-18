@@ -532,6 +532,7 @@ export type Database = {
           id: string
           metadata: Json | null
           owner_id: string
+          processed_at: string | null
           reason: string | null
           resolution_reason: string | null
           resolved_at: string | null
@@ -550,6 +551,7 @@ export type Database = {
           id?: string
           metadata?: Json | null
           owner_id: string
+          processed_at?: string | null
           reason?: string | null
           resolution_reason?: string | null
           resolved_at?: string | null
@@ -568,6 +570,7 @@ export type Database = {
           id?: string
           metadata?: Json | null
           owner_id?: string
+          processed_at?: string | null
           reason?: string | null
           resolution_reason?: string | null
           resolved_at?: string | null
