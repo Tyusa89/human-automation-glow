@@ -407,7 +407,7 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={toggleVoiceMode}
-                className="text-xs h-6 px-2"
+                className="text-xs h-6 px-2 bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 <Volume2 className="h-3 w-3 mr-1" />
                 {useVoiceMode ? 'Switch to Text' : 'Voice Chat'}
