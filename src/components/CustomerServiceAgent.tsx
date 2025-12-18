@@ -427,7 +427,7 @@ const CustomerServiceAgent: React.FC<CustomerServiceAgentProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => setInput(action)}
-                className="text-xs h-6 px-2"
+                className="text-xs h-6 px-2 bg-primary text-primary-foreground hover:bg-primary/90"
                 disabled={isLoading}
               >
                 {action}
