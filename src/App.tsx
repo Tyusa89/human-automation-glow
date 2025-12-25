@@ -65,41 +65,43 @@ const App = () => {
             <AppHeader />
             <main>
               <Routes>
-                {/* public */}
-                <Route path="/" element={<Index />} />
-                <Route path="/product" element={<ProductPage />} />
-                <Route path="/solutions" element={<SolutionsPage />} />
-                <Route path="/templates" element={<TemplatesPage />} />
-                <Route path="/templates/:templateId/setup" element={<TemplateSetupWizard />} />
-                <Route path="/template-success" element={<TemplateSuccess />} />
-                <Route path="/demo/zapier-intercom" element={<ZapierIntercomIntegration />} />
-                <Route path="/demo/social-media-scheduler" element={<SocialMediaScheduler />} />
-                <Route path="/demo/email-campaign-builder" element={<EmailCampaignBuilder />} />
-            <Route path="/demo/inventory-manager" element={<InventoryManager />} />
-            <Route path="/demo/data-sync-tool" element={<DataSyncTool />} />
-            <Route path="/demo/report-generator" element={<ReportGenerator />} />
-                <Route path="/demo/analytics-dashboard" element={<AnalyticsDashboard />} />
-                <Route path="/templates/:slug" element={<TemplateDetail />} />
-                <Route path="/integrations" element={<IntegrationsPage />} />
-                <Route path="/docs" element={<DocsHub />} />
-                <Route path="/docs/getting-started" element={<GettingStarted />} />
-                <Route path="/docs/templates" element={<TemplatesGuide />} />
-                <Route path="/docs/integrations" element={<IntegrationsGuide />} />
-                <Route path="/docs/solutions" element={<SolutionsGuide />} />
-                <Route path="/docs/troubleshooting" element={<TroubleshootingGuide />} />
-                <Route path="/help" element={<HelpPage />} />
-                <Route path="/trust" element={<TrustPage />} />
-                <Route path="/services" element={<ServicesPage />} />
-                <Route path="/pricing" element={<PricingPage />} />
-                <Route path="/payment" element={<PaymentPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-          <Route path="/payment-terms" element={<PaymentTerms />} />
-          <Route path="/terms-acceptance" element={<TermsAcceptance />} />
-          <Route path="/owner-dashboard" element={<OwnerDashboard />} />
-          <Route path="/owner/approvals" element={<OwnerApprovals />} />
-                <Route path="/setup" element={<SetupPage />} />
+                {/* public - only auth page */}
                 <Route path="/auth" element={<AuthPage />} />
-                <Route path="/create-profile" element={<CreateProfile />} />
+
+                {/* protected - all app routes require authentication */}
+                <Route path="/" element={<RequireAuth><Index /></RequireAuth>} />
+                <Route path="/product" element={<RequireAuth><ProductPage /></RequireAuth>} />
+                <Route path="/solutions" element={<RequireAuth><SolutionsPage /></RequireAuth>} />
+                <Route path="/templates" element={<RequireAuth><TemplatesPage /></RequireAuth>} />
+                <Route path="/templates/:templateId/setup" element={<RequireAuth><TemplateSetupWizard /></RequireAuth>} />
+                <Route path="/template-success" element={<RequireAuth><TemplateSuccess /></RequireAuth>} />
+                <Route path="/demo/zapier-intercom" element={<RequireAuth><ZapierIntercomIntegration /></RequireAuth>} />
+                <Route path="/demo/social-media-scheduler" element={<RequireAuth><SocialMediaScheduler /></RequireAuth>} />
+                <Route path="/demo/email-campaign-builder" element={<RequireAuth><EmailCampaignBuilder /></RequireAuth>} />
+                <Route path="/demo/inventory-manager" element={<RequireAuth><InventoryManager /></RequireAuth>} />
+                <Route path="/demo/data-sync-tool" element={<RequireAuth><DataSyncTool /></RequireAuth>} />
+                <Route path="/demo/report-generator" element={<RequireAuth><ReportGenerator /></RequireAuth>} />
+                <Route path="/demo/analytics-dashboard" element={<RequireAuth><AnalyticsDashboard /></RequireAuth>} />
+                <Route path="/templates/:slug" element={<RequireAuth><TemplateDetail /></RequireAuth>} />
+                <Route path="/integrations" element={<RequireAuth><IntegrationsPage /></RequireAuth>} />
+                <Route path="/docs" element={<RequireAuth><DocsHub /></RequireAuth>} />
+                <Route path="/docs/getting-started" element={<RequireAuth><GettingStarted /></RequireAuth>} />
+                <Route path="/docs/templates" element={<RequireAuth><TemplatesGuide /></RequireAuth>} />
+                <Route path="/docs/integrations" element={<RequireAuth><IntegrationsGuide /></RequireAuth>} />
+                <Route path="/docs/solutions" element={<RequireAuth><SolutionsGuide /></RequireAuth>} />
+                <Route path="/docs/troubleshooting" element={<RequireAuth><TroubleshootingGuide /></RequireAuth>} />
+                <Route path="/help" element={<RequireAuth><HelpPage /></RequireAuth>} />
+                <Route path="/trust" element={<RequireAuth><TrustPage /></RequireAuth>} />
+                <Route path="/services" element={<RequireAuth><ServicesPage /></RequireAuth>} />
+                <Route path="/pricing" element={<RequireAuth><PricingPage /></RequireAuth>} />
+                <Route path="/payment" element={<RequireAuth><PaymentPage /></RequireAuth>} />
+                <Route path="/contact" element={<RequireAuth><ContactPage /></RequireAuth>} />
+                <Route path="/payment-terms" element={<RequireAuth><PaymentTerms /></RequireAuth>} />
+                <Route path="/terms-acceptance" element={<RequireAuth><TermsAcceptance /></RequireAuth>} />
+                <Route path="/owner-dashboard" element={<RequireAuth><OwnerDashboard /></RequireAuth>} />
+                <Route path="/owner/approvals" element={<RequireAuth><OwnerApprovals /></RequireAuth>} />
+                <Route path="/setup" element={<RequireAuth><SetupPage /></RequireAuth>} />
+                <Route path="/create-profile" element={<RequireAuth><CreateProfile /></RequireAuth>} />
 
                 {/* protected */}
                 <Route
