@@ -48,6 +48,8 @@ import ReportGenerator from '@/pages/templates/ReportGenerator';
 import AnalyticsDashboard from '@/pages/templates/AnalyticsDashboard';
 import CustomerServiceWidget from '@/components/CustomerServiceWidget';
 import TemplateSuccess from '@/pages/TemplateSuccess';
+import BookPage from '@/pages/Book';
+import DashboardAppointments from '@/pages/DashboardAppointments';
 
 const queryClient = new QueryClient();
 
@@ -102,6 +104,8 @@ const App = () => {
                 <Route path="/owner/approvals" element={<RequireAuth><OwnerApprovals /></RequireAuth>} />
                 <Route path="/setup" element={<RequireAuth><SetupPage /></RequireAuth>} />
                 <Route path="/create-profile" element={<RequireAuth><CreateProfile /></RequireAuth>} />
+                <Route path="/book" element={<BookPage />} />
+                <Route path="/dashboard/appointments" element={<RequireAuth><DashboardAppointments /></RequireAuth>} />
 
                 {/* protected */}
                 <Route
