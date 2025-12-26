@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { getResend, getFromEmail, bookingEmail } from '../_shared/email.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -120,7 +121,32 @@ Deno.serve(async (req) => {
 
     console.log(`Appointment booked: ${appointment.id} for ${clientEmail} at ${startTime}`);
 
-    // TODO: Send confirmation email (phase 2)
+    const manage = {
+      cancelUrl: `/book/manage?token=${appointment.cancel_token}&action=cancel`,
+      rescheduleUrl: `/book/manage?token=${appointment.reschedule_token}&action=reschedule`
+    };
+
+    // Send confirmation email (non-blocking but awaited for visibility)
+    try {
+      const resend = getResend();
+      const from = getFromEmail();
+      const tpl = bookingEmail({
+        name: clientName,
+        startTime: appointment.start_time,
+        manage,
+      });
+
+      await resend.emails.send({
+        from,
+        to: clientEmail,
+        subject: tpl.subject,
+        html: tpl.html,
+      });
+      console.log(`Confirmation email sent to ${clientEmail}`);
+    } catch (emailErr) {
+      // Don't fail booking if email fails
+      console.error("Booking email failed:", emailErr);
+    }
 
     return new Response(
       JSON.stringify({
@@ -130,8 +156,8 @@ Deno.serve(async (req) => {
           service: service.name,
           startTime: appointment.start_time,
           endTime: appointment.end_time,
-          cancelUrl: `/book/manage?token=${appointment.cancel_token}&action=cancel`,
-          rescheduleUrl: `/book/manage?token=${appointment.reschedule_token}&action=reschedule`
+          cancelUrl: manage.cancelUrl,
+          rescheduleUrl: manage.rescheduleUrl
         }
       }),
       { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

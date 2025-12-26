@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { getResend, getFromEmail, canceledEmail, rescheduledEmail } from '../_shared/email.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -45,7 +46,7 @@ Deno.serve(async (req) => {
     const tokenColumn = action === 'cancel' ? 'cancel_token' : 'reschedule_token';
     const { data: appointment, error: findError } = await supabase
       .from('appointments')
-      .select('id, service_id, start_time, end_time, status, client_email')
+      .select('id, service_id, start_time, end_time, status, client_email, client_name')
       .eq(tokenColumn, token)
       .single();
 
@@ -81,6 +82,26 @@ Deno.serve(async (req) => {
       }
 
       console.log(`Appointment ${appointment.id} canceled`);
+
+      // Send cancellation email
+      try {
+        const resend = getResend();
+        const from = getFromEmail();
+        const tpl = canceledEmail({
+          name: appointment.client_name,
+          startTime: appointment.start_time,
+        });
+
+        await resend.emails.send({
+          from,
+          to: appointment.client_email,
+          subject: tpl.subject,
+          html: tpl.html,
+        });
+        console.log(`Cancellation email sent to ${appointment.client_email}`);
+      } catch (emailErr) {
+        console.error("Cancel email failed:", emailErr);
+      }
 
       return new Response(
         JSON.stringify({
@@ -161,6 +182,26 @@ Deno.serve(async (req) => {
       }
 
       console.log(`Appointment ${appointment.id} rescheduled to ${newStartTime}`);
+
+      // Send reschedule email
+      try {
+        const resend = getResend();
+        const from = getFromEmail();
+        const tpl = rescheduledEmail({
+          name: appointment.client_name,
+          newStartTime,
+        });
+
+        await resend.emails.send({
+          from,
+          to: appointment.client_email,
+          subject: tpl.subject,
+          html: tpl.html,
+        });
+        console.log(`Reschedule email sent to ${appointment.client_email}`);
+      } catch (emailErr) {
+        console.error("Reschedule email failed:", emailErr);
+      }
 
       return new Response(
         JSON.stringify({
