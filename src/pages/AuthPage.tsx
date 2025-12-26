@@ -1,5 +1,5 @@
-
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,10 @@ type Tab = 'magic' | 'password' | 'phone';
 
 export default function AuthPage() {
   console.log('AuthPage component is rendering');
+  
+  const [searchParams] = useSearchParams();
+  // Get the return URL from query params, default to /dashboard
+  const returnTo = searchParams.get('returnTo') || '/dashboard';
   
   // UI state
   const [tab, setTab] = useState<Tab>('magic');
@@ -47,11 +51,11 @@ export default function AuthPage() {
     supabase.auth.getSession().then(({ data }) => {
       console.log('Session check result:', data);
       if (data.session) {
-        console.log('User already authenticated, redirecting to dashboard');
-        window.location.replace('/dashboard');
+        console.log('User already authenticated, redirecting to:', returnTo);
+        window.location.replace(returnTo);
       }
     });
-  }, []);
+  }, [returnTo]);
 
   // live countdown for "Resend in N s"
   useEffect(() => {
@@ -82,7 +86,7 @@ export default function AuthPage() {
     
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: window.location.origin + '/dashboard' }
+      options: { emailRedirectTo: window.location.origin + returnTo }
     });
     
     setLoading(false);
@@ -121,7 +125,7 @@ export default function AuthPage() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`
+          emailRedirectTo: `${window.location.origin}${returnTo}`
         }
       });
       data = result.data;
@@ -153,7 +157,7 @@ export default function AuthPage() {
       return;
     }
     
-    window.location.replace('/dashboard');
+    window.location.replace(returnTo);
   }
 
   async function handleReset() {
@@ -212,7 +216,7 @@ export default function AuthPage() {
       return;
     }
     
-    window.location.replace('/dashboard');
+    window.location.replace(returnTo);
   }
 
   return (
