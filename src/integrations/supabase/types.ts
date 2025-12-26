@@ -68,6 +68,83 @@ export type Database = {
         }
         Relationships: []
       }
+      appointment_services: {
+        Row: {
+          active: boolean
+          created_at: string
+          duration_minutes: number
+          id: string
+          name: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          duration_minutes: number
+          id?: string
+          name: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      appointments: {
+        Row: {
+          cancel_token: string
+          client_email: string
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          end_time: string
+          id: string
+          notes: string | null
+          reschedule_token: string
+          service_id: string
+          start_time: string
+          status: string
+        }
+        Insert: {
+          cancel_token?: string
+          client_email: string
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          end_time: string
+          id?: string
+          notes?: string | null
+          reschedule_token?: string
+          service_id: string
+          start_time: string
+          status?: string
+        }
+        Update: {
+          cancel_token?: string
+          client_email?: string
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          end_time?: string
+          id?: string
+          notes?: string | null
+          reschedule_token?: string
+          service_id?: string
+          start_time?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "appointment_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action_type: string
