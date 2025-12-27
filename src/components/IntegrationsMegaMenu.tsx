@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
   NavigationMenu,
@@ -24,11 +24,17 @@ const integrations = [
 ];
 
 export default function IntegrationsMegaMenu({ className }: { className?: string }) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate("/integrations");
+  };
+
   return (
     <NavigationMenu className={cn("", className)}>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>
+          <NavigationMenuTrigger onClick={handleClick} className="cursor-pointer">
             Integrations
           </NavigationMenuTrigger>
           <NavigationMenuContent>
