@@ -44,7 +44,7 @@ export function resolveDashboardWidgets(
     const enabled = ovr ? ovr.enabled : def.defaultEnabled;
 
     // Use DB sort_order if exists, otherwise use template-aware default
-    const sortOrder = ovr?.sort_order ?? (() => {
+    let sortOrder = ovr?.sort_order ?? (() => {
       const base = ruleOrder.get(key) ?? def.defaultOrder ?? 999;
       const rank = emphasisRank.get(key);
 
@@ -55,6 +55,11 @@ export function resolveDashboardWidgets(
       // We compress into early slots while still stable.
       return rank * 10; // hero: 10,20,30... secondary: 1010,1020...
     })();
+
+    // HARD PIN: focus_today always first (unless user explicitly set a DB sort_order)
+    if (key === "focus_today" && ovr?.sort_order == null) {
+      sortOrder = -100000;
+    }
 
     const config = {
       ...(def.defaultConfig ?? {}),
