@@ -26,7 +26,7 @@ import {
   type UserProfile,
   type ResolvedWidget 
 } from '@/dashboard';
-import { isActivationComplete, toActivationState } from '@/dashboard/activation';
+import { getActivationComplete } from '@/dashboard/activation';
 import { runTask } from '@/lib/db';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
@@ -168,7 +168,16 @@ const Dashboard = () => {
   const isPowerUser = mode === 'power';
 
   // Compute activation complete using single source of truth
-  const activationComplete = isActivationComplete(toActivationState(signals));
+  const activationComplete = getActivationComplete({
+    profile: {
+      full_name: signals.profileCompleted ? 'set' : null, // simplified - we already have profileCompleted
+      company: signals.profileCompleted ? 'set' : null,
+      onboarding_completed: signals.profileCompleted,
+    },
+    activeTemplatesCount: signals.activeTemplatesCount,
+    hasSuccessfulRun: signals.hasSuccessfulAutomationRun,
+    hasFirstValueEvent: signals.hasFirstValueEvent,
+  });
 
   // Power user mode: filter out beginner-focused widgets
   const displayedSecondaryWidgets = isNewUser 
@@ -299,6 +308,16 @@ const Dashboard = () => {
             
             {/* Setup Checklist - only show if NOT activation complete */}
             {!activationComplete && <SetupChecklist />}
+            
+            {/* Small link for activated users who want to revisit setup */}
+            {activationComplete && (
+              <p className="text-sm text-slate-500">
+                Need to change your setup?{" "}
+                <Link to="/support/getting-started" className="text-primary hover:underline">
+                  View setup guide
+                </Link>
+              </p>
+            )}
             
             {/* Suggestion Banner */}
             {!suggestionLoading && suggestion && (

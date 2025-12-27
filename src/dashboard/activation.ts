@@ -1,19 +1,20 @@
 /**
- * Activation state represents the milestones a user must complete
- * to transition from "new user" (activation mode) to "power user" (operations mode).
- * 
- * This is the single source of truth for dashboard mode switching.
+ * Activation inputs - matches exact database schema fields
  */
-export interface ActivationState {
-  profileCompleted: boolean;
+export type ActivationInputs = {
+  profile: {
+    full_name: string | null;
+    company: string | null;
+    onboarding_completed: boolean;
+  } | null;
   activeTemplatesCount: number;
   hasSuccessfulRun: boolean;
-  hasFirstValueEvent: boolean; // appointment booked OR lead created OR payment received
-}
+  hasFirstValueEvent: boolean;
+};
 
 /**
  * A user is "activation complete" when ALL of these are true:
- * - Profile is completed (name, company, onboarding_completed)
+ * - Profile is completed (full_name + company + onboarding_completed)
  * - At least one active template installed
  * - Either a successful automation run OR a first value event
  * 
@@ -21,7 +22,33 @@ export interface ActivationState {
  * - Setup checklist disappears forever
  * - Dashboard shifts to power user mode
  * - NBA shows optimization actions instead of activation actions
+ * - Power-user suggestions start appearing
  */
+export function getActivationComplete(i: ActivationInputs): boolean {
+  const profileCompleted = !!(
+    i.profile?.full_name &&
+    i.profile?.company &&
+    i.profile?.onboarding_completed
+  );
+
+  return (
+    profileCompleted &&
+    (i.activeTemplatesCount ?? 0) >= 1 &&
+    (i.hasSuccessfulRun || i.hasFirstValueEvent)
+  );
+}
+
+/**
+ * Legacy aliases for backward compatibility
+ * @deprecated Use ActivationInputs and getActivationComplete instead
+ */
+export type ActivationState = {
+  profileCompleted: boolean;
+  activeTemplatesCount: number;
+  hasSuccessfulRun: boolean;
+  hasFirstValueEvent: boolean;
+};
+
 export function isActivationComplete(state: ActivationState): boolean {
   return (
     state.profileCompleted &&
@@ -30,9 +57,6 @@ export function isActivationComplete(state: ActivationState): boolean {
   );
 }
 
-/**
- * Helper to create ActivationState from MaturitySignals
- */
 export function toActivationState(signals: {
   profileCompleted: boolean;
   activeTemplatesCount: number;

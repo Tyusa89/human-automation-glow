@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { CheckCircle2, Circle, Calendar, Users, Bot, Settings, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
-import { isActivationComplete, type ActivationState } from "@/dashboard/activation";
+import { getActivationComplete } from "@/dashboard/activation";
 
 interface ChecklistItem {
   id: string;
@@ -68,14 +68,18 @@ export function SetupChecklist() {
       const hasSuccessfulRun = (runsResult.data?.length ?? 0) > 0;
 
       // Check if activation is complete - if so, hide forever
-      const activationState: ActivationState = {
-        profileCompleted: !!(profile?.full_name && profile?.company && profile?.onboarding_completed),
+      const activationComplete = getActivationComplete({
+        profile: {
+          full_name: profile?.full_name ?? null,
+          company: profile?.company ?? null,
+          onboarding_completed: profile?.onboarding_completed ?? false,
+        },
         activeTemplatesCount,
         hasSuccessfulRun,
-        hasFirstValueEvent: hasLeads, // leads count as first value
-      };
+        hasFirstValueEvent: hasLeads,
+      });
 
-      if (isActivationComplete(activationState)) {
+      if (activationComplete) {
         setDismissed(true);
         return;
       }

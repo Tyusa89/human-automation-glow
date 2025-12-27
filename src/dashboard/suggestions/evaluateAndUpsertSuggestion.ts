@@ -3,7 +3,7 @@ import { getDashboardConfig, UserProfile } from "@/dashboard/dashboardRules";
 import { resolveDashboardWidgets } from "@/dashboard/mergeDashboardConfig";
 import { WidgetKey, WIDGETS } from "@/dashboard/widgetRegistry";
 import { SuggestionPayload } from "./types";
-import { isActivationComplete, ActivationState } from "@/dashboard/activation";
+import { getActivationComplete } from "@/dashboard/activation";
 type DbWidgetRow = {
   widget_key: string;
   enabled: boolean;
@@ -137,16 +137,20 @@ export async function evaluateAndUpsertSuggestionOncePerDay(userId: string) {
     supabase.from("appointments").select("id").limit(1),
   ]);
 
-  const activationState: ActivationState = {
-    profileCompleted: !!(profile.full_name && profile.company && profile.onboarding_completed),
+  const activationComplete = getActivationComplete({
+    profile: {
+      full_name: profile.full_name ?? null,
+      company: profile.company ?? null,
+      onboarding_completed: profile.onboarding_completed ?? false,
+    },
     activeTemplatesCount: templatesResult.count ?? 0,
     hasSuccessfulRun: (runsResult.data?.length ?? 0) > 0,
     hasFirstValueEvent: (leadsResult.data?.length ?? 0) > 0 || (appointmentsResult.data?.length ?? 0) > 0,
-  };
+  });
 
   // If not activated yet, don't show "power user" suggestions.
   // Let the dashboard checklist + NBA handle activation.
-  if (!isActivationComplete(activationState)) return;
+  if (!activationComplete) return;
 
   // 5) Fetch last 7 days of events
   const since = isoDaysAgo(7);
