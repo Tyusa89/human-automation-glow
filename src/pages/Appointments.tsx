@@ -265,7 +265,7 @@ export default function AppointmentsPage() {
             <Button 
               variant="outline" 
               onClick={copyBookingLink}
-              className="gap-2"
+              className="gap-2 border-slate-600 bg-slate-800/60 text-slate-200 hover:bg-slate-700 hover:text-white"
             >
               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
               Copy booking link
@@ -336,10 +336,10 @@ export default function AppointmentsPage() {
         {/* Filter and Refresh */}
         <div className="flex items-center gap-3 mb-6">
           <Select value={filter} onValueChange={(v: any) => setFilter(v)}>
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-[140px] border-slate-600 bg-slate-800/60 text-slate-200">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="border-slate-600 bg-slate-800">
               <SelectItem value="upcoming">Upcoming</SelectItem>
               <SelectItem value="past">Past</SelectItem>
               <SelectItem value="all">All</SelectItem>
