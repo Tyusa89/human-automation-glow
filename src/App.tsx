@@ -50,6 +50,7 @@ import CustomerServiceWidget from '@/components/CustomerServiceWidget';
 import TemplateSuccess from '@/pages/TemplateSuccess';
 import BookPage from '@/pages/Book';
 import DashboardAppointments from '@/pages/DashboardAppointments';
+import AdminAppointments from '@/pages/AdminAppointments';
 
 const queryClient = new QueryClient();
 
@@ -106,6 +107,7 @@ const App = () => {
                 <Route path="/create-profile" element={<RequireAuth><CreateProfile /></RequireAuth>} />
                 <Route path="/book" element={<BookPage />} />
                 <Route path="/dashboard/appointments" element={<RequireAuth><DashboardAppointments /></RequireAuth>} />
+                <Route path="/admin/appointments" element={<RequireAuth><RequireAdmin><AdminAppointments /></RequireAdmin></RequireAuth>} />
 
                 {/* protected */}
                 <Route
