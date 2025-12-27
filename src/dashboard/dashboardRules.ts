@@ -14,95 +14,137 @@ export type UserProfile = {
 };
 
 export function getDashboardConfig(profile: UserProfile): WidgetKey[] {
-  const widgets: WidgetKey[] = [];
-
   // Map legacy fields if new ones aren't set
   const businessType = profile.business_type || mapLegacyWorkType(profile.work_type);
   const challenges = profile.primary_challenges?.length 
     ? profile.primary_challenges 
     : mapLegacyChallenges(profile.hardest_things);
 
-  /* -------------------------------------------------
-     1. ALWAYS-ON BASELINE
-  --------------------------------------------------*/
-  widgets.push("activity_feed");
-  widgets.push("kpi_weekly_income");
+  // Eligible set (the "what")
+  const eligible = new Set<WidgetKey>();
 
-  if (
-    profile.monthly_revenue_range &&
-    profile.monthly_revenue_range !== "starting_inconsistent"
-  ) {
-    widgets.push("kpi_monthly_income");
+  // Always-on baseline
+  eligible.add("activity_feed");
+  eligible.add("kpi_weekly_income");
+
+  if (profile.monthly_revenue_range && profile.monthly_revenue_range !== "starting_inconsistent") {
+    eligible.add("kpi_monthly_income");
   }
 
-  /* -------------------------------------------------
-     2. WORK TYPE → CORE WORK AREA
-  --------------------------------------------------*/
+  // Work type eligibility
   switch (businessType) {
     case "consultant":
     case "coach":
     case "freelancer":
-      widgets.push("client_list");
+      eligible.add("client_list");
       break;
-
     case "creative_designer":
     case "creative":
-      widgets.push("project_board");
+      eligible.add("project_board");
       break;
-
     case "local_service_provider":
     case "local-service":
-      widgets.push("appointments_today");
+      eligible.add("appointments_today");
       break;
-
     default:
-      widgets.push("task_list");
+      eligible.add("task_list");
   }
 
-  /* -------------------------------------------------
-     3. HARDEST THINGS → TOP PRIORITY WIDGETS
-  --------------------------------------------------*/
+  // Pain-point eligibility
   if (challenges?.includes("knowing_what_to_focus_on") || challenges?.includes("focus")) {
-    widgets.unshift("focus_today"); // force to top
+    eligible.add("focus_today");
   }
-
   if (challenges?.includes("client_follow_ups") || challenges?.includes("followups")) {
-    widgets.push("follow_up_queue");
+    eligible.add("follow_up_queue");
   }
-
   if (challenges?.includes("tracking_income_expenses") || challenges?.includes("income")) {
-    widgets.push("income_trend_chart");
+    eligible.add("income_trend_chart");
   }
-
   if (challenges?.includes("staying_organized") || challenges?.includes("organized")) {
-    if (!widgets.includes("task_list")) {
-      widgets.push("task_list");
-    }
+    eligible.add("task_list");
   }
 
-  /* -------------------------------------------------
-     4. CLIENT VOLUME → DENSITY CONTROL
-  --------------------------------------------------*/
-  if (profile.client_volume === "25_plus") {
-    // reduce clutter, focus on queues
-    const taskIdx = widgets.indexOf("task_list");
-    if (taskIdx > -1) widgets.splice(taskIdx, 1);
-  }
-
-  /* -------------------------------------------------
-     5. ASSISTANT LEVEL → BEHAVIOR
-  --------------------------------------------------*/
+  // Assistant level
   if (profile.assistant_level === "active") {
-    widgets.push("assistant_suggestions");
+    eligible.add("assistant_suggestions");
   }
 
-  return dedupe(widgets);
+  // Now: compute order (the "where")
+  return sortByPriority([...eligible], { ...profile, business_type: businessType, primary_challenges: challenges });
+}
+
+function sortByPriority(keys: WidgetKey[], profile: UserProfile): WidgetKey[] {
+  // Base priority (lower = earlier)
+  const base: Record<WidgetKey, number> = {
+    focus_today: 10,
+    kpi_weekly_income: 20,
+    kpi_monthly_income: 30,
+    income_trend_chart: 40,
+    appointments_today: 45,
+    follow_up_queue: 50,
+    task_list: 60,
+    client_list: 70,
+    project_board: 75,
+    activity_feed: 90,
+    assistant_suggestions: 95
+  };
+
+  // Adjustments based on onboarding (small deltas)
+  const bump: Partial<Record<WidgetKey, number>> = {};
+
+  const ch = profile.primary_challenges ?? [];
+
+  // If they struggle with focus → Focus Today MUST be first
+  if (ch.includes("knowing_what_to_focus_on") || ch.includes("focus")) {
+    bump["focus_today"] = -8;
+  }
+
+  // Income tracking → chart moves up
+  if (ch.includes("tracking_income_expenses") || ch.includes("income")) {
+    bump["income_trend_chart"] = -10;
+  }
+
+  // Follow-ups → follow-up queue moves up
+  if (ch.includes("client_follow_ups") || ch.includes("followups")) {
+    bump["follow_up_queue"] = -10;
+  }
+
+  // Staying organized → tasks move up
+  if (ch.includes("staying_organized") || ch.includes("organized")) {
+    bump["task_list"] = -10;
+  }
+
+  // Work-type emphasis
+  if (profile.business_type === "local_service_provider" || profile.business_type === "local-service") {
+    bump["appointments_today"] = -12;
+  }
+  if (profile.business_type === "creative_designer" || profile.business_type === "creative") {
+    bump["project_board"] = -8;
+  }
+  if (["consultant", "coach", "freelancer"].includes(profile.business_type ?? "")) {
+    bump["client_list"] = -8;
+  }
+
+  // High client volume → queues + list become more important
+  if (profile.client_volume === "25_plus") {
+    bump["follow_up_queue"] = (bump["follow_up_queue"] ?? 0) - 6;
+    bump["client_list"] = (bump["client_list"] ?? 0) - 4;
+    bump["activity_feed"] = (bump["activity_feed"] ?? 0) - 4;
+  }
+
+  // Active assistant → suggestions can appear earlier
+  if (profile.assistant_level === "active") {
+    bump["assistant_suggestions"] = -8;
+  }
+
+  return keys.sort((a, b) => {
+    const pa = (base[a] ?? 1000) + (bump[a] ?? 0);
+    const pb = (base[b] ?? 1000) + (bump[b] ?? 0);
+    return pa - pb;
+  });
 }
 
 /* ---------- helpers ---------- */
-function dedupe<T>(arr: T[]): T[] {
-  return Array.from(new Set(arr));
-}
 
 // Map legacy work_type to new business_type
 function mapLegacyWorkType(workType?: string | null): string | null {
