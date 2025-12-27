@@ -198,7 +198,7 @@ export const EcoNestOwnerDashboard: React.FC = () => {
       {/* Header */}
       <header className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             EcoNest Owner Dashboard
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -206,38 +206,38 @@ export const EcoNestOwnerDashboard: React.FC = () => {
             your signed-in owner account.
           </p>
         </div>
-        <div className="rounded-full border px-4 py-1 text-xs text-muted-foreground">
+        <div className="rounded-full border border-border bg-secondary px-4 py-1 text-xs text-muted-foreground">
           Signed in as <span className="font-medium text-foreground">{userEmail}</span>
         </div>
       </header>
 
       {/* Top stats cards */}
       <section className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border bg-card p-4 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <p className="text-xs font-medium uppercase tracking-wide text-primary">
             Total Leads
           </p>
-          <p className="mt-2 text-3xl font-semibold">{leadStats.total}</p>
+          <p className="mt-2 text-3xl font-semibold text-card-foreground">{leadStats.total}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            New: {leadStats.new} • Warm: {leadStats.warm} • Customers: {leadStats.customer}
+            New: <span className="text-primary">{leadStats.new}</span> • Warm: <span className="text-primary">{leadStats.warm}</span> • Customers: <span className="text-primary">{leadStats.customer}</span>
           </p>
         </div>
 
-        <div className="rounded-2xl border bg-card p-4 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <p className="text-xs font-medium uppercase tracking-wide text-primary">
             Templates
           </p>
-          <p className="mt-2 text-3xl font-semibold">{templateStats.totalTemplates}</p>
+          <p className="mt-2 text-3xl font-semibold text-card-foreground">{templateStats.totalTemplates}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Owned by you: {templateStats.ownedTemplates}
+            Owned by you: <span className="text-primary">{templateStats.ownedTemplates}</span>
           </p>
         </div>
 
-        <div className="rounded-2xl border bg-card p-4 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <p className="text-xs font-medium uppercase tracking-wide text-primary">
             Agent Activity
           </p>
-          <p className="mt-2 text-3xl font-semibold">
+          <p className="mt-2 text-3xl font-semibold text-card-foreground">
             {recentEvents.length}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -248,56 +248,56 @@ export const EcoNestOwnerDashboard: React.FC = () => {
 
       {/* Leads breakdown */}
       <section className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border bg-card p-4 shadow-sm">
-          <h2 className="text-sm font-semibold">Lead Funnel Snapshot</h2>
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <h2 className="text-sm font-semibold text-card-foreground">Lead Funnel Snapshot</h2>
           <p className="mt-1 text-xs text-muted-foreground">
             Quick breakdown of where your leads are in the pipeline.
           </p>
           <div className="mt-4 grid grid-cols-3 gap-3 text-center text-xs">
-            <div className="rounded-xl border bg-muted/40 p-3">
-              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+            <div className="rounded-xl border border-border bg-secondary p-3">
+              <p className="text-[11px] uppercase tracking-wide text-primary">
                 New
               </p>
-              <p className="mt-1 text-xl font-semibold">{leadStats.new}</p>
+              <p className="mt-1 text-xl font-semibold text-card-foreground">{leadStats.new}</p>
             </div>
-            <div className="rounded-xl border bg-muted/40 p-3">
-              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+            <div className="rounded-xl border border-border bg-secondary p-3">
+              <p className="text-[11px] uppercase tracking-wide text-primary">
                 Warm
               </p>
-              <p className="mt-1 text-xl font-semibold">{leadStats.warm}</p>
+              <p className="mt-1 text-xl font-semibold text-card-foreground">{leadStats.warm}</p>
             </div>
-            <div className="rounded-xl border bg-muted/40 p-3">
-              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+            <div className="rounded-xl border border-border bg-secondary p-3">
+              <p className="text-[11px] uppercase tracking-wide text-primary">
                 Customers
               </p>
-              <p className="mt-1 text-xl font-semibold">{leadStats.customer}</p>
+              <p className="mt-1 text-xl font-semibold text-card-foreground">{leadStats.customer}</p>
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border bg-card p-4 shadow-sm">
-          <h2 className="text-sm font-semibold">Templates Overview</h2>
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <h2 className="text-sm font-semibold text-card-foreground">Templates Overview</h2>
           <p className="mt-1 text-xs text-muted-foreground">
             Active marketplace templates vs what&apos;s already unlocked for your account.
           </p>
           <ul className="mt-4 space-y-2 text-xs">
-            <li className="flex items-center justify-between rounded-lg border bg-muted/40 px-3 py-2">
-              <span>Total active templates</span>
-              <span className="font-semibold">{templateStats.totalTemplates}</span>
+            <li className="flex items-center justify-between rounded-lg border border-border bg-secondary px-3 py-2">
+              <span className="text-card-foreground">Total active templates</span>
+              <span className="font-semibold text-primary">{templateStats.totalTemplates}</span>
             </li>
-            <li className="flex items-center justify-between rounded-lg border bg-muted/40 px-3 py-2">
-              <span>Templates you own</span>
-              <span className="font-semibold">{templateStats.ownedTemplates}</span>
+            <li className="flex items-center justify-between rounded-lg border border-border bg-secondary px-3 py-2">
+              <span className="text-card-foreground">Templates you own</span>
+              <span className="font-semibold text-primary">{templateStats.ownedTemplates}</span>
             </li>
           </ul>
         </div>
       </section>
 
       {/* Recent agent events */}
-      <section className="rounded-2xl border bg-card p-4 shadow-sm">
+      <section className="rounded-2xl border border-border bg-card p-4 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-sm font-semibold">Recent Agent Events</h2>
+            <h2 className="text-sm font-semibold text-card-foreground">Recent Agent Events</h2>
             <p className="mt-1 text-xs text-muted-foreground">
               Last 20 actions your EcoNest agent logged (tool calls, final outputs, etc.).
             </p>
@@ -310,23 +310,23 @@ export const EcoNestOwnerDashboard: React.FC = () => {
             they&apos;ll appear here.
           </p>
         ) : (
-          <div className="mt-4 max-h-80 overflow-auto rounded-xl border text-xs">
+          <div className="mt-4 max-h-80 overflow-auto rounded-xl border border-border text-xs">
             <table className="min-w-full text-left">
-              <thead className="bg-muted/60">
+              <thead className="bg-secondary">
                 <tr>
-                  <th className="px-3 py-2 font-medium">Time</th>
-                  <th className="px-3 py-2 font-medium">Type</th>
-                  <th className="px-3 py-2 font-medium">Details</th>
+                  <th className="px-3 py-2 font-medium text-card-foreground">Time</th>
+                  <th className="px-3 py-2 font-medium text-card-foreground">Type</th>
+                  <th className="px-3 py-2 font-medium text-card-foreground">Details</th>
                 </tr>
               </thead>
               <tbody>
                 {recentEvents.map((ev) => (
-                  <tr key={ev.id} className="border-t border-border/60 align-top">
-                    <td className="px-3 py-2 whitespace-nowrap">
+                  <tr key={ev.id} className="border-t border-border align-top">
+                    <td className="px-3 py-2 whitespace-nowrap text-card-foreground">
                       {formatDateTime(ev.created_at)}
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap">
-                      <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium">
+                      <span className="rounded-full bg-primary/20 text-primary px-2 py-0.5 text-[11px] font-medium">
                         {ev.type}
                       </span>
                     </td>
