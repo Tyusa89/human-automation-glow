@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Settings, Download, RefreshCw, ArrowLeft, Activity, Sliders, Zap, Calendar, FileText, AlertTriangle } from 'lucide-react';
+import { MoreHorizontal, Settings, Download, RefreshCw, ArrowLeft, Activity, Sliders, Zap, Calendar, FileText } from 'lucide-react';
 import { SetupChecklist } from '@/components/dashboard/SetupChecklist';
 import { NextBestAction } from '@/components/dashboard/NextBestAction';
 import { useDashboardSuggestion, DashboardSuggestionCard } from '@/dashboard/suggestions';
@@ -161,11 +161,22 @@ const Dashboard = () => {
   const primaryWidgets = widgets.filter(w => ['client_list', 'project_board', 'appointments_today', 'task_list'].includes(w.key));
   const secondaryWidgets = widgets.filter(w => ['follow_up_queue', 'assistant_suggestions', 'activity_feed'].includes(w.key));
 
-  // Power user mode: filter out beginner-focused widgets
+  // Mode-based display logic
   const isNewUser = mode === 'new';
+  const isReactivation = mode === 'reactivation';
+  const isPowerUser = mode === 'power';
+
+  // Power user mode: filter out beginner-focused widgets
   const displayedSecondaryWidgets = isNewUser 
     ? secondaryWidgets 
     : secondaryWidgets.filter(w => w.key !== 'assistant_suggestions');
+
+  // Subtitle based on mode
+  const getSubtitle = () => {
+    if (isNewUser) return "Let's get you set up";
+    if (isReactivation) return "Welcome back";
+    return "Your business at a glance";
+  };
 
   if (profileLoading) {
     return (
@@ -197,16 +208,14 @@ const Dashboard = () => {
                   Dashboard
                 </h1>
                 <p className="text-slate-400">
-                  {isNewUser 
-                    ? "Let's get you set up" 
-                    : "Your business at a glance"}
+                  {getSubtitle()}
                 </p>
               </div>
             </div>
             
             <div className="flex items-center gap-2">
               {/* Power user quick actions */}
-              {!isNewUser && (
+              {isPowerUser && (
                 <div className="hidden md:flex items-center gap-1 mr-2">
                   {quickActions.map((action) => (
                     <Button
@@ -276,11 +285,13 @@ const Dashboard = () => {
       </div>
 
       <div className="container mx-auto px-4 py-6 space-y-6">
-        {/* NEW USER MODE: Activation-focused layout */}
+        {/* ============================================ */}
+        {/* 🟢 NEW USER MODE: Activation-focused layout */}
+        {/* ============================================ */}
         {isNewUser && (
           <>
-            {/* Next Best Action - the missing "what do I do next" */}
-            <NextBestAction signals={signals} />
+            {/* Next Best Action - THE missing "what do I do next" */}
+            <NextBestAction signals={signals} mode={mode} />
             
             {/* Setup Checklist - prominent for new users */}
             <SetupChecklist />
@@ -324,9 +335,16 @@ const Dashboard = () => {
           </>
         )}
 
-        {/* POWER USER MODE: Operations-focused layout */}
-        {!isNewUser && (
+        {/* ============================================ */}
+        {/* 🔵 POWER USER / REACTIVATION MODE          */}
+        {/* ============================================ */}
+        {(isPowerUser || isReactivation) && (
           <>
+            {/* Reactivation gets the Next Best Action (resume nudge) */}
+            {isReactivation && (
+              <NextBestAction signals={signals} mode={mode} />
+            )}
+
             {/* Focus Today - top priority */}
             {focusWidget && (
               <div key={focusWidget.key}>
@@ -343,6 +361,11 @@ const Dashboard = () => {
                   await refreshSuggestion();
                 }} 
               />
+            )}
+
+            {/* Power user also gets Next Best Action for Tier 2/3 signals */}
+            {isPowerUser && (
+              <NextBestAction signals={signals} mode={mode} />
             )}
 
             {/* KPI Row - prominent for power users */}
