@@ -73,19 +73,19 @@ export function SetupChecklist() {
   if (dismissed || progress === 100) return null;
 
   return (
-    <Card className="border-border/50">
+    <Card className="border-white/10 bg-[hsl(220,91%,15%)]/80 backdrop-blur">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle className="text-base">Setup Checklist</CardTitle>
-            <CardDescription className="text-sm">
+            <CardTitle className="text-base text-white">Setup Checklist</CardTitle>
+            <CardDescription className="text-sm text-slate-400">
               {completedCount} of {items.length} completed
             </CardDescription>
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-muted-foreground"
+            className="h-8 w-8 text-slate-400 hover:text-white hover:bg-white/10"
             onClick={handleDismiss}
           >
             <X className="h-4 w-4" />
@@ -102,27 +102,27 @@ export function SetupChecklist() {
               to={item.href}
               className={cn(
                 "flex items-center gap-3 p-2 rounded-lg transition-colors",
-                "hover:bg-muted/50",
+                "hover:bg-white/5",
                 item.completed && "opacity-60"
               )}
             >
               {item.completed ? (
-                <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                <CheckCircle2 className="h-5 w-5 text-emerald-400 flex-shrink-0" />
               ) : (
-                <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                <Circle className="h-5 w-5 text-slate-500 flex-shrink-0" />
               )}
               <div className="flex-1 min-w-0">
                 <div className={cn(
-                  "text-sm font-medium",
-                  item.completed && "line-through"
+                  "text-sm font-medium text-white",
+                  item.completed && "line-through text-slate-400"
                 )}>
                   {item.label}
                 </div>
-                <div className="text-xs text-muted-foreground truncate">
+                <div className="text-xs text-slate-500 truncate">
                   {item.description}
                 </div>
               </div>
-              <Icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <Icon className="h-4 w-4 text-slate-500 flex-shrink-0" />
             </Link>
           );
         })}

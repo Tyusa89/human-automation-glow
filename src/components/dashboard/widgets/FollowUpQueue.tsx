@@ -13,9 +13,9 @@ export function FollowUpQueue() {
   const overdueCount = followUps.filter(f => f.overdue).length;
   
   return (
-    <Card className="border-accent/20">
+    <Card className="border-white/10 bg-[hsl(220,91%,15%)]/80 backdrop-blur">
       <CardHeader className="pb-2 flex-row items-center justify-between">
-        <CardTitle className="text-base font-semibold flex items-center gap-2">
+        <CardTitle className="text-base font-semibold flex items-center gap-2 text-white">
           <UserCheck className="h-4 w-4" />
           Follow-up Queue
         </CardTitle>
@@ -28,15 +28,15 @@ export function FollowUpQueue() {
       <CardContent>
         <div className="space-y-3">
           {followUps.map((item) => (
-            <div key={item.name} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+            <div key={item.name} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{item.name}</p>
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <p className="text-sm font-medium truncate text-white">{item.name}</p>
+                <p className="text-xs text-slate-500 flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {item.reason} · {item.daysAgo}d ago
                 </p>
               </div>
-              <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+              <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-white/10">
                 <Mail className="h-4 w-4" />
               </Button>
             </div>

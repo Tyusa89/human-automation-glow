@@ -10,9 +10,9 @@ const data = [
 
 export function IncomeChart() {
   return (
-    <Card className="border-accent/20">
+    <Card className="border-white/10 bg-[hsl(220,91%,15%)]/80 backdrop-blur">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-semibold">Income Trend</CardTitle>
+        <CardTitle className="text-base font-semibold text-white">Income Trend</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[180px]">
@@ -20,34 +20,35 @@ export function IncomeChart() {
             <AreaChart data={data}>
               <defs>
                 <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <XAxis 
                 dataKey="week" 
                 axisLine={false} 
                 tickLine={false}
-                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+                tick={{ fontSize: 12, fill: '#64748b' }}
               />
               <YAxis 
                 axisLine={false} 
                 tickLine={false}
-                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+                tick={{ fontSize: 12, fill: '#64748b' }}
                 tickFormatter={(v) => `$${v}`}
               />
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: 'hsl(var(--background))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '8px'
+                  backgroundColor: 'hsl(220, 91%, 15%)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '8px',
+                  color: '#fff'
                 }}
                 formatter={(value: number) => [`$${value}`, 'Income']}
               />
               <Area
                 type="monotone"
                 dataKey="income"
-                stroke="hsl(var(--primary))"
+                stroke="#10b981"
                 strokeWidth={2}
                 fill="url(#incomeGradient)"
               />

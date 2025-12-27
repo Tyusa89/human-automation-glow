@@ -149,16 +149,16 @@ const Dashboard = () => {
 
   if (profileLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-pulse text-muted-foreground">Loading dashboard...</div>
+      <div className="min-h-screen flex items-center justify-center bg-[hsl(220,91%,8%)]">
+        <div className="animate-pulse text-slate-400">Loading dashboard...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-[hsl(220,91%,8%)] via-[hsl(220,91%,12%)] to-[hsl(220,80%,15%)]">
       {/* Header */}
-      <div className="bg-gradient-to-r from-primary/10 to-accent/10 border-b border-border">
+      <div className="bg-[hsl(220,91%,10%)]/50 border-b border-white/10">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -166,17 +166,17 @@ const Dashboard = () => {
                 variant="ghost" 
                 size="icon" 
                 onClick={() => navigate(-1)}
-                className="h-10 w-10"
+                className="h-10 w-10 text-white hover:bg-white/10"
               >
                 <ArrowLeft className="h-5 w-5" />
                 <span className="sr-only">Go back</span>
               </Button>
               
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
                   Dashboard
                 </h1>
-                <p className="text-muted-foreground">
+                <p className="text-slate-400">
                   Your personalized business overview
                 </p>
               </div>
@@ -187,7 +187,7 @@ const Dashboard = () => {
                 variant="outline" 
                 size="sm"
                 onClick={() => navigate('/dashboard/settings')}
-                className="gap-2"
+                className="gap-2 border-white/20 text-white hover:bg-white/10"
               >
                 <Sliders className="h-4 w-4" />
                 Customize
@@ -195,12 +195,12 @@ const Dashboard = () => {
               
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-10 w-10">
+                  <Button variant="ghost" size="icon" className="h-10 w-10 text-white hover:bg-white/10">
                     <MoreHorizontal className="h-5 w-5" />
                     <span className="sr-only">Open menu</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-background border border-border">
+                <DropdownMenuContent align="end" className="w-56 bg-[hsl(220,91%,15%)] border-white/10">
                   <DropdownMenuItem onClick={() => loadDashboard()} className="cursor-pointer">
                     <RefreshCw className="mr-2 h-4 w-4" />
                     Refresh Dashboard
