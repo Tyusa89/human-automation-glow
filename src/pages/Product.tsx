@@ -1,39 +1,104 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Bot, Workflow, LayoutTemplate, ArrowRight } from "lucide-react";
 
 export default function ProductPage() {
-  const navigate = useNavigate();
-
-  const features = [
-    { title: 'AI Agents', desc: 'Autonomous workers that think, plan, and act.', icon: Bot, path: '/solutions' },
-    { title: 'Automations', desc: 'Reliable workflows powered by n8n + Supabase.', icon: Workflow, path: '/templates' },
-    { title: 'Templates', desc: 'Pre-built systems you can install instantly.', icon: LayoutTemplate, path: '/templates' },
-  ];
-
   return (
-    <main className="mx-auto max-w-6xl px-6 py-12">
-      <h1 className="text-3xl font-semibold text-white">EcoNest Platform</h1>
-      <p className="mt-2 text-white/70 max-w-2xl">
-        EcoNest is an AI-powered automation platform that combines intelligent agents,
-        workflows, and integrations to run your business operations with minimal manual effort.
-      </p>
+    <main className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
+      {/* Header */}
+      <div className="text-center mb-16">
+        <h1 className="text-3xl font-bold text-white sm:text-4xl">Product</h1>
+        <p className="mt-4 text-lg text-muted-foreground">
+          Everything you need to automate real work.
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          EcoNest is built around three core building blocks.<br />
+          Use them together or on their own.
+        </p>
+      </div>
 
-      <div className="mt-10 grid gap-6 md:grid-cols-3">
-        {features.map((item) => (
-          <button
-            key={item.title}
-            onClick={() => navigate(item.path)}
-            className="group rounded-xl border border-white/10 p-5 bg-white/5 text-left hover:bg-white/10 hover:border-white/20 transition-all"
-          >
-            <item.icon className="h-6 w-6 text-primary mb-3" />
-            <h2 className="font-medium text-white flex items-center gap-2">
-              {item.title}
-              <ArrowRight className="h-4 w-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-            </h2>
-            <p className="mt-2 text-sm text-white/60">{item.desc}</p>
-          </button>
-        ))}
+      {/* AI Agents */}
+      <section className="mb-12">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+            <Bot className="h-5 w-5 text-primary" />
+          </div>
+          <h2 className="text-xl font-semibold text-white">AI Agents</h2>
+        </div>
+        <p className="text-muted-foreground mb-4">
+          Autonomous assistants that act on your behalf.
+        </p>
+        <p className="text-sm text-muted-foreground mb-3">They can:</p>
+        <ul className="space-y-1.5 text-sm text-muted-foreground ml-4">
+          <li>• respond to events</li>
+          <li>• make decisions</li>
+          <li>• trigger workflows</li>
+          <li>• assist with daily operations</li>
+        </ul>
+        <p className="mt-4 text-xs text-muted-foreground">
+          Agents are configured and managed inside your dashboard.
+        </p>
+      </section>
+
+      {/* Automations */}
+      <section className="mb-12 pt-8 border-t border-border/40">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+            <Workflow className="h-5 w-5 text-primary" />
+          </div>
+          <h2 className="text-xl font-semibold text-white">Automations</h2>
+        </div>
+        <p className="text-muted-foreground mb-4">
+          Reliable workflows that connect your tools.
+        </p>
+        <p className="text-sm text-muted-foreground mb-3">Automations:</p>
+        <ul className="space-y-1.5 text-sm text-muted-foreground ml-4">
+          <li>• move data between systems</li>
+          <li>• trigger actions automatically</li>
+          <li>• reduce manual steps</li>
+          <li>• run quietly in the background</li>
+        </ul>
+        <p className="mt-4 text-xs text-muted-foreground">
+          Built on proven infrastructure. No brittle scripts.
+        </p>
+      </section>
+
+      {/* Templates */}
+      <section className="mb-12 pt-8 border-t border-border/40">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+            <LayoutTemplate className="h-5 w-5 text-primary" />
+          </div>
+          <h2 className="text-xl font-semibold text-white">Templates</h2>
+        </div>
+        <p className="text-muted-foreground mb-4">
+          Prebuilt systems you can launch fast.
+        </p>
+        <p className="text-sm text-muted-foreground mb-3">
+          Templates combine agents + automations into ready-to-use solutions.<br />
+          They are designed to be:
+        </p>
+        <ul className="space-y-1.5 text-sm text-muted-foreground ml-4">
+          <li>• installed in minutes</li>
+          <li>• customizable</li>
+          <li>• production-ready</li>
+        </ul>
+        <p className="mt-4 text-sm text-muted-foreground">
+          Most users start here.
+        </p>
+        <Link
+          to="/templates"
+          className="inline-flex items-center gap-1 mt-4 text-sm text-primary hover:underline"
+        >
+          Browse templates
+          <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+      </section>
+
+      {/* Footer micro-line */}
+      <div className="pt-8 border-t border-border/40 text-center">
+        <p className="text-xs text-muted-foreground">
+          Product features are accessed through your dashboard and templates.
+        </p>
       </div>
     </main>
   );
