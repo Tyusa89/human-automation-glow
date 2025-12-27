@@ -1,33 +1,28 @@
 import { getTemplateIdentity } from "@/config/templates/templateIdentity";
+import type { NextStep } from "@/lib/maturity/resolveNextStep";
 
-export type TemplateNextStep = {
-  title: string;
-  description?: string;
-  ctaLabel: string;
-  href: string;
-  source: "template";
-};
-
-export function resolveTemplatePrimaryAction(activeTemplateSlug: string | null): TemplateNextStep | null {
+export function resolveTemplatePrimaryAction(activeTemplateSlug: string | null): NextStep | null {
   if (!activeTemplateSlug) return null;
 
   const t = getTemplateIdentity(activeTemplateSlug);
-  if (!t?.primaryAction?.label) return null;
+  if (!t) return null;
 
-  // If templateIdentity has an href, use it. Otherwise, provide fallback.
-  const href = t.primaryAction.href ?? fallbackHrefForSlug(activeTemplateSlug);
+  const ctaLabel = t.primaryAction?.label?.trim();
+  if (!ctaLabel) return null;
+
+  const href = t.primaryAction?.href ?? fallbackHrefForSlug(activeTemplateSlug);
 
   return {
-    title: t.primaryJob,
-    description: t.description ?? "Recommended next action based on the system you activated.",
-    ctaLabel: t.primaryAction.label,
+    kind: "nothing", // Don't expand maturity kinds - behavior comes from title/cta/href
+    title: "Next step",
+    description: t.primaryJob,
+    ctaLabel,
     href,
-    source: "template",
+    priority: 60, // Template intent priority
   };
 }
 
 function fallbackHrefForSlug(slug: string): string {
-  // Conservative defaults by category/slug
   switch (slug) {
     case "analytics-dashboard":
       return "/dashboard";
