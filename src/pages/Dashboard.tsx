@@ -12,6 +12,7 @@ import TracesList from '@/components/TracesList';
 import { SPADEProcessor } from '@/components/SPADEProcessor';
 import ProfileCard from '@/components/ProfileCard';
 import CompleteProfile from '@/components/CompleteProfile';
+import { SetupChecklist } from '@/components/dashboard/SetupChecklist';
 import { runTask } from '@/lib/db';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
@@ -196,9 +197,14 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Complete Profile Prompt */}
+      {/* Setup Checklist & Complete Profile */}
       <div className="container mx-auto px-4 py-6">
-        <CompleteProfile />
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <SetupChecklist />
+          <div className="lg:col-span-2">
+            <CompleteProfile />
+          </div>
+        </div>
       </div>
 
       {/* Stats Grid */}

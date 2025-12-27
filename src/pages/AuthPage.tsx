@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { brand } from '@/components/Brand';
 
 import {
   OTP_WINDOW_SECONDS,
@@ -143,18 +144,34 @@ export default function AuthPage() {
     }
     
     if (isSignUp && data.user) {
-      // Minimal bootstrap record
+      // Minimal bootstrap record with onboarding_completed = false
       await supabase.from('profiles').insert({
         user_id: data.user.id,
         email: email,
         full_name: null,
         company: null,
-        preferences: {}
+        preferences: {},
+        onboarding_completed: false,
+        onboarding_step: 'welcome'
       }).select().maybeSingle();
       
-      // Redirect new users to terms acceptance
-      window.location.replace('/terms-acceptance');
+      // Redirect new users to onboarding
+      window.location.replace('/onboarding');
       return;
+    }
+    
+    // For existing users, check if they need to complete onboarding
+    if (data.user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('user_id', data.user.id)
+        .maybeSingle();
+      
+      if (profile && !profile.onboarding_completed) {
+        window.location.replace('/onboarding');
+        return;
+      }
     }
     
     window.location.replace(returnTo);
@@ -220,11 +237,14 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen grid place-items-center p-6 bg-background">
-      <div className="w-full max-w-md space-y-6 bg-card p-8 rounded-lg border shadow-lg">
+    <div className="min-h-screen grid place-items-center p-6 bg-gradient-to-b from-background to-muted/20">
+      <div className="w-full max-w-md space-y-6 bg-card p-8 rounded-xl border border-border/50 shadow-lg">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Welcome to EcoNest AI</h1>
-          <p className="text-muted-foreground">Sign in to continue</p>
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg mb-4">
+            B
+          </div>
+          <h1 className="text-2xl font-bold text-foreground mb-1">{brand.name}</h1>
+          <p className="text-sm text-muted-foreground">{brand.tagline}</p>
         </div>
 
         {/* Tabs */}

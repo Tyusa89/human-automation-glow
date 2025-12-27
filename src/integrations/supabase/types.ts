@@ -668,7 +668,10 @@ export type Database = {
           email: string
           full_name: string | null
           id: string
+          onboarding_completed: boolean | null
+          onboarding_step: string | null
           preferences: Json | null
+          setup_goals: string[] | null
           updated_at: string
           user_id: string | null
         }
@@ -679,7 +682,10 @@ export type Database = {
           email: string
           full_name?: string | null
           id?: string
+          onboarding_completed?: boolean | null
+          onboarding_step?: string | null
           preferences?: Json | null
+          setup_goals?: string[] | null
           updated_at?: string
           user_id?: string | null
         }
@@ -690,7 +696,10 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
+          onboarding_completed?: boolean | null
+          onboarding_step?: string | null
           preferences?: Json | null
+          setup_goals?: string[] | null
           updated_at?: string
           user_id?: string | null
         }
