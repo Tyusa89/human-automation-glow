@@ -1,48 +1,20 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { brand } from "@/components/Brand";
 
 type AppShellProps = {
-  title?: string;
-  rightSlot?: React.ReactNode;
   children: React.ReactNode;
 };
 
-export default function AppShell({ title, rightSlot, children }: AppShellProps) {
+export default function AppShell({ children }: AppShellProps) {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          {/* Brand */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
-              B
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold leading-none">{brand.name}</span>
-              <span className="text-[10px] text-muted-foreground leading-none mt-0.5">
-                {brand.tagline}
-              </span>
-            </div>
-          </Link>
+    <div className="relative min-h-screen bg-gradient-to-br from-[hsl(220,91%,8%)] via-[hsl(220,91%,12%)] to-[hsl(220,80%,15%)] text-foreground">
+      {/* Soft ambient glow */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl" />
+      </div>
 
-          {/* Page title (optional) */}
-          <div className="hidden sm:block text-sm font-medium text-muted-foreground">
-            {title ?? ""}
-          </div>
-
-          {/* Right side actions */}
-          <div className="flex items-center gap-2">{rightSlot}</div>
-        </div>
-      </header>
-
-      {/* Main */}
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-          {children}
-        </div>
-      </main>
+      {/* Content */}
+      <div className="relative z-10">{children}</div>
     </div>
   );
 }
