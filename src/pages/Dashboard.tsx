@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Settings, Download, RefreshCw, ArrowLeft, Activity, Sliders } from 'lucide-react';
+import { MoreHorizontal, Settings, Download, RefreshCw, ArrowLeft, Activity, Sliders, Zap, Calendar, FileText, AlertTriangle } from 'lucide-react';
 import { SetupChecklist } from '@/components/dashboard/SetupChecklist';
+import { NextBestAction } from '@/components/dashboard/NextBestAction';
 import { useDashboardSuggestion, DashboardSuggestionCard } from '@/dashboard/suggestions';
 import { 
   FocusToday, 
@@ -30,6 +31,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
 import { useToast } from '@/hooks/use-toast';
 import { useRole, isAdminLike } from '@/hooks/useRole';
+import { useUserMaturity } from '@/hooks/useUserMaturity';
 
 
 // Widget component map - using any for flexibility with different widget props
@@ -47,12 +49,20 @@ const WidgetComponent: Record<string, React.FC<any>> = {
   assistant_suggestions: AssistantSuggestions,
 };
 
+// Quick action links for power users
+const quickActions = [
+  { label: 'Automations', href: '/integrations', icon: Zap },
+  { label: 'Appointments', href: '/appointments', icon: Calendar },
+  { label: 'Templates', href: '/templates', icon: FileText },
+];
+
 const Dashboard = () => {
   useEnsureProfile();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { role, loading } = useRole();
   const admin = isAdminLike(role);
+  const { mode, signals, refresh: refreshMaturity } = useUserMaturity();
   const [lastKpi, setLastKpi] = useState<any>(null);
   const [profile, setProfile] = useState<UserProfile>({});
   const [widgets, setWidgets] = useState<ResolvedWidget[]>([]);
@@ -141,11 +151,21 @@ const Dashboard = () => {
     }
   }
 
+  async function handleRefresh() {
+    await Promise.all([loadDashboard(), refreshMaturity()]);
+  }
+
   // Group widgets by zone
   const focusWidget = widgets.find(w => w.key === 'focus_today');
   const kpiWidgets = widgets.filter(w => ['kpi_weekly_income', 'kpi_monthly_income', 'income_trend_chart'].includes(w.key));
   const primaryWidgets = widgets.filter(w => ['client_list', 'project_board', 'appointments_today', 'task_list'].includes(w.key));
   const secondaryWidgets = widgets.filter(w => ['follow_up_queue', 'assistant_suggestions', 'activity_feed'].includes(w.key));
+
+  // Power user mode: filter out beginner-focused widgets
+  const isNewUser = mode === 'new';
+  const displayedSecondaryWidgets = isNewUser 
+    ? secondaryWidgets 
+    : secondaryWidgets.filter(w => w.key !== 'assistant_suggestions');
 
   if (profileLoading) {
     return (
@@ -177,12 +197,34 @@ const Dashboard = () => {
                   Dashboard
                 </h1>
                 <p className="text-slate-400">
-                  Your personalized business overview
+                  {isNewUser 
+                    ? "Let's get you set up" 
+                    : "Your business at a glance"}
                 </p>
               </div>
             </div>
             
             <div className="flex items-center gap-2">
+              {/* Power user quick actions */}
+              {!isNewUser && (
+                <div className="hidden md:flex items-center gap-1 mr-2">
+                  {quickActions.map((action) => (
+                    <Button
+                      key={action.href}
+                      variant="ghost"
+                      size="sm"
+                      asChild
+                      className="gap-1.5 text-slate-300 hover:text-white hover:bg-white/10"
+                    >
+                      <Link to={action.href}>
+                        <action.icon className="h-4 w-4" />
+                        {action.label}
+                      </Link>
+                    </Button>
+                  ))}
+                </div>
+              )}
+
               <Button 
                 variant="outline" 
                 size="sm"
@@ -190,7 +232,7 @@ const Dashboard = () => {
                 className="gap-2 border-white/20 text-white hover:bg-white/10"
               >
                 <Sliders className="h-4 w-4" />
-                Customize
+                <span className="hidden sm:inline">Customize</span>
               </Button>
               
               <DropdownMenu>
@@ -201,14 +243,16 @@ const Dashboard = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-[hsl(220,91%,15%)] border-white/10">
-                  <DropdownMenuItem onClick={() => loadDashboard()} className="cursor-pointer">
+                  <DropdownMenuItem onClick={handleRefresh} className="cursor-pointer">
                     <RefreshCw className="mr-2 h-4 w-4" />
                     Refresh Dashboard
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleRunDaily} className="cursor-pointer">
-                    <Download className="mr-2 h-4 w-4" />
-                    Generate Daily Report
-                  </DropdownMenuItem>
+                  {!isNewUser && (
+                    <DropdownMenuItem onClick={handleRunDaily} className="cursor-pointer">
+                      <Download className="mr-2 h-4 w-4" />
+                      Generate Daily Report
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/dashboard/settings')}>
                     <Sliders className="mr-2 h-4 w-4" />
@@ -232,65 +276,115 @@ const Dashboard = () => {
       </div>
 
       <div className="container mx-auto px-4 py-6 space-y-6">
-        {/* Suggestion Banner */}
-        {!suggestionLoading && suggestion && (
-          <DashboardSuggestionCard 
-            suggestion={suggestion} 
-            onChanged={async () => {
-              await loadDashboard();        // refresh widgets/order first
-              await refreshSuggestion();    // then clear banner (single UI update)
-            }} 
-          />
+        {/* NEW USER MODE: Activation-focused layout */}
+        {isNewUser && (
+          <>
+            {/* Next Best Action - the missing "what do I do next" */}
+            <NextBestAction signals={signals} />
+            
+            {/* Setup Checklist - prominent for new users */}
+            <SetupChecklist />
+            
+            {/* Suggestion Banner */}
+            {!suggestionLoading && suggestion && (
+              <DashboardSuggestionCard 
+                suggestion={suggestion} 
+                onChanged={async () => {
+                  await handleRefresh();
+                  await refreshSuggestion();
+                }} 
+              />
+            )}
+
+            {/* Early proof - show income even if 0 */}
+            {kpiWidgets.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {kpiWidgets.slice(0, 2).map((widget) => {
+                  const Component = WidgetComponent[widget.key];
+                  return Component ? <Component key={widget.key} config={widget.config} /> : null;
+                })}
+              </div>
+            )}
+
+            {/* Basic work widgets */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="space-y-6">
+                {primaryWidgets.slice(0, 2).map((widget) => {
+                  const Component = WidgetComponent[widget.key];
+                  return Component ? <Component key={widget.key} config={widget.config} /> : null;
+                })}
+              </div>
+              <div className="space-y-6">
+                {displayedSecondaryWidgets.slice(0, 2).map((widget) => {
+                  const Component = WidgetComponent[widget.key];
+                  return Component ? <Component key={widget.key} config={widget.config} /> : null;
+                })}
+              </div>
+            </div>
+          </>
         )}
 
-        {/* Focus Today - top priority */}
-        {focusWidget && (
-          <div key={focusWidget.key}>
-            <FocusToday />
-          </div>
-        )}
+        {/* POWER USER MODE: Operations-focused layout */}
+        {!isNewUser && (
+          <>
+            {/* Focus Today - top priority */}
+            {focusWidget && (
+              <div key={focusWidget.key}>
+                <FocusToday />
+              </div>
+            )}
 
-        {/* Setup Checklist */}
-        <SetupChecklist />
+            {/* Exception-based suggestions (not hand-holding) */}
+            {!suggestionLoading && suggestion && (
+              <DashboardSuggestionCard 
+                suggestion={suggestion} 
+                onChanged={async () => {
+                  await handleRefresh();
+                  await refreshSuggestion();
+                }} 
+              />
+            )}
 
-        {/* KPI Row */}
-        {kpiWidgets.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {kpiWidgets.map((widget) => {
-              const Component = WidgetComponent[widget.key];
-              return Component ? <Component key={widget.key} config={widget.config} /> : null;
-            })}
-          </div>
-        )}
+            {/* KPI Row - prominent for power users */}
+            {kpiWidgets.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {kpiWidgets.map((widget) => {
+                  const Component = WidgetComponent[widget.key];
+                  return Component ? <Component key={widget.key} config={widget.config} /> : null;
+                })}
+              </div>
+            )}
 
-        {/* Main Work Area - 2 column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Column - Primary work widgets */}
-          <div className="space-y-6">
-            {primaryWidgets.map((widget) => {
-              const Component = WidgetComponent[widget.key];
-              return Component ? <Component key={widget.key} config={widget.config} /> : null;
-            })}
-          </div>
+            {/* Main Work Area - 2 column layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Column - Primary work widgets */}
+              <div className="space-y-6">
+                {primaryWidgets.map((widget) => {
+                  const Component = WidgetComponent[widget.key];
+                  return Component ? <Component key={widget.key} config={widget.config} /> : null;
+                })}
+              </div>
 
-          {/* Right Column - Secondary widgets */}
-          <div className="space-y-6">
-            {secondaryWidgets.map((widget) => {
-              const Component = WidgetComponent[widget.key];
-              return Component ? <Component key={widget.key} config={widget.config} /> : null;
-            })}
-          </div>
-        </div>
+              {/* Right Column - Secondary widgets (no assistant suggestions for power users) */}
+              <div className="space-y-6">
+                {displayedSecondaryWidgets.map((widget) => {
+                  const Component = WidgetComponent[widget.key];
+                  return Component ? <Component key={widget.key} config={widget.config} /> : null;
+                })}
+              </div>
+            </div>
 
-        {/* Last KPI info for admin */}
-        {admin && lastKpi && (
-          <Card className="border-muted">
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">
-                Last report: {lastKpi.date} · Leads {lastKpi.leads_today} · Tasks {lastKpi.tasks_run} · Avg resp {lastKpi.avg_response_min}m
-              </p>
-            </CardContent>
-          </Card>
+            {/* Last KPI info for admin */}
+            {admin && lastKpi && (
+              <Card className="border-muted">
+                <CardContent className="p-4">
+                  <p className="text-sm text-muted-foreground">
+                    Last report: {lastKpi.date} · Leads {lastKpi.leads_today} · Tasks {lastKpi.tasks_run} · Avg resp {lastKpi.avg_response_min}m
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </>
         )}
 
         {loading && (
