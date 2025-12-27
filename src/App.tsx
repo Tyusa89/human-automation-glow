@@ -35,7 +35,7 @@ import OwnerDashboard from '@/pages/OwnerDashboard';
 import OwnerApprovals from '@/pages/OwnerApprovals';
 import NotFound from '@/pages/NotFound';
 import ErrorBoundary from "./components/ErrorBoundary";
-import { TemplateDetail } from '@/components/templates/TemplateDetail';
+import TemplatePreview from '@/pages/TemplatePreview';
 import TemplateSetupWizard from '@/pages/templates/TemplateSetupWizard';
 import TemplateActivation from '@/pages/templates/TemplateActivation';
 import ZapierIntercomIntegration from '@/pages/templates/ZapierIntercomIntegration';
@@ -89,7 +89,7 @@ const App = () => {
               <Route path="/demo/data-sync-tool" element={<DataSyncTool />} />
               <Route path="/demo/report-generator" element={<ReportGenerator />} />
               <Route path="/demo/analytics-dashboard" element={<AnalyticsDashboard />} />
-              <Route path="/templates/:slug" element={<TemplateDetail />} />
+              <Route path="/templates/:slug" element={<TemplatePreview />} />
               <Route path="/integrations" element={<IntegrationsPage />} />
               
               {/* Support hub routes */}
