@@ -161,11 +161,9 @@ export default function DocsPage() {
       {/* Soft CTA */}
       <div className="rounded-lg bg-muted/30 p-4 text-center mb-8">
         <p className="text-sm text-muted-foreground">
-          Looking for something specific?{" "}
+          Not sure where to start?{" "}
           <Link to="/templates" className="text-primary hover:underline">Templates</Link>
-          {" or "}
-          <Link to="/" className="text-primary hover:underline">Dashboard</Link>
-          {" might be faster."}
+          {" are the fastest way to get value."}
         </p>
       </div>
 
