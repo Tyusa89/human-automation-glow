@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, Lock, Info } from "lucide-react";
+import { Check, Lock, Info, Plus, UserPlus, Shield } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,10 +8,31 @@ import { Switch } from "@/components/ui/switch";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { pricing, addOns, faqItems } from "@/lib/site-data";
+import { useToast } from "@/hooks/use-toast";
 
 export default function PricingPage() {
   const navigate = useNavigate();
   const [isYearly, setIsYearly] = useState(false);
+  const { toast } = useToast();
+
+  const handleEnableAddon = (addon: typeof addOns[0]) => {
+    // For now, show confirmation toast - in production this would trigger Stripe
+    toast({
+      title: `${addon.ctaLabel}`,
+      description: `${addon.name} will be added to your account for ${addon.price}.`,
+    });
+    // TODO: Integrate with Stripe for actual payment
+    // navigate(`/payment?addon=${addon.sku}&price=${addon.priceValue}`);
+  };
+
+  const getAddonIcon = (iconName: string) => {
+    switch (iconName) {
+      case "plus": return Plus;
+      case "user-plus": return UserPlus;
+      case "shield": return Shield;
+      default: return Plus;
+    }
+  };
 
   const handleSelectPlan = (tierName: string, price: string | number) => {
     if (tierName === "Free") {
@@ -218,7 +239,7 @@ export default function PricingPage() {
                     <span className="text-amber-400 font-bold whitespace-nowrap">{addon.price}</span>
                   </div>
                   <p className="text-slate-300 text-sm mb-4">{addon.description}</p>
-                  <div className="space-y-2">
+                  <div className="space-y-2 mb-5">
                     {addon.features.map((feature, idx) => (
                       <div key={idx} className="flex items-start gap-2 text-sm">
                         <Check className="w-4 h-4 flex-shrink-0 mt-0.5 text-emerald-400" />
@@ -226,6 +247,19 @@ export default function PricingPage() {
                       </div>
                     ))}
                   </div>
+                  
+                  {/* CTA Button */}
+                  <Button
+                    onClick={() => handleEnableAddon(addon)}
+                    variant="outline"
+                    className="w-full gap-2 border-slate-600 text-white hover:bg-slate-700 hover:border-slate-500"
+                  >
+                    {(() => {
+                      const IconComponent = getAddonIcon(addon.ctaIcon);
+                      return <IconComponent className="w-4 h-4" />;
+                    })()}
+                    {addon.ctaLabel}
+                  </Button>
                 </CardContent>
               </Card>
             ))}
