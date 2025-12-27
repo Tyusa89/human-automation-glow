@@ -39,7 +39,7 @@ export default function AppHeader() {
   }
 
   return (
-    <header className="flex items-center px-4 py-2 border-b border-white/10 bg-[hsl(220,91%,12%)]">
+    <header className="flex items-center px-4 py-2 border-b border-white/10 bg-[hsl(220,91%,12%)]/70 backdrop-blur-md sticky top-0 z-50">
       {/* Logo */}
       <Link to="/" className="font-semibold text-white text-xl flex items-center gap-2">
         <img 

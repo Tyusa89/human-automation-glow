@@ -3,12 +3,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route } from "react-router-dom";
-import { Footer } from '@/components/Chrome';
-import AppHeader from '@/components/Header';
 import { CommandMenu } from '@/components/CommandMenu';
 import AuthPage from '@/pages/AuthPage';
 import RequireAuth from '@/components/RequireAuth';
 import RequireAdmin from '@/components/RequireAdmin';
+import AuthedLayout from '@/layouts/AuthedLayout';
 import Dashboard from '@/pages/Dashboard';
 import Results from '@/pages/Results';
 import AdminPage from '@/pages/Admin';
@@ -61,106 +60,70 @@ const App = () => {
   console.log('App component is rendering');
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-background to-background text-foreground">
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <ErrorBoundary>
-            <CommandMenu />
-            <AppHeader />
-            <main>
-              <Routes>
-                {/* public routes */}
-                <Route path="/auth" element={<AuthPage />} />
-                <Route path="/onboarding" element={<RequireAuth><Onboarding /></RequireAuth>} />
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <ErrorBoundary>
+          <CommandMenu />
+          <Routes>
+            {/* Public routes */}
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/book" element={<BookPage />} />
 
-                {/* protected - all app routes require authentication */}
-                <Route path="/" element={<RequireAuth><Index /></RequireAuth>} />
-                <Route path="/product" element={<RequireAuth><ProductPage /></RequireAuth>} />
-                <Route path="/solutions" element={<RequireAuth><SolutionsPage /></RequireAuth>} />
-                <Route path="/templates" element={<RequireAuth><TemplatesPage /></RequireAuth>} />
-                <Route path="/templates/:templateId/setup" element={<RequireAuth><TemplateSetupWizard /></RequireAuth>} />
-                <Route path="/template-success" element={<RequireAuth><TemplateSuccess /></RequireAuth>} />
-                <Route path="/demo/zapier-intercom" element={<RequireAuth><ZapierIntercomIntegration /></RequireAuth>} />
-                <Route path="/demo/social-media-scheduler" element={<RequireAuth><SocialMediaScheduler /></RequireAuth>} />
-                <Route path="/demo/email-campaign-builder" element={<RequireAuth><EmailCampaignBuilder /></RequireAuth>} />
-                <Route path="/demo/inventory-manager" element={<RequireAuth><InventoryManager /></RequireAuth>} />
-                <Route path="/demo/data-sync-tool" element={<RequireAuth><DataSyncTool /></RequireAuth>} />
-                <Route path="/demo/report-generator" element={<RequireAuth><ReportGenerator /></RequireAuth>} />
-                <Route path="/demo/analytics-dashboard" element={<RequireAuth><AnalyticsDashboard /></RequireAuth>} />
-                <Route path="/templates/:slug" element={<RequireAuth><TemplateDetail /></RequireAuth>} />
-                <Route path="/integrations" element={<RequireAuth><IntegrationsPage /></RequireAuth>} />
-                <Route path="/docs" element={<RequireAuth><DocsHub /></RequireAuth>} />
-                <Route path="/docs/getting-started" element={<RequireAuth><GettingStarted /></RequireAuth>} />
-                <Route path="/docs/templates" element={<RequireAuth><TemplatesGuide /></RequireAuth>} />
-                <Route path="/docs/integrations" element={<RequireAuth><IntegrationsGuide /></RequireAuth>} />
-                <Route path="/docs/solutions" element={<RequireAuth><SolutionsGuide /></RequireAuth>} />
-                <Route path="/docs/troubleshooting" element={<RequireAuth><TroubleshootingGuide /></RequireAuth>} />
-                <Route path="/help" element={<RequireAuth><HelpPage /></RequireAuth>} />
-                <Route path="/trust" element={<RequireAuth><TrustPage /></RequireAuth>} />
-                <Route path="/services" element={<RequireAuth><ServicesPage /></RequireAuth>} />
-                <Route path="/pricing" element={<RequireAuth><PricingPage /></RequireAuth>} />
-                <Route path="/payment" element={<RequireAuth><PaymentPage /></RequireAuth>} />
-                <Route path="/contact" element={<RequireAuth><ContactPage /></RequireAuth>} />
-                <Route path="/payment-terms" element={<RequireAuth><PaymentTerms /></RequireAuth>} />
-                <Route path="/terms-acceptance" element={<RequireAuth><TermsAcceptance /></RequireAuth>} />
-                <Route path="/owner-dashboard" element={<RequireAuth><OwnerDashboard /></RequireAuth>} />
-                <Route path="/owner/approvals" element={<RequireAuth><OwnerApprovals /></RequireAuth>} />
-                <Route path="/setup" element={<RequireAuth><SetupPage /></RequireAuth>} />
-                <Route path="/create-profile" element={<RequireAuth><CreateProfile /></RequireAuth>} />
-                <Route path="/book" element={<BookPage />} />
-                <Route path="/appointments" element={<RequireAuth><AppointmentsPage /></RequireAuth>} />
-                <Route path="/dashboard/appointments" element={<RequireAuth><DashboardAppointments /></RequireAuth>} />
-                <Route path="/admin/appointments" element={<RequireAuth><RequireAdmin><AdminAppointments /></RequireAdmin></RequireAuth>} />
+            {/* Authenticated routes - all wrapped in AuthedLayout */}
+            <Route element={<RequireAuth><AuthedLayout /></RequireAuth>}>
+              <Route path="/" element={<Index />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/product" element={<ProductPage />} />
+              <Route path="/solutions" element={<SolutionsPage />} />
+              <Route path="/templates" element={<TemplatesPage />} />
+              <Route path="/templates/:templateId/setup" element={<TemplateSetupWizard />} />
+              <Route path="/template-success" element={<TemplateSuccess />} />
+              <Route path="/demo/zapier-intercom" element={<ZapierIntercomIntegration />} />
+              <Route path="/demo/social-media-scheduler" element={<SocialMediaScheduler />} />
+              <Route path="/demo/email-campaign-builder" element={<EmailCampaignBuilder />} />
+              <Route path="/demo/inventory-manager" element={<InventoryManager />} />
+              <Route path="/demo/data-sync-tool" element={<DataSyncTool />} />
+              <Route path="/demo/report-generator" element={<ReportGenerator />} />
+              <Route path="/demo/analytics-dashboard" element={<AnalyticsDashboard />} />
+              <Route path="/templates/:slug" element={<TemplateDetail />} />
+              <Route path="/integrations" element={<IntegrationsPage />} />
+              <Route path="/docs" element={<DocsHub />} />
+              <Route path="/docs/getting-started" element={<GettingStarted />} />
+              <Route path="/docs/templates" element={<TemplatesGuide />} />
+              <Route path="/docs/integrations" element={<IntegrationsGuide />} />
+              <Route path="/docs/solutions" element={<SolutionsGuide />} />
+              <Route path="/docs/troubleshooting" element={<TroubleshootingGuide />} />
+              <Route path="/help" element={<HelpPage />} />
+              <Route path="/trust" element={<TrustPage />} />
+              <Route path="/services" element={<ServicesPage />} />
+              <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/payment" element={<PaymentPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/payment-terms" element={<PaymentTerms />} />
+              <Route path="/terms-acceptance" element={<TermsAcceptance />} />
+              <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+              <Route path="/owner/approvals" element={<OwnerApprovals />} />
+              <Route path="/setup" element={<SetupPage />} />
+              <Route path="/create-profile" element={<CreateProfile />} />
+              <Route path="/appointments" element={<AppointmentsPage />} />
+              <Route path="/dashboard/appointments" element={<DashboardAppointments />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard/settings" element={<DashboardSettings />} />
+              
+              {/* Admin routes */}
+              <Route path="/results" element={<RequireAdmin><Results /></RequireAdmin>} />
+              <Route path="/admin" element={<RequireAdmin><AdminPage /></RequireAdmin>} />
+              <Route path="/admin/appointments" element={<RequireAdmin><AdminAppointments /></RequireAdmin>} />
+            </Route>
 
-                {/* protected */}
-                <Route
-                  path="/dashboard"
-                  element={
-                    <RequireAuth>
-                      <Dashboard />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/dashboard/settings"
-                  element={
-                    <RequireAuth>
-                      <DashboardSettings />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/results"
-                  element={
-                    <RequireAuth>
-                      <RequireAdmin>
-                        <Results />
-                      </RequireAdmin>
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/admin"
-                  element={
-                    <RequireAuth>
-                      <RequireAdmin>
-                        <AdminPage />
-                      </RequireAdmin>
-                    </RequireAuth>
-                  }
-                />
-
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-            <Footer />
-            <CustomerServiceWidget />
-          </ErrorBoundary>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </div>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <CustomerServiceWidget />
+        </ErrorBoundary>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 };
 
