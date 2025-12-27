@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-
-export type UserPlan = 'free' | 'pro' | 'business' | 'enterprise';
+import { type PlanTier } from '@/config/templates/templateIdentity';
 
 interface UserPlanState {
-  plan: UserPlan;
+  plan: PlanTier;
   loading: boolean;
   subscriptionEnd: string | null;
 }
@@ -40,18 +39,16 @@ export function useUserPlan(): UserPlanState {
 
       // For now, determine plan based on owned templates
       // In production: call check-subscription edge function
-      let detectedPlan = 'free' as UserPlan;
+      let detectedPlan: PlanTier = 'free';
       
       if (templates && templates.length > 0) {
         // Check if any template requires higher tier
         for (const ut of templates) {
           const config = (ut.templates as any)?.config;
           const required = config?.requiredPlan as string | undefined;
-          if (required === 'enterprise') {
-            detectedPlan = 'enterprise';
-            break;
-          } else if (required === 'business' && detectedPlan !== 'enterprise') {
+          if (required === 'business') {
             detectedPlan = 'business';
+            break;
           } else if (required === 'pro' && detectedPlan === 'free') {
             detectedPlan = 'pro';
           }
@@ -91,14 +88,13 @@ export function useUserPlan(): UserPlanState {
 /**
  * Check if a user's plan meets the required plan level.
  */
-export function planMeetsRequirement(userPlan: UserPlan, requiredPlan: UserPlan | undefined): boolean {
+export function planMeetsRequirement(userPlan: PlanTier, requiredPlan: PlanTier | undefined): boolean {
   if (!requiredPlan || requiredPlan === 'free') return true;
   
-  const planOrder: Record<UserPlan, number> = {
+  const planOrder: Record<PlanTier, number> = {
     free: 0,
     pro: 1,
     business: 2,
-    enterprise: 3,
   };
 
   return planOrder[userPlan] >= planOrder[requiredPlan];

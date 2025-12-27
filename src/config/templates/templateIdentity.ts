@@ -1,248 +1,245 @@
 export type TemplateCategory = "dashboards" | "ops" | "bots" | "ecommerce" | "other";
+export type PlanTier = "free" | "pro" | "business";
+
+export type TemplateSlug =
+  | "analytics-dashboard"
+  | "data-sync-warehouse"
+  | "report-generator"
+  | "data-sync-tool"
+  | "workflow-automation"
+  | "expense-tracker"
+  | "data-doc-sync"
+  | "inventory-manager"
+  | "appointment-booker"
+  | "customer-support-widget"
+  | "lead-qualification-bot"
+  | "customer-support-bot"
+  | "agent-support-bot"
+  | "bio-lead-qualifier"
+  | "social-media-scheduler"
+  | "email-campaign-builder"
+  | "zapier-intercom-integration";
 
 export type PrimaryActionId =
   | "view_analytics"
-  | "run_sync"
+  | "connect_warehouse"
   | "generate_report"
+  | "connect_data_source"
   | "run_automation"
-  | "log_expense"
-  | "test_booking"
-  | "chat_demo"
-  | "test_qualification"
-  | "configure_integration"
-  | "schedule_post"
-  | "create_campaign"
+  | "add_expense"
+  | "connect_docs"
   | "view_inventory"
-  | "nothing";
-
-export type RequiredPlan = "free" | "pro" | "business" | "enterprise";
-
-/**
- * Get the upgrade button label for a given plan tier.
- */
-export function getUpgradeLabel(plan: RequiredPlan): string {
-  switch (plan) {
-    case "pro":
-      return "Upgrade to Pro";
-    case "business":
-      return "Upgrade to Business";
-    case "enterprise":
-      return "Contact Sales";
-    default:
-      return "Upgrade";
-  }
-}
-
-/**
- * Check if a template is locked for a user based on their plan.
- */
-export function isTemplateLocked(requiredPlan: RequiredPlan, userPlan: RequiredPlan): boolean {
-  const rank: Record<RequiredPlan, number> = { free: 0, pro: 1, business: 2, enterprise: 3 };
-  return rank[userPlan] < rank[requiredPlan];
-}
+  | "test_booking"
+  | "embed_widget"
+  | "test_lead_qualification"
+  | "view_support_inbox"
+  | "open_agent_console"
+  | "run_flow"
+  | "create_post_schedule"
+  | "create_email_campaign"
+  | "open_integration";
 
 export interface TemplateIdentity {
-  slug: string;
+  slug: TemplateSlug;
   name: string;
   category: TemplateCategory;
+  requiredPlan: PlanTier;
+
+  // the one-liner meaning
   primaryJob: string;
+
+  // first value action
   primaryAction: {
     id: PrimaryActionId;
     label: string;
-    href?: string;
+    href?: string; // optional, can be wired later
   };
+
+  // optional for cards/subtext
   description?: string;
-  requiredPlan?: RequiredPlan;
 }
 
-/**
- * Canonical map: keys MUST match edge function / DB slugs exactly.
- */
-export const TEMPLATE_IDENTITIES = {
-  // ═══════════════════════════════════════════════════════════════
-  // DASHBOARDS
-  // ═══════════════════════════════════════════════════════════════
+export const TEMPLATE_IDENTITIES: Record<TemplateSlug, TemplateIdentity> = {
+  // DASHBOARDS (Business/Pro)
   "analytics-dashboard": {
     slug: "analytics-dashboard",
     name: "Analytics Dashboard",
     category: "dashboards",
-    primaryJob: "Understand your business at a glance",
-    primaryAction: { id: "view_analytics", label: "View analytics" },
-    description: "Real-time data visualization with custom KPIs and interactive charts.",
     requiredPlan: "business",
+    primaryJob: "Understand revenue trends and performance",
+    primaryAction: { id: "view_analytics", label: "View analytics", href: "/dashboard" },
+    description: "Real-time business analytics with custom KPIs and tracking.",
   },
   "data-sync-warehouse": {
     slug: "data-sync-warehouse",
     name: "Data Sync Warehouse",
     category: "dashboards",
-    primaryJob: "Centralize data from all sources",
-    primaryAction: { id: "run_sync", label: "Run sync" },
-    description: "Enterprise-grade data warehouse synchronization with ETL pipelines.",
     requiredPlan: "business",
+    primaryJob: "Sync data to your warehouse with automated ETL pipelines",
+    primaryAction: { id: "connect_warehouse", label: "Connect warehouse", href: "/settings/integrations" },
+    description: "Enterprise-grade pipelines for warehouse sync and monitoring.",
   },
   "report-generator": {
     slug: "report-generator",
     name: "Report Generator",
     category: "dashboards",
-    primaryJob: "Generate polished reports in minutes",
-    primaryAction: { id: "generate_report", label: "Generate a report" },
-    description: "Template library, PDF generation, and data visualization.",
     requiredPlan: "pro",
+    primaryJob: "Generate clean business reports from your data",
+    primaryAction: { id: "generate_report", label: "Generate a report", href: "/reports" },
+    description: "Create shareable reports with summaries and key metrics.",
   },
 
-  // ═══════════════════════════════════════════════════════════════
-  // OPS
-  // ═══════════════════════════════════════════════════════════════
+  // OPS (Free/Pro)
   "data-sync-tool": {
     slug: "data-sync-tool",
     name: "Data Sync Tool",
     category: "ops",
-    primaryJob: "Keep your systems in sync automatically",
-    primaryAction: { id: "run_sync", label: "Connect a source" },
-    description: "Multi-platform sync with conflict resolution and scheduling.",
     requiredPlan: "pro",
+    primaryJob: "Synchronize data between multiple systems automatically",
+    primaryAction: { id: "connect_data_source", label: "Connect a data source", href: "/settings/integrations" },
+    description: "Keep your tools aligned without manual exports.",
   },
   "workflow-automation": {
     slug: "workflow-automation",
     name: "Workflow Automation",
     category: "ops",
-    primaryJob: "Automate repetitive business tasks",
-    primaryAction: { id: "run_automation", label: "Run an automation" },
-    description: "Visual workflow builder with custom triggers and multi-step actions.",
     requiredPlan: "pro",
+    primaryJob: "Automate repetitive business tasks end-to-end",
+    primaryAction: { id: "run_automation", label: "Run an automation", href: "/automations" },
+    description: "Build workflows that trigger actions automatically.",
   },
   "expense-tracker": {
     slug: "expense-tracker",
     name: "Expense Tracker",
     category: "ops",
-    primaryJob: "Track and categorize business expenses",
-    primaryAction: { id: "log_expense", label: "Log an expense" },
-    description: "Receipt scanning, expense categorization, and monthly reports.",
     requiredPlan: "free",
+    primaryJob: "Track business expenses and stay organized",
+    primaryAction: { id: "add_expense", label: "Add an expense", href: "/expenses" },
+    description: "Log expenses and keep spending under control.",
   },
   "data-doc-sync": {
     slug: "data-doc-sync",
     name: "Data + Docs Sync",
     category: "ops",
-    primaryJob: "Keep docs in sync with your repo or database",
-    primaryAction: { id: "run_sync", label: "Sync now" },
-    description: "Automatic sync between docs and your codebase or database.",
     requiredPlan: "pro",
+    primaryJob: "Keep your documents updated with live data automatically",
+    primaryAction: { id: "connect_docs", label: "Connect docs", href: "/settings/integrations" },
+    description: "Sync data into docs for always-current client deliverables.",
   },
   "inventory-manager": {
     slug: "inventory-manager",
     name: "Inventory Manager",
     category: "ops",
-    primaryJob: "Track inventory and avoid stockouts",
-    primaryAction: { id: "view_inventory", label: "View inventory" },
-    description: "Stock tracking, low stock alerts, and supplier management.",
     requiredPlan: "free",
+    primaryJob: "Track inventory levels and prevent stockouts",
+    primaryAction: { id: "view_inventory", label: "View inventory", href: "/inventory" },
+    description: "Automated reorder alerts and inventory tracking.",
   },
 
-  // ═══════════════════════════════════════════════════════════════
-  // BOTS
-  // ═══════════════════════════════════════════════════════════════
+  // BOTS (Free/Pro/Business)
   "appointment-booker": {
     slug: "appointment-booker",
     name: "Appointment Booker",
     category: "bots",
-    primaryJob: "Get clients booked automatically",
-    primaryAction: { id: "test_booking", label: "Test a booking" },
-    description: "Calendar integration with automated reminders and reschedule handling.",
     requiredPlan: "free",
+    primaryJob: "Get clients booked automatically",
+    primaryAction: { id: "test_booking", label: "Test a booking", href: "/appointments" },
+    description: "Let clients book time with you without back-and-forth.",
   },
   "customer-support-widget": {
     slug: "customer-support-widget",
     name: "Customer Support Widget",
     category: "bots",
-    primaryJob: "Answer customer questions instantly",
-    primaryAction: { id: "chat_demo", label: "Try a demo chat" },
-    description: "AI chat assistant with ticket management and real-time support.",
     requiredPlan: "pro",
+    primaryJob: "Add AI-powered support to your site with escalation",
+    primaryAction: { id: "embed_widget", label: "Get embed code", href: "/support/widget" },
+    description: "Customer support widget for FAQs and ticket escalation.",
   },
   "lead-qualification-bot": {
     slug: "lead-qualification-bot",
     name: "Lead Qualification Bot",
     category: "bots",
-    primaryJob: "Qualify leads so you focus on the best ones",
-    primaryAction: { id: "test_qualification", label: "Test qualification" },
-    description: "Conversational AI with lead scoring and CRM integration.",
     requiredPlan: "pro",
+    primaryJob: "Qualify leads automatically so you focus on the best ones",
+    primaryAction: { id: "test_lead_qualification", label: "Test qualification", href: "/leads" },
+    description: "Qualifies leads through intelligent conversations and scoring.",
   },
   "customer-support-bot": {
     slug: "customer-support-bot",
     name: "Customer Support Bot",
     category: "bots",
-    primaryJob: "Handle FAQs and escalate when needed",
-    primaryAction: { id: "chat_demo", label: "Chat demo" },
-    description: "FAQ handling, escalation, and transcript logging.",
     requiredPlan: "pro",
+    primaryJob: "Handle FAQs and escalation with an AI support agent",
+    primaryAction: { id: "view_support_inbox", label: "View support inbox", href: "/support" },
+    description: "AI-powered support agent for FAQs and escalation.",
   },
   "agent-support-bot": {
     slug: "agent-support-bot",
     name: "Agent + Support Bot",
     category: "bots",
-    primaryJob: "AI support with memory and seamless handoff",
-    primaryAction: { id: "chat_demo", label: "Start a conversation" },
-    description: "Production-ready support agent with context and human handoff.",
     requiredPlan: "business",
+    primaryJob: "Run a customer-facing agent with memory, tools, and escalation",
+    primaryAction: { id: "open_agent_console", label: "Open agent console", href: "/agent" },
+    description: "Advanced support with tools, memory, and clean escalation paths.",
   },
   "bio-lead-qualifier": {
     slug: "bio-lead-qualifier",
     name: "Flow + Lead Qualifier",
     category: "bots",
-    primaryJob: "Capture, score, and route leads automatically",
-    primaryAction: { id: "test_qualification", label: "Test the flow" },
-    description: "Conversational intake that scores intent and books meetings.",
     requiredPlan: "business",
+    primaryJob: "Automate lead qualification with a full intake flow",
+    primaryAction: { id: "run_flow", label: "Run intake flow", href: "/leads" },
+    description: "Combines guided intake + lead scoring for high-signal leads.",
   },
 
-  // ═══════════════════════════════════════════════════════════════
-  // ECOMMERCE
-  // ═══════════════════════════════════════════════════════════════
+  // ECOMMERCE (Pro)
   "social-media-scheduler": {
     slug: "social-media-scheduler",
     name: "Social Media Scheduler",
     category: "ecommerce",
-    primaryJob: "Schedule posts across all platforms",
-    primaryAction: { id: "schedule_post", label: "Schedule a post" },
-    description: "Multi-platform posting with content calendar and analytics.",
     requiredPlan: "pro",
+    primaryJob: "Plan and schedule posts consistently across platforms",
+    primaryAction: { id: "create_post_schedule", label: "Create a schedule", href: "/social" },
+    description: "Schedule content so you stay consistent without manual posting.",
   },
   "email-campaign-builder": {
     slug: "email-campaign-builder",
     name: "Email Campaign Builder",
     category: "ecommerce",
-    primaryJob: "Send personalized email campaigns",
-    primaryAction: { id: "create_campaign", label: "Create a campaign" },
-    description: "Drag & drop editor with A/B testing and segmentation.",
     requiredPlan: "pro",
+    primaryJob: "Build and send email campaigns that convert",
+    primaryAction: { id: "create_email_campaign", label: "Create a campaign", href: "/email" },
+    description: "Create campaigns, audiences, and sequences.",
   },
 
-  // ═══════════════════════════════════════════════════════════════
-  // OTHER
-  // ═══════════════════════════════════════════════════════════════
+  // OTHER (Free)
   "zapier-intercom-integration": {
     slug: "zapier-intercom-integration",
-    name: "Zapier x Intercom Integration",
+    name: "Zapier x Intercom",
     category: "other",
-    primaryJob: "Connect Zapier and Intercom in minutes",
-    primaryAction: { id: "configure_integration", label: "Configure integration" },
-    description: "Example zaps and Intercom snippets for easy setup.",
     requiredPlan: "free",
+    primaryJob: "Connect Zapier and Intercom to automate support workflows",
+    primaryAction: { id: "open_integration", label: "Open integration", href: "/settings/integrations" },
+    description: "Wire events between Zapier and Intercom for streamlined support.",
   },
-} as const satisfies Record<string, TemplateIdentity>;
-
-export type TemplateSlug = keyof typeof TEMPLATE_IDENTITIES;
+};
 
 export function getTemplateIdentity(slug: string): TemplateIdentity | null {
   return (TEMPLATE_IDENTITIES as Record<string, TemplateIdentity>)[slug] ?? null;
 }
 
-export const CATEGORY_HERO_WIDGET: Record<TemplateCategory, string> = {
-  dashboards: "analytics",
-  ops: "automation",
-  bots: "assistant",
-  ecommerce: "campaigns",
-  other: "integrations",
-};
+export function getUpgradeLabel(plan: PlanTier) {
+  switch (plan) {
+    case "pro":
+      return "Upgrade to Pro";
+    case "business":
+      return "Upgrade to Business";
+    default:
+      return "Upgrade";
+  }
+}
+
+export function isTemplateLocked(requiredPlan: PlanTier, userPlan: PlanTier) {
+  const rank: Record<PlanTier, number> = { free: 0, pro: 1, business: 2 };
+  return rank[userPlan] < rank[requiredPlan];
+}
