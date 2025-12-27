@@ -22,13 +22,13 @@ export function DashboardNextStepCard() {
       <CardContent className="p-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-0.5">
+            <p className="text-xs font-medium text-primary-foreground/70 uppercase tracking-wide mb-0.5">
               Next step
             </p>
-            <h3 className="text-base font-semibold text-foreground">
+            <h3 className="text-base font-semibold text-primary-foreground">
               {step.title}
             </h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-primary-foreground/80">
               {step.description}
             </p>
           </div>

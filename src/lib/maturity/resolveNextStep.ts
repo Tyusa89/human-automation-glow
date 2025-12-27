@@ -55,7 +55,7 @@ export function resolveNextStep(s: MaturitySignals): NextStep {
       title: "Complete your profile",
       description: "Answer a few questions so your dashboard can auto-configure.",
       ctaLabel: "Finish setup",
-      href: "/onboarding",
+      href: "/create-profile",
       priority: 20,
     };
   }
