@@ -53,6 +53,7 @@ import DashboardAppointments from '@/pages/DashboardAppointments';
 import AdminAppointments from '@/pages/AdminAppointments';
 import AppointmentsPage from '@/pages/Appointments';
 import Onboarding from '@/pages/Onboarding';
+import DashboardSettings from '@/pages/DashboardSettings';
 
 const queryClient = new QueryClient();
 
@@ -119,6 +120,14 @@ const App = () => {
                   element={
                     <RequireAuth>
                       <Dashboard />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/dashboard/settings"
+                  element={
+                    <RequireAuth>
+                      <DashboardSettings />
                     </RequireAuth>
                   }
                 />
