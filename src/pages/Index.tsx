@@ -1,5 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import AppShell from "@/components/layout/AppShell";
+import { Button } from "@/components/ui/button";
 
 /** EcoNest – New Landing with Template Preview modal */
 type Template = {
@@ -83,9 +85,16 @@ const TEMPLATES: Record<Template["category"], Template> = {
 export default function Index() {
   const [preview, setPreview] = useState<Template | null>(null);
 
-  return (
-    <div className="min-h-screen bg-background text-foreground">
+  const headerActions = (
+    <div className="flex items-center gap-2">
+      <Link to="/auth?mode=signup">
+        <Button size="sm">Start free</Button>
+      </Link>
+    </div>
+  );
 
+  return (
+    <AppShell title="Home" rightSlot={headerActions}>
       {/* Hero */}
       <section className="relative">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
@@ -182,9 +191,7 @@ export default function Index() {
           onClose={() => setPreview(null)}
         />
       )}
-
-      <Footer />
-    </div>
+    </AppShell>
   );
 }
 
