@@ -184,11 +184,12 @@ const Dashboard = () => {
     ? secondaryWidgets 
     : secondaryWidgets.filter(w => w.key !== 'assistant_suggestions');
 
-  // Subtitle based on mode
+  // Subtitle based on mode - never show "setup" language for onboarded users
   const getSubtitle = () => {
-    if (isNewUser) return "Let's get you set up";
     if (isReactivation) return "Welcome back";
-    return "Your business at a glance";
+    if (isPowerUser) return "Your business at a glance";
+    // Even for new users, use neutral language
+    return "Overview";
   };
 
   if (profileLoading) {

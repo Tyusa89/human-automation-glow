@@ -3,63 +3,76 @@ import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getTemplateById } from "@/lib/templates";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2, Settings2 } from "lucide-react";
+import { Loader2, CheckCircle2, Settings2, Clock, Puzzle, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { brand } from "@/components/Brand";
 
-type ActivationState = "loading" | "activating" | "success" | "error";
+type ActivationState = "details" | "activating" | "success" | "error";
 
 export default function TemplateActivation() {
   const navigate = useNavigate();
   const { templateId: raw } = useParams();
   const templateId = (raw ?? "").toLowerCase();
   
-  const [state, setState] = useState<ActivationState>("loading");
+  const [state, setState] = useState<ActivationState>("details");
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [loadingPhase, setLoadingPhase] = useState(0);
   
   const template = getTemplateById(templateId);
 
+  // Fetch profile on mount
   useEffect(() => {
     if (!template) {
       setError("Template not found");
       setState("error");
       return;
     }
-    activateTemplate();
+    fetchProfile();
   }, [templateId]);
 
-  const activateTemplate = async () => {
+  const fetchProfile = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    setProfile(profileData);
+  };
+
+  const activateSystem = async () => {
     setState("activating");
+    setLoadingPhase(0);
+    
+    // Progress through loading phases
+    const phaseTimer = setInterval(() => {
+      setLoadingPhase(prev => Math.min(prev + 1, 2));
+    }, 800);
     
     try {
-      // Get current user and profile
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate("/auth");
         return;
       }
 
-      // Fetch profile data for auto-configuration
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      setProfile(profileData);
-
       // Auto-generate config from profile
-      const preferences = profileData?.preferences as Record<string, unknown> | null;
+      const preferences = profile?.preferences as Record<string, unknown> | null;
       const autoConfig = {
         mode: "auto",
-        projectName: `${template?.title || "Project"} - ${profileData?.company || "My Business"}`,
+        projectName: `${template?.title || "Project"} - ${profile?.company || "My Business"}`,
         environment: "production",
         notifications: preferences?.email_reminders ?? true,
-        timezone: profileData?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
-        workType: profileData?.work_type || "consultant",
-        assistantLevel: profileData?.assistant_level || "balanced",
+        timezone: profile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+        workType: profile?.work_type || profile?.business_type || "consultant",
+        assistantLevel: profile?.assistant_level || "balanced",
       };
 
       // Call the templates-use function with auto mode
@@ -75,7 +88,7 @@ export default function TemplateActivation() {
       if (fnError) throw fnError;
 
       // Record the template activation in user_templates
-      const { error: insertError } = await supabase
+      await supabase
         .from("user_templates")
         .insert({
           user_id: user.id,
@@ -84,22 +97,20 @@ export default function TemplateActivation() {
           source: "auto-activation",
         });
 
-      if (insertError) {
-        console.warn("Could not record template activation:", insertError);
-      }
-
+      clearInterval(phaseTimer);
       setState("success");
       
-      // Short delay to show success state, then redirect
+      // Redirect after showing success
       setTimeout(() => {
         navigate(`/template-success?template=${templateId}`);
       }, 1500);
 
     } catch (err) {
+      clearInterval(phaseTimer);
       console.error("Template activation error:", err);
-      setError(err instanceof Error ? err.message : "Failed to activate template");
+      setError(err instanceof Error ? err.message : "Failed to activate system");
       setState("error");
-      toast.error("Failed to activate template");
+      toast.error("Failed to activate system");
     }
   };
 
@@ -117,6 +128,12 @@ export default function TemplateActivation() {
     };
     return types[profile?.work_type] || types[profile?.business_type] || "your business";
   };
+
+  const loadingMessages = [
+    { icon: Sparkles, text: "Applying your goals and workflow preferences" },
+    { icon: Puzzle, text: "Connecting recommended modules" },
+    { icon: CheckCircle2, text: "Finalizing setup" },
+  ];
 
   if (!template) {
     return (
@@ -139,82 +156,137 @@ export default function TemplateActivation() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-lg border-border/50 shadow-xl">
         <CardContent className="pt-8 pb-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-4">
-              {state === "success" ? (
-                <CheckCircle2 className="h-8 w-8" />
-              ) : (
-                <Loader2 className="h-8 w-8 animate-spin" />
-              )}
-            </div>
-            <h1 className="text-2xl font-bold text-foreground mb-2">
-              {state === "success" ? "System Activated!" : `Activating ${template.title}`}
-            </h1>
-          </div>
-
-          {/* Status */}
-          <div className="space-y-4">
-            {state === "activating" && (
-              <div className="text-center space-y-3">
+          
+          {/* Screen A: Template Details */}
+          {state === "details" && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <h1 className="text-2xl font-bold text-foreground mb-2">
+                  Activate {template.title}
+                </h1>
                 <p className="text-muted-foreground">
-                  Configuring your system for a <span className="text-foreground font-medium">{getBusinessTypeLabel()}</span>...
+                  EcoNest will configure this automatically using your onboarding profile.
                 </p>
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Applying smart defaults from your profile</span>
+              </div>
+
+              {/* Bullets */}
+              <div className="space-y-3 py-4">
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4 text-primary shrink-0" />
+                  <span>Takes ~10 seconds</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <Settings2 className="h-4 w-4 text-primary shrink-0" />
+                  <span>You can customize settings later</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                  <span>No extra setup required</span>
                 </div>
               </div>
-            )}
 
-            {state === "success" && (
-              <div className="text-center space-y-4">
-                <div className="p-4 rounded-lg bg-primary/5 border border-primary/10">
-                  <p className="text-foreground font-medium mb-1">
-                    Your system is live
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    We've configured this template based on your business.
-                  </p>
+              {/* Actions */}
+              <div className="space-y-3">
+                <Button 
+                  onClick={activateSystem}
+                  size="lg"
+                  className="w-full"
+                >
+                  Activate system
+                </Button>
+                <button
+                  onClick={() => navigate(`/templates/${templateId}/setup?mode=advanced`)}
+                  className="w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Customize settings (optional)
+                </button>
+              </div>
+
+              {/* Microcopy */}
+              <p className="text-xs text-muted-foreground/70 text-center pt-2">
+                By continuing, EcoNest will generate your project with recommended defaults.
+              </p>
+            </div>
+          )}
+
+          {/* Screen B: Activating (loading) */}
+          {state === "activating" && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-4">
+                  <Loader2 className="h-8 w-8 animate-spin" />
                 </div>
+                <h1 className="text-2xl font-bold text-foreground mb-2">
+                  Configuring your system…
+                </h1>
+                <p className="text-muted-foreground">
+                  Using your <span className="text-foreground font-medium">{getBusinessTypeLabel()}</span> profile to apply the best defaults.
+                </p>
+              </div>
+
+              {/* Progress lines */}
+              <div className="space-y-3 py-4">
+                {loadingMessages.map((msg, index) => {
+                  const Icon = msg.icon;
+                  const isActive = index <= loadingPhase;
+                  const isCurrent = index === loadingPhase;
+                  
+                  return (
+                    <div 
+                      key={index}
+                      className={`flex items-center gap-3 text-sm transition-all duration-300 ${
+                        isActive ? "text-foreground" : "text-muted-foreground/50"
+                      }`}
+                    >
+                      {isCurrent ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-primary shrink-0" />
+                      ) : isActive ? (
+                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                      ) : (
+                        <Icon className="h-4 w-4 shrink-0" />
+                      )}
+                      <span>{msg.text}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Screen B.5: Success (brief before redirect) */}
+          {state === "success" && (
+            <div className="text-center space-y-4">
+              <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-4">
+                <CheckCircle2 className="h-8 w-8" />
+              </div>
+              <h1 className="text-2xl font-bold text-foreground">
+                System activated ✓
+              </h1>
+              <p className="text-muted-foreground">
+                Redirecting to your dashboard...
+              </p>
+            </div>
+          )}
+
+          {/* Error state */}
+          {state === "error" && (
+            <div className="text-center space-y-4">
+              <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
+                <p className="text-destructive font-medium mb-1">
+                  Activation failed
+                </p>
                 <p className="text-sm text-muted-foreground">
-                  Redirecting to your dashboard...
+                  {error || "Something went wrong. Please try again."}
                 </p>
               </div>
-            )}
-
-            {state === "error" && (
-              <div className="text-center space-y-4">
-                <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
-                  <p className="text-destructive font-medium mb-1">
-                    Activation failed
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {error || "Something went wrong. Please try again."}
-                  </p>
-                </div>
-                <div className="flex gap-3 justify-center">
-                  <Button variant="outline" onClick={() => navigate("/templates")}>
-                    Back to Templates
-                  </Button>
-                  <Button onClick={activateTemplate}>
-                    Try Again
-                  </Button>
-                </div>
+              <div className="flex gap-3 justify-center">
+                <Button variant="outline" onClick={() => navigate("/templates")}>
+                  Back to Templates
+                </Button>
+                <Button onClick={() => { setState("details"); setError(null); }}>
+                  Try Again
+                </Button>
               </div>
-            )}
-          </div>
-
-          {/* Advanced settings link - only show during activation/success */}
-          {(state === "activating" || state === "success") && (
-            <div className="mt-8 pt-6 border-t border-border/50 text-center">
-              <button
-                onClick={() => navigate(`/templates/${templateId}/setup?mode=advanced`)}
-                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <Settings2 className="h-4 w-4" />
-                Advanced settings
-              </button>
             </div>
           )}
         </CardContent>
