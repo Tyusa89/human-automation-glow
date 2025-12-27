@@ -318,13 +318,13 @@ const Dashboard = () => {
         {/* Template Context Header - shows active template context */}
         <TemplateContextHeader activeTemplateSlug={activeTemplateSlug} />
 
-        {isNewUser && (
+{isNewUser && (
           <>
-            {/* Next Step Card - one clear action */}
-            <DashboardNextStepCard />
+            {/* Next Step Card - one clear action (template-aware) */}
+            <DashboardNextStepCard activeTemplateSlug={activeTemplateSlug} />
             
-            {/* Setup Checklist - only show if NOT activation complete */}
-            {!activationComplete && <SetupChecklist />}
+            {/* Setup Checklist - hide when template is active (one authority rule) */}
+            {!activationComplete && !activeTemplateSlug && <SetupChecklist />}
             
             {/* Small link for activated users who want to revisit setup */}
             {activationComplete && (
@@ -381,7 +381,7 @@ const Dashboard = () => {
         {(isPowerUser || isReactivation) && (
           <>
             {/* Reactivation gets the Next Step Card (resume nudge) */}
-            {isReactivation && <DashboardNextStepCard />}
+            {isReactivation && <DashboardNextStepCard activeTemplateSlug={activeTemplateSlug} />}
 
             {/* Focus Today - top priority */}
             {focusWidget && (
@@ -402,7 +402,7 @@ const Dashboard = () => {
             )}
 
             {/* Power user gets Next Step Card only if there's something actionable */}
-            {isPowerUser && tier !== 'power' && <DashboardNextStepCard />}
+            {isPowerUser && tier !== 'power' && <DashboardNextStepCard activeTemplateSlug={activeTemplateSlug} />}
 
             {/* KPI Row - prominent for power users */}
             {kpiWidgets.length > 0 && (
