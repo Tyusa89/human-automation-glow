@@ -43,7 +43,7 @@ export function resolveNextStep(s: MaturitySignals): NextStep {
       title: "Fix automation errors",
       description: `You have ${s.automationErrorsCount} run issue(s) to review.`,
       ctaLabel: "Review errors",
-      href: "/owner/approvals",
+      href: "/automations/runs",
       priority: 10,
     };
   }
@@ -79,7 +79,7 @@ export function resolveNextStep(s: MaturitySignals): NextStep {
       title: "Run your first automation",
       description: "Trigger a test run to confirm everything is connected.",
       ctaLabel: "Run now",
-      href: "/integrations",
+      href: "/automations",
       priority: 40,
     };
   }
@@ -91,7 +91,7 @@ export function resolveNextStep(s: MaturitySignals): NextStep {
       title: "Enable appointments",
       description: "Turn on booking so your system can capture leads automatically.",
       ctaLabel: "Enable booking",
-      href: "/appointments",
+      href: "/appointments/settings",
       priority: 50,
     };
   }
@@ -102,7 +102,7 @@ export function resolveNextStep(s: MaturitySignals): NextStep {
       title: "Add your first lead",
       description: "Start your pipeline so automations have something to work with.",
       ctaLabel: "Add lead",
-      href: "/dashboard",
+      href: "/crm/leads/new",
       priority: 60,
     };
   }
@@ -113,7 +113,7 @@ export function resolveNextStep(s: MaturitySignals): NextStep {
       title: "Create your first appointment",
       description: "Test the booking flow end-to-end.",
       ctaLabel: "Create appointment",
-      href: "/appointments",
+      href: "/appointments/new",
       priority: 70,
     };
   }
@@ -124,7 +124,7 @@ export function resolveNextStep(s: MaturitySignals): NextStep {
       title: "Connect payments",
       description: "Add a product or payment method so revenue can be tracked.",
       ctaLabel: "Set up payments",
-      href: "/payment",
+      href: "/payments",
       priority: 80,
     };
   }
