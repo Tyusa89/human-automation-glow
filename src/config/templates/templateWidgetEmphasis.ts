@@ -128,6 +128,7 @@ export const TEMPLATE_WIDGET_EMPHASIS: Partial<Record<TemplateSlug, TemplateEmph
 
 /**
  * Get emphasis config for a template (falls back to category, then "other")
+ * ENFORCES: focus_today always first in hero if present anywhere
  */
 export function getTemplateWidgetEmphasis(params: {
   templateSlug: TemplateSlug | null;
@@ -135,15 +136,28 @@ export function getTemplateWidgetEmphasis(params: {
 }): TemplateEmphasis {
   const { templateSlug, templateCategory } = params;
 
-  if (templateSlug && TEMPLATE_WIDGET_EMPHASIS[templateSlug]) {
-    return TEMPLATE_WIDGET_EMPHASIS[templateSlug]!;
+  // IMPORTANT: get base config (don't mutate shared objects)
+  const base: TemplateEmphasis =
+    (templateSlug && TEMPLATE_WIDGET_EMPHASIS[templateSlug]) ||
+    (templateCategory && CATEGORY_DEFAULTS[templateCategory]) ||
+    CATEGORY_DEFAULTS.other;
+
+  // Clone arrays so we don't mutate CATEGORY_DEFAULTS / TEMPLATE_WIDGET_EMPHASIS
+  const hero = [...base.hero];
+  const secondary = [...base.secondary];
+
+  // ENFORCE: focus_today always first in hero (if present anywhere)
+  const inHero = hero.includes("focus_today");
+  const inSecondary = secondary.includes("focus_today");
+
+  if (inHero || inSecondary) {
+    return {
+      hero: ["focus_today", ...hero.filter((k) => k !== "focus_today")],
+      secondary: secondary.filter((k) => k !== "focus_today"),
+    };
   }
 
-  if (templateCategory && CATEGORY_DEFAULTS[templateCategory]) {
-    return CATEGORY_DEFAULTS[templateCategory];
-  }
-
-  return CATEGORY_DEFAULTS.other;
+  return { hero, secondary };
 }
 
 /**
