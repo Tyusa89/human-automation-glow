@@ -2,8 +2,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
+import { 
+  Bot, Workflow, LayoutTemplate, ArrowRight, CheckCircle2, 
+  Briefcase, Lightbulb, Users, Building2, Sparkles, Zap
+} from "lucide-react";
 
-/** EcoNest – New Landing with Template Preview modal */
+/** EcoNest – Landing Page with Target Audience Positioning */
 type Template = {
   id: string;
   name: string;
@@ -82,97 +86,295 @@ const TEMPLATES: Record<Template["category"], Template> = {
   },
 };
 
+const audiences = [
+  { icon: Briefcase, label: "Service businesses", description: "Consultants, coaches, agencies" },
+  { icon: Lightbulb, label: "Solo founders & creators", description: "Independent operators" },
+  { icon: Users, label: "Small teams & startups", description: "Growing businesses" },
+  { icon: Building2, label: "Operations-heavy businesses", description: "Process-driven orgs" },
+];
+
+const popularTemplates = [
+  { name: "Appointment Booking", tag: "Popular with consultants" },
+  { name: "Analytics Dashboard", tag: "Great for agencies" },
+  { name: "Lead Qualification Bot", tag: "Common for solo founders" },
+  { name: "Customer Support Widget", tag: "Essential for teams" },
+  { name: "Workflow Automation", tag: "Operations favorite" },
+];
+
 export default function Index() {
+  const navigate = useNavigate();
   const [preview, setPreview] = useState<Template | null>(null);
 
   return (
     <AppShell>
-      {/* Hero */}
-      <section className="relative">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-          <div className="grid items-center gap-10 lg:grid-cols-2">
-            {/* Left block */}
-            <div>
-              <div className="flex flex-wrap items-center gap-2 text-sm">
-                <span className="rounded-full bg-secondary/70 px-2.5 py-1 font-medium text-secondary-foreground">Home</span>
-                <span className="rounded-full bg-secondary px-2.5 py-1 font-medium text-secondary-foreground">Beta</span>
-                <span className="rounded-full bg-secondary px-2.5 py-1 font-medium text-secondary-foreground">Zapier × Intercom vibe</span>
-              </div>
-
-              <h1 className="mt-5 text-4xl font-extrabold leading-tight text-white sm:text-5xl">
-                Build AI agents and automations — visually
-              </h1>
-
-              <p className="mt-4 text-lg text-muted-foreground">
-                EcoNest is your Zapier-meets-Intercom workspace: design automations, launch customer-facing agents,
-                and wire them to your data — all in one place.
-              </p>
-
-              <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row">
-                <Link
-                  to="/auth?mode=signup"
-                  className="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-3 text-base font-semibold text-primary-foreground shadow hover:bg-primary/90"
-                >
-                  Start free
-                </Link>
-                <Link
-                  to="/contact?type=demo"
-                  className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-5 py-3 text-base font-semibold text-white hover:bg-accent"
-                >
-                  Book a demo
-                </Link>
-
-                <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-2 text-sm font-medium text-primary">
-                  <span className="h-2 w-2 rounded-full bg-primary" />
-                  Visual Studio • Templates • Integrations
-                </span>
-              </div>
-
-              <div className="mt-6 flex flex-wrap gap-x-8 gap-y-2 text-sm text-muted-foreground">
-                <span>GDPR-ready</span>
-                <span>RLS/Row Security</span>
-                <span>Self-host option</span>
-              </div>
+      {/* Hero Section */}
+      <section className="relative overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary mb-6">
+              <Sparkles className="h-4 w-4" />
+              AI-Powered Automation Platform
             </div>
 
-            {/* Right card: Visual Automation Studio */}
-            <div className="mx-auto w-full max-w-xl">
-              <div className="rounded-2xl border border-border bg-card p-5 shadow-elegant">
-                <div className="mb-3 flex items-center justify-between">
-                  <h3 className="text-base font-semibold">Visual Automation Studio</h3>
-                  <span className="text-xs text-muted-foreground">Drag, connect, and publish without code.</span>
-                </div>
+            <h1 className="text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-6xl">
+              Automations that run your business
+              <span className="block text-primary">— without the complexity</span>
+            </h1>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <StudioTile label="Agent" icon={<IconAgent />} onClick={() => setPreview(TEMPLATES.agent)} />
-                  <StudioTile label="Flow" icon={<IconFlow />} onClick={() => setPreview(TEMPLATES.flow)} />
-                  <StudioTile label="Data" icon={<IconData />} onClick={() => setPreview(TEMPLATES.data)} />
-                  <StudioTile label="Integration" icon={<IconPlug />} onClick={() => setPreview(TEMPLATES.integration)} />
-                  <StudioTile label="Channel" icon={<IconChannel />} onClick={() => setPreview(TEMPLATES.channel)} />
-                  <StudioTile label="Policy" icon={<IconShield />} onClick={() => setPreview(TEMPLATES.policy)} />
-                </div>
-              </div>
+            <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
+              EcoNest is an AI-powered automation platform designed for service businesses, 
+              solo founders, and small teams who want real results, not technical headaches.
+            </p>
+
+            <p className="mt-4 text-base text-muted-foreground">
+              Build workflows, deploy AI agents, and connect your tools — all from one place.
+            </p>
+
+            <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+              <Link
+                to="/auth?mode=signup"
+                className="inline-flex items-center justify-center rounded-xl bg-primary px-6 py-3.5 text-base font-semibold text-primary-foreground shadow hover:bg-primary/90 transition-colors"
+              >
+                Start free
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+              <Link
+                to="/templates"
+                className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-6 py-3.5 text-base font-semibold text-white hover:bg-accent transition-colors"
+              >
+                View templates
+              </Link>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Feature cards row */}
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
+      {/* Who EcoNest Is For */}
+      <section className="border-t border-border/50 bg-muted/20">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl font-bold text-white sm:text-3xl">
+              Built for real businesses — not just developers
+            </h2>
+            <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
+              EcoNest is designed for people who want automation to work, not become another project.
+            </p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {audiences.map((audience) => (
+              <div
+                key={audience.label}
+                className="rounded-xl border border-border/50 bg-card p-5 text-center hover:border-primary/30 transition-colors"
+              >
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                  <audience.icon className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-white">{audience.label}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{audience.description}</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-8 text-center text-sm text-muted-foreground">
+            Don't see yourself listed? <span className="text-primary">EcoNest adapts to your workflow.</span>
+          </p>
+        </div>
+      </section>
+
+      {/* What You Can Do */}
+      <section className="border-t border-border/50">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl font-bold text-white sm:text-3xl">
+              What you can do with EcoNest
+            </h2>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            <FeatureCard
+              title="AI Agents"
+              desc="Autonomous assistants that think, plan, and act — handling tasks like scheduling, lead qualification, and support."
+              icon={<Bot className="h-6 w-6" />}
+              onClick={() => navigate('/solutions')}
+            />
             <FeatureCard
               title="Automations"
-              desc="Multi-step workflows with triggers, branches, retries, and human-in-the-loop steps."
-              icon={<IconNodes />}
+              desc="Reliable workflows powered by n8n + Supabase to connect your tools and eliminate manual work."
+              icon={<Workflow className="h-6 w-6" />}
+              onClick={() => navigate('/templates')}
             />
             <FeatureCard
-              title="Agents"
-              desc="LLM-powered agents with tools, memory, and guardrails — deploy to web, chat, or voice."
-              icon={<IconAgent />}
-            />
-            <FeatureCard
-              title="Integrations"
-              desc="Directory + generic API/Webhook & DB connectors for anything custom."
-              icon={<IconPlug />}
+              title="Templates"
+              desc="Production-ready systems you can install, customize, and launch in minutes."
+              icon={<LayoutTemplate className="h-6 w-6" />}
+              onClick={() => navigate('/templates')}
             />
           </div>
+        </div>
+      </section>
+
+      {/* Templates Section */}
+      <section className="border-t border-border/50 bg-muted/20">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl font-bold text-white sm:text-3xl">
+              Start fast with ready-to-use templates
+            </h2>
+            <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
+              Skip setup fatigue. Choose a template and let EcoNest guide the rest.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {popularTemplates.map((template) => (
+              <button
+                key={template.name}
+                onClick={() => navigate('/templates')}
+                className="group flex items-center justify-between rounded-xl border border-border/50 bg-card p-4 text-left hover:border-primary/30 hover:bg-accent/50 transition-all"
+              >
+                <div>
+                  <h3 className="font-medium text-white">{template.name}</h3>
+                  <p className="text-xs text-primary/80">{template.tag}</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+              </button>
+            ))}
+          </div>
+
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            Each template includes guided setup, best-practice defaults, and optional customization.
+          </p>
+
+          <div className="mt-6 text-center">
+            <Link
+              to="/templates"
+              className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
+            >
+              Browse all templates
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Dashboard Personalization */}
+      <section className="border-t border-border/50">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="grid gap-10 lg:grid-cols-2 items-center">
+            <div>
+              <h2 className="text-2xl font-bold text-white sm:text-3xl">
+                A dashboard that adapts to you
+              </h2>
+              <p className="mt-4 text-muted-foreground">
+                EcoNest personalizes your experience based on your business type, 
+                goals, and how you actually use the platform.
+              </p>
+              
+              <ul className="mt-6 space-y-3">
+                {[
+                  "Focused suggestions based on your work",
+                  "Relevant widgets — not everything at once",
+                  "Less noise over time",
+                ].map((item) => (
+                  <li key={item} className="flex items-center gap-3 text-muted-foreground">
+                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <p className="mt-6 text-sm font-medium text-white">
+                No clutter. No wasted clicks.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-border/50 bg-card p-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 rounded-lg bg-muted/50 p-3">
+                  <Zap className="h-5 w-5 text-primary" />
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-white">Focus Today</div>
+                    <div className="text-xs text-muted-foreground">3 tasks prioritized for you</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 rounded-lg bg-muted/50 p-3">
+                  <Users className="h-5 w-5 text-primary" />
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-white">Follow-up Queue</div>
+                    <div className="text-xs text-muted-foreground">2 clients need your attention</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 rounded-lg bg-muted/50 p-3">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-white">Smart Suggestion</div>
+                    <div className="text-xs text-muted-foreground">"Connect your calendar"</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Powerful Without Overwhelm */}
+      <section className="border-t border-border/50 bg-muted/20">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-2xl font-bold text-white sm:text-3xl">
+            Powerful — without the overwhelm
+          </h2>
+          
+          <div className="mt-8 flex flex-wrap justify-center gap-6 text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-primary" />
+              Clarity over complexity
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-primary" />
+              Automation without lock-in
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-primary" />
+              Growth without rebuilding
+            </div>
+          </div>
+
+          <p className="mt-6 text-muted-foreground max-w-xl mx-auto">
+            Whether you're just getting started or scaling operations, EcoNest grows with you.
+          </p>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="border-t border-border/50">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-2xl font-bold text-white sm:text-3xl">
+            Get started in minutes
+          </h2>
+          <p className="mt-3 text-muted-foreground">
+            Create an account, answer a few questions once, and launch your first automation.
+          </p>
+
+          <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+            <Link
+              to="/auth?mode=signup"
+              className="inline-flex items-center justify-center rounded-xl bg-primary px-6 py-3.5 text-base font-semibold text-primary-foreground shadow hover:bg-primary/90 transition-colors"
+            >
+              Start free
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+            <Link
+              to="/contact?type=demo"
+              className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-6 py-3.5 text-base font-semibold text-white hover:bg-accent transition-colors"
+            >
+              Book a demo
+            </Link>
+          </div>
+
+          <p className="mt-10 text-sm text-muted-foreground">
+            EcoNest AI — flexible automation for modern businesses.
+          </p>
         </div>
       </section>
 
@@ -187,60 +389,32 @@ export default function Index() {
   );
 }
 
-/* ------------------------------- Footer ---------------------------------- */
-function Footer() {
-  return (
-    <footer className="border-t border-border bg-background py-8 text-muted-foreground">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <p className="text-sm">© {new Date().getFullYear()} EcoNest. All rights reserved.</p>
-          <nav aria-label="Footer" className="text-sm">
-            <ul className="flex items-center gap-4">
-              <li><Link to="/trust" className="hover:text-foreground">Trust</Link></li>
-              <li><Link to="/docs" className="hover:text-foreground">Docs</Link></li>
-              <li><Link to="/pricing" className="hover:text-foreground">Pricing</Link></li>
-              <li><Link to="/payment-terms" className="hover:text-foreground">Payment Terms</Link></li>
-            </ul>
-          </nav>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
 /* ------------------------------ Primitives ------------------------------- */
-function StudioTile({
-  label,
-  icon,
-  onClick,
-}: {
-  label: string;
+function FeatureCard({ 
+  title, 
+  desc, 
+  icon, 
+  onClick 
+}: { 
+  title: string; 
+  desc: string; 
   icon: React.ReactNode;
   onClick?: () => void;
 }) {
   return (
     <button
-      type="button"
       onClick={onClick}
-      className="flex items-center gap-3 rounded-xl border border-border bg-muted px-4 py-3 text-left text-foreground hover:bg-accent transition-colors"
+      className="group rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md hover:border-primary/30 text-left"
     >
-      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-background text-muted-foreground">
-        {icon}
-      </span>
-      <span className="font-medium">{label}</span>
-    </button>
-  );
-}
-
-function FeatureCard({ title, desc, icon }: { title: string; desc: string; icon: React.ReactNode }) {
-  return (
-    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md">
-      <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+      <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
         {icon}
       </div>
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <p className="mt-1 text-muted-foreground">{desc}</p>
-    </div>
+      <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+        {title}
+        <ArrowRight className="h-4 w-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+      </h3>
+      <p className="mt-2 text-muted-foreground">{desc}</p>
+    </button>
   );
 }
 
@@ -296,73 +470,5 @@ function TemplatePreviewModal({ template, onClose }: { template: Template; onClo
         </div>
       </div>
     </div>
-  );
-}
-
-/* --------------------------------- Icons ---------------------------------- */
-function IconAgent() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <rect x="3" y="8" width="18" height="10" rx="2" />
-      <path d="M12 2v4" />
-      <circle cx="9" cy="13" r="1" />
-      <circle cx="15" cy="13" r="1" />
-    </svg>
-  );
-}
-function IconFlow() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <path d="M6 3h12M6 21h12" />
-      <rect x="4" y="6" width="6" height="6" rx="2" />
-      <rect x="14" y="12" width="6" height="6" rx="2" />
-      <path d="M10 9h4m-8 6h4" />
-    </svg>
-  );
-}
-function IconData() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <ellipse cx="12" cy="5" rx="8" ry="3" />
-      <path d="M4 5v10c0 1.7 3.6 3 8 3s8-1.3 8-3V5" />
-    </svg>
-  );
-}
-function IconPlug() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <path d="M9 7V3m6 4V3" />
-      <path d="M7 13l10-2" />
-      <rect x="3" y="9" width="8" height="8" rx="2" />
-      <rect x="13" y="7" width="8" height="8" rx="2" />
-    </svg>
-  );
-}
-function IconChannel() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <circle cx="7" cy="12" r="3" />
-      <circle cx="17" cy="12" r="3" />
-      <path d="M10 12h4" />
-    </svg>
-  );
-}
-function IconShield() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <path d="M12 3l7 4v5c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V7l7-4z" />
-      <path d="M9 12l2 2 4-4" />
-    </svg>
-  );
-}
-function IconNodes() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <circle cx="5" cy="12" r="2" />
-      <circle cx="12" cy="5" r="2" />
-      <circle cx="12" cy="19" r="2" />
-      <circle cx="19" cy="12" r="2" />
-      <path d="M7 12h10M12 7v10" />
-    </svg>
   );
 }
