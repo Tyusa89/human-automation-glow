@@ -34,7 +34,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
 
   const openPreview = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/templates/${encodeURIComponent(templateId)}/preview`);
+    navigate(`/templates/${encodeURIComponent(templateId)}`);
   };
   
   return (
