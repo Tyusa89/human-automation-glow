@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Template } from '@/lib/templates';
 import { useUserPlan } from '@/hooks/useUserPlan';
 import { 
-  type RequiredPlan, 
+  type PlanTier, 
   getUpgradeLabel, 
   isTemplateLocked,
   getTemplateIdentity 
@@ -17,7 +17,7 @@ interface TemplatesGridProps {
 }
 
 // Get required plan from template identity map (not from badges)
-function getRequiredPlan(template: Template): RequiredPlan {
+function getRequiredPlan(template: Template): PlanTier {
   const identity = getTemplateIdentity(template.id);
   return identity?.requiredPlan || "free";
 }
@@ -145,9 +145,7 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
                   <button 
                     onClick={() => navigate('/pricing')}
                     className={`inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
-                      requiredPlan === "enterprise"
-                        ? "border-rose-500/50 text-rose-400 hover:bg-rose-500/10"
-                        : requiredPlan === "business" 
+                      requiredPlan === "business" 
                         ? "border-purple-500/50 text-purple-400 hover:bg-purple-500/10" 
                         : "border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
                     }`}
@@ -172,9 +170,7 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
               {/* Upgrade note for templates user doesn't have access to */}
               {needsUpgrade && (
                 <p className="mt-3 text-xs text-slate-500 leading-relaxed">
-                  {requiredPlan === "enterprise" 
-                    ? "Enterprise plan includes white-glove onboarding, custom integrations, and SLA support."
-                    : requiredPlan === "business" 
+                  {requiredPlan === "business" 
                     ? "Includes enterprise integrations, unlimited automations, and dedicated support."
                     : "Includes advanced workflows, automation limits, and priority support."
                   }
