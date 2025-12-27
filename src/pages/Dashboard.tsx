@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal, Settings, Download, RefreshCw, ArrowLeft, Activity, Sliders, Zap, Calendar, FileText } from 'lucide-react';
 import { SetupChecklist } from '@/components/dashboard/SetupChecklist';
-import { NextBestAction } from '@/components/dashboard/NextBestAction';
+import NextBestActionCard from '@/components/dashboard/NextBestActionCard';
 import { useDashboardSuggestion, DashboardSuggestionCard } from '@/dashboard/suggestions';
 import { 
   FocusToday, 
@@ -27,6 +27,8 @@ import {
   type ResolvedWidget 
 } from '@/dashboard';
 import { getActivationComplete } from '@/dashboard/activation';
+import { getNextBestAction } from '@/dashboard/nextBestAction';
+import { isDismissed, dismiss as dismissNBA } from '@/dashboard/nbaDismiss';
 import { runTask } from '@/lib/db';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
@@ -179,6 +181,21 @@ const Dashboard = () => {
     hasFirstValueEvent: signals.hasFirstValueEvent,
   });
 
+  // Compute NBA using exact inputs
+  const nba = getNextBestAction({
+    profileCompleted: signals.profileCompleted,
+    activeTemplatesCount: signals.activeTemplatesCount,
+    hasSuccessfulRun: signals.hasSuccessfulAutomationRun,
+    hasFirstValueEvent: signals.hasFirstValueEvent,
+    hasLeads: signals.hasLeads,
+    hasAppointments: signals.upcomingAppointmentsCount > 0,
+    hasPayments: signals.hasFirstValueEvent, // simplified - uses value event
+    failedRunsCount: signals.automationErrorsCount,
+  });
+
+  const [nbaDismissed, setNbaDismissed] = useState(false);
+  const showNBA = !!(nba && userId && !isDismissed(userId, nba.eventKey) && !nbaDismissed);
+
   // Power user mode: filter out beginner-focused widgets
   const displayedSecondaryWidgets = isNewUser 
     ? secondaryWidgets 
@@ -304,7 +321,15 @@ const Dashboard = () => {
         {isNewUser && (
           <>
             {/* Next Best Action - THE missing "what do I do next" */}
-            <NextBestAction signals={signals} mode={mode} />
+            {showNBA && nba && (
+              <NextBestActionCard
+                action={nba}
+                onDismiss={() => {
+                  if (userId) dismissNBA(userId, nba.eventKey);
+                  setNbaDismissed(true);
+                }}
+              />
+            )}
             
             {/* Setup Checklist - only show if NOT activation complete */}
             {!activationComplete && <SetupChecklist />}
@@ -364,8 +389,14 @@ const Dashboard = () => {
         {(isPowerUser || isReactivation) && (
           <>
             {/* Reactivation gets the Next Best Action (resume nudge) */}
-            {isReactivation && (
-              <NextBestAction signals={signals} mode={mode} />
+            {isReactivation && showNBA && nba && (
+              <NextBestActionCard
+                action={nba}
+                onDismiss={() => {
+                  if (userId) dismissNBA(userId, nba.eventKey);
+                  setNbaDismissed(true);
+                }}
+              />
             )}
 
             {/* Focus Today - top priority */}
@@ -387,8 +418,14 @@ const Dashboard = () => {
             )}
 
             {/* Power user also gets Next Best Action for Tier 2/3 signals */}
-            {isPowerUser && (
-              <NextBestAction signals={signals} mode={mode} />
+            {isPowerUser && showNBA && nba && (
+              <NextBestActionCard
+                action={nba}
+                onDismiss={() => {
+                  if (userId) dismissNBA(userId, nba.eventKey);
+                  setNbaDismissed(true);
+                }}
+              />
             )}
 
             {/* KPI Row - prominent for power users */}
