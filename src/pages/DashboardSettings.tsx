@@ -49,7 +49,7 @@ export default function DashboardSettings() {
 
     const { data: prof } = await supabase
       .from("profiles")
-      .select("business_type, client_volume, monthly_revenue_range, tracking_method, success_goal, assistant_level, primary_challenges, work_type, hardest_things")
+      .select("business_type, client_volume, monthly_revenue_range, tracking_method, success_goal, assistant_level, primary_challenges, work_type, hardest_things, onboarding_completed")
       .eq("user_id", uid)
       .maybeSingle();
 
@@ -63,6 +63,13 @@ export default function DashboardSettings() {
     setDbRows((rows as DbRow[]) ?? []);
     setLoading(false);
   }
+
+  // Redirect to onboarding if not completed
+  useEffect(() => {
+    if (!loading && profile && (profile as any).onboarding_completed === false) {
+      navigate("/onboarding");
+    }
+  }, [loading, profile, navigate]);
 
   useEffect(() => {
     if (!profile) return;
