@@ -1,5 +1,6 @@
 export type TemplateCategory = "dashboards" | "ops" | "bots" | "ecommerce" | "other";
 export type PlanTier = "free" | "pro" | "business";
+export type Difficulty = "beginner" | "intermediate" | "advanced";
 
 export type TemplateSlug =
   | "analytics-dashboard"
@@ -44,6 +45,7 @@ export interface TemplateIdentity {
   name: string;
   category: TemplateCategory;
   requiredPlan: PlanTier;
+  difficulty: Difficulty;
 
   // the one-liner meaning
   primaryJob: string;
@@ -52,7 +54,7 @@ export interface TemplateIdentity {
   primaryAction: {
     id: PrimaryActionId;
     label: string;
-    href?: string; // optional, can be wired later
+    href?: string;
   };
 
   // optional for cards/subtext
@@ -60,12 +62,15 @@ export interface TemplateIdentity {
 }
 
 export const TEMPLATE_IDENTITIES: Record<TemplateSlug, TemplateIdentity> = {
-  // DASHBOARDS (Business/Pro)
+  // ═══════════════════════════════════════════════════════════════
+  // DASHBOARDS
+  // ═══════════════════════════════════════════════════════════════
   "analytics-dashboard": {
     slug: "analytics-dashboard",
     name: "Analytics Dashboard",
     category: "dashboards",
     requiredPlan: "business",
+    difficulty: "advanced",
     primaryJob: "Understand revenue trends and performance",
     primaryAction: { id: "view_analytics", label: "View analytics", href: "/dashboard" },
     description: "Real-time business analytics with custom KPIs and tracking.",
@@ -75,6 +80,7 @@ export const TEMPLATE_IDENTITIES: Record<TemplateSlug, TemplateIdentity> = {
     name: "Data Sync Warehouse",
     category: "dashboards",
     requiredPlan: "business",
+    difficulty: "advanced",
     primaryJob: "Sync data to your warehouse with automated ETL pipelines",
     primaryAction: { id: "connect_warehouse", label: "Connect warehouse", href: "/settings/integrations" },
     description: "Enterprise-grade pipelines for warehouse sync and monitoring.",
@@ -84,17 +90,21 @@ export const TEMPLATE_IDENTITIES: Record<TemplateSlug, TemplateIdentity> = {
     name: "Report Generator",
     category: "dashboards",
     requiredPlan: "pro",
+    difficulty: "beginner",
     primaryJob: "Generate clean business reports from your data",
     primaryAction: { id: "generate_report", label: "Generate a report", href: "/reports" },
     description: "Create shareable reports with summaries and key metrics.",
   },
 
-  // OPS (Free/Pro)
+  // ═══════════════════════════════════════════════════════════════
+  // OPS
+  // ═══════════════════════════════════════════════════════════════
   "data-sync-tool": {
     slug: "data-sync-tool",
     name: "Data Sync Tool",
     category: "ops",
     requiredPlan: "pro",
+    difficulty: "intermediate",
     primaryJob: "Synchronize data between multiple systems automatically",
     primaryAction: { id: "connect_data_source", label: "Connect a data source", href: "/settings/integrations" },
     description: "Keep your tools aligned without manual exports.",
@@ -104,6 +114,7 @@ export const TEMPLATE_IDENTITIES: Record<TemplateSlug, TemplateIdentity> = {
     name: "Workflow Automation",
     category: "ops",
     requiredPlan: "pro",
+    difficulty: "intermediate",
     primaryJob: "Automate repetitive business tasks end-to-end",
     primaryAction: { id: "run_automation", label: "Run an automation", href: "/automations" },
     description: "Build workflows that trigger actions automatically.",
@@ -113,6 +124,7 @@ export const TEMPLATE_IDENTITIES: Record<TemplateSlug, TemplateIdentity> = {
     name: "Expense Tracker",
     category: "ops",
     requiredPlan: "free",
+    difficulty: "beginner",
     primaryJob: "Track business expenses and stay organized",
     primaryAction: { id: "add_expense", label: "Add an expense", href: "/expenses" },
     description: "Log expenses and keep spending under control.",
@@ -122,6 +134,7 @@ export const TEMPLATE_IDENTITIES: Record<TemplateSlug, TemplateIdentity> = {
     name: "Data + Docs Sync",
     category: "ops",
     requiredPlan: "pro",
+    difficulty: "intermediate",
     primaryJob: "Keep your documents updated with live data automatically",
     primaryAction: { id: "connect_docs", label: "Connect docs", href: "/settings/integrations" },
     description: "Sync data into docs for always-current client deliverables.",
@@ -131,17 +144,21 @@ export const TEMPLATE_IDENTITIES: Record<TemplateSlug, TemplateIdentity> = {
     name: "Inventory Manager",
     category: "ops",
     requiredPlan: "free",
+    difficulty: "beginner",
     primaryJob: "Track inventory levels and prevent stockouts",
     primaryAction: { id: "view_inventory", label: "View inventory", href: "/inventory" },
     description: "Automated reorder alerts and inventory tracking.",
   },
 
-  // BOTS (Free/Pro/Business)
+  // ═══════════════════════════════════════════════════════════════
+  // BOTS
+  // ═══════════════════════════════════════════════════════════════
   "appointment-booker": {
     slug: "appointment-booker",
     name: "Appointment Booker",
     category: "bots",
     requiredPlan: "free",
+    difficulty: "beginner",
     primaryJob: "Get clients booked automatically",
     primaryAction: { id: "test_booking", label: "Test a booking", href: "/appointments" },
     description: "Let clients book time with you without back-and-forth.",
@@ -151,6 +168,7 @@ export const TEMPLATE_IDENTITIES: Record<TemplateSlug, TemplateIdentity> = {
     name: "Customer Support Widget",
     category: "bots",
     requiredPlan: "pro",
+    difficulty: "intermediate",
     primaryJob: "Add AI-powered support to your site with escalation",
     primaryAction: { id: "embed_widget", label: "Get embed code", href: "/support/widget" },
     description: "Customer support widget for FAQs and ticket escalation.",
@@ -160,6 +178,7 @@ export const TEMPLATE_IDENTITIES: Record<TemplateSlug, TemplateIdentity> = {
     name: "Lead Qualification Bot",
     category: "bots",
     requiredPlan: "pro",
+    difficulty: "intermediate",
     primaryJob: "Qualify leads automatically so you focus on the best ones",
     primaryAction: { id: "test_lead_qualification", label: "Test qualification", href: "/leads" },
     description: "Qualifies leads through intelligent conversations and scoring.",
@@ -169,6 +188,7 @@ export const TEMPLATE_IDENTITIES: Record<TemplateSlug, TemplateIdentity> = {
     name: "Customer Support Bot",
     category: "bots",
     requiredPlan: "pro",
+    difficulty: "intermediate",
     primaryJob: "Handle FAQs and escalation with an AI support agent",
     primaryAction: { id: "view_support_inbox", label: "View support inbox", href: "/support" },
     description: "AI-powered support agent for FAQs and escalation.",
@@ -178,6 +198,7 @@ export const TEMPLATE_IDENTITIES: Record<TemplateSlug, TemplateIdentity> = {
     name: "Agent + Support Bot",
     category: "bots",
     requiredPlan: "business",
+    difficulty: "advanced",
     primaryJob: "Run a customer-facing agent with memory, tools, and escalation",
     primaryAction: { id: "open_agent_console", label: "Open agent console", href: "/agent" },
     description: "Advanced support with tools, memory, and clean escalation paths.",
@@ -187,17 +208,21 @@ export const TEMPLATE_IDENTITIES: Record<TemplateSlug, TemplateIdentity> = {
     name: "Flow + Lead Qualifier",
     category: "bots",
     requiredPlan: "business",
+    difficulty: "advanced",
     primaryJob: "Automate lead qualification with a full intake flow",
     primaryAction: { id: "run_flow", label: "Run intake flow", href: "/leads" },
     description: "Combines guided intake + lead scoring for high-signal leads.",
   },
 
-  // ECOMMERCE (Pro)
+  // ═══════════════════════════════════════════════════════════════
+  // ECOMMERCE
+  // ═══════════════════════════════════════════════════════════════
   "social-media-scheduler": {
     slug: "social-media-scheduler",
     name: "Social Media Scheduler",
     category: "ecommerce",
     requiredPlan: "pro",
+    difficulty: "beginner",
     primaryJob: "Plan and schedule posts consistently across platforms",
     primaryAction: { id: "create_post_schedule", label: "Create a schedule", href: "/social" },
     description: "Schedule content so you stay consistent without manual posting.",
@@ -207,17 +232,21 @@ export const TEMPLATE_IDENTITIES: Record<TemplateSlug, TemplateIdentity> = {
     name: "Email Campaign Builder",
     category: "ecommerce",
     requiredPlan: "pro",
+    difficulty: "beginner",
     primaryJob: "Build and send email campaigns that convert",
     primaryAction: { id: "create_email_campaign", label: "Create a campaign", href: "/email" },
     description: "Create campaigns, audiences, and sequences.",
   },
 
-  // OTHER (Free)
+  // ═══════════════════════════════════════════════════════════════
+  // OTHER
+  // ═══════════════════════════════════════════════════════════════
   "zapier-intercom-integration": {
     slug: "zapier-intercom-integration",
     name: "Zapier x Intercom",
     category: "other",
     requiredPlan: "free",
+    difficulty: "beginner",
     primaryJob: "Connect Zapier and Intercom to automate support workflows",
     primaryAction: { id: "open_integration", label: "Open integration", href: "/settings/integrations" },
     description: "Wire events between Zapier and Intercom for streamlined support.",
@@ -228,7 +257,7 @@ export function getTemplateIdentity(slug: string): TemplateIdentity | null {
   return (TEMPLATE_IDENTITIES as Record<string, TemplateIdentity>)[slug] ?? null;
 }
 
-export function getUpgradeLabel(plan: PlanTier) {
+export function getUpgradeLabel(plan: PlanTier): string {
   switch (plan) {
     case "pro":
       return "Upgrade to Pro";
@@ -239,7 +268,53 @@ export function getUpgradeLabel(plan: PlanTier) {
   }
 }
 
-export function isTemplateLocked(requiredPlan: PlanTier, userPlan: PlanTier) {
+export function isTemplateLocked(requiredPlan: PlanTier, userPlan: PlanTier): boolean {
   const rank: Record<PlanTier, number> = { free: 0, pro: 1, business: 2 };
   return rank[userPlan] < rank[requiredPlan];
+}
+
+// Difficulty display labels
+export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
+  beginner: "Beginner",
+  intermediate: "Intermediate",
+  advanced: "Advanced",
+};
+
+// Sorting ranks
+const PLAN_RANK: Record<PlanTier, number> = { free: 0, pro: 1, business: 2 };
+const DIFFICULTY_RANK: Record<Difficulty, number> = { beginner: 0, intermediate: 1, advanced: 2 };
+
+/**
+ * Sort templates for display in the grid.
+ * Order: Unlocked first, then by locked tier (pro before business), then difficulty, then name.
+ */
+export function sortTemplatesForGrid(
+  templateIds: string[],
+  userPlan: PlanTier
+): string[] {
+  return [...templateIds].sort((a, b) => {
+    const identityA = getTemplateIdentity(a);
+    const identityB = getTemplateIdentity(b);
+    
+    if (!identityA || !identityB) return 0;
+
+    const lockedA = isTemplateLocked(identityA.requiredPlan, userPlan);
+    const lockedB = isTemplateLocked(identityB.requiredPlan, userPlan);
+
+    // 1. Unlocked before locked
+    if (lockedA !== lockedB) return lockedA ? 1 : -1;
+
+    // 2. If both locked, sort by tier (pro before business)
+    if (lockedA && lockedB) {
+      const tierDiff = PLAN_RANK[identityA.requiredPlan] - PLAN_RANK[identityB.requiredPlan];
+      if (tierDiff !== 0) return tierDiff;
+    }
+
+    // 3. Sort by difficulty (beginner → intermediate → advanced)
+    const diffDiff = DIFFICULTY_RANK[identityA.difficulty] - DIFFICULTY_RANK[identityB.difficulty];
+    if (diffDiff !== 0) return diffDiff;
+
+    // 4. Alphabetical by name
+    return identityA.name.localeCompare(identityB.name);
+  });
 }
