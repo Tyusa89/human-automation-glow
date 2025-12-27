@@ -7,7 +7,7 @@ export const SiteFooter: React.FC = () => (
   <footer className="border-t py-10">
     <div className="max-w-6xl mx-auto px-4 text-center">
       <div className="font-semibold">{brand.name}</div>
-      <p className="text-muted-foreground mt-2">Agents & automations for modern teams.</p>
+      <p className="text-muted-foreground mt-2">{brand.tagline}</p>
       <div className="flex justify-center gap-2 mt-4">
         <Link to="/create-profile">
           <Button variant="default">Start free</Button>
