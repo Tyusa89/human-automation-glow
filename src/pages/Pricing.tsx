@@ -25,7 +25,18 @@ export default function PricingPage() {
       case "green": return "bg-emerald-500";
       case "orange": return "bg-amber-500";
       case "purple": return "bg-purple-500";
+      case "cyan": return "bg-cyan-500";
       default: return "bg-slate-500";
+    }
+  };
+
+  const getTextColor = (color: string) => {
+    switch (color) {
+      case "green": return "text-emerald-400";
+      case "orange": return "text-amber-400";
+      case "purple": return "text-purple-400";
+      case "cyan": return "text-cyan-400";
+      default: return "text-slate-400";
     }
   };
 
@@ -35,6 +46,8 @@ export default function PricingPage() {
         return "bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold border-0";
       case "purple":
         return "bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold border-0";
+      case "cyan":
+        return "bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-slate-900 font-semibold border-0";
       case "outline":
       default:
         return "bg-slate-800 border-slate-600 text-white hover:bg-slate-700 font-semibold";
@@ -63,7 +76,7 @@ export default function PricingPage() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-16">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {pricing.map((tier) => (
             <Card 
               key={tier.name} 
@@ -83,11 +96,7 @@ export default function PricingPage() {
                 {/* Status dot and tier name */}
                 <div className="flex items-center gap-2 mb-2">
                   <div className={`w-2.5 h-2.5 rounded-full ${getDotColor(tier.dotColor)}`} />
-                  <span className={`text-sm font-medium ${
-                    tier.dotColor === "green" ? "text-emerald-400" :
-                    tier.dotColor === "orange" ? "text-amber-400" :
-                    "text-purple-400"
-                  }`}>
+                  <span className={`text-sm font-medium ${getTextColor(tier.dotColor)}`}>
                     {tier.name}
                   </span>
                 </div>
@@ -123,11 +132,7 @@ export default function PricingPage() {
                   <div className="space-y-2">
                     {tier.includes.map((item, idx) => (
                       <div key={idx} className="flex items-start gap-2 text-sm">
-                        <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${
-                          tier.dotColor === "green" ? "text-emerald-400" :
-                          tier.dotColor === "orange" ? "text-amber-400" :
-                          "text-purple-400"
-                        }`} />
+                        <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${getTextColor(tier.dotColor)}`} />
                         <span className="text-slate-300">{item}</span>
                       </div>
                     ))}
@@ -142,11 +147,7 @@ export default function PricingPage() {
                   <div className="space-y-2">
                     {tier.unlockedTemplates.map((item, idx) => (
                       <div key={idx} className="flex items-start gap-2 text-sm">
-                        <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${
-                          tier.dotColor === "green" ? "text-emerald-400" :
-                          tier.dotColor === "orange" ? "text-amber-400" :
-                          "text-purple-400"
-                        }`} />
+                        <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${getTextColor(tier.dotColor)}`} />
                         <span className="text-slate-300">{item}</span>
                       </div>
                     ))}
