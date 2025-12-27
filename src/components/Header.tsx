@@ -39,7 +39,7 @@ export default function AppHeader() {
   }
 
   return (
-    <header className="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-[hsl(220,91%,12%)]">
+    <header className="flex items-center px-4 py-2 border-b border-white/10 bg-[hsl(220,91%,12%)]">
       {/* Logo */}
       <Link to="/" className="font-semibold text-white text-xl flex items-center gap-2">
         <img 
@@ -50,8 +50,8 @@ export default function AppHeader() {
         <span className="hidden sm:inline">EcoNest AI</span>
       </Link>
       
-      {/* Desktop Nav */}
-      <nav className="hidden md:flex items-center gap-1">
+      {/* Desktop Nav - positioned close to logo */}
+      <nav className="hidden md:flex items-center gap-1 ml-8">
         {/* Core app links for authenticated users */}
         {authed && (
           <>
@@ -103,6 +103,9 @@ export default function AppHeader() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* Spacer to push account to the right */}
+        <div className="flex-1" />
 
         {/* Profile / Auth dropdown */}
         {authed ? (
