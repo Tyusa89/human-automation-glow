@@ -30,7 +30,8 @@ import {
 import { getActivationComplete } from '@/dashboard/activation';
 import { resolveMaturityTier } from '@/lib/maturity/resolveMaturity';
 import { resolveDashboardNextStep, shouldShowChecklist } from '@/lib/templates/resolveDashboardNextStep';
-import { getWidgetEmphasis, sortWidgetsByEmphasis, isWidgetHidden } from '@/dashboard/templateWidgetEmphasis';
+import { getTemplateWidgetEmphasis, sortWidgetsByEmphasis, isWidgetHero } from '@/config/templates/templateWidgetEmphasis';
+import { getTemplateIdentity } from '@/config/templates/templateIdentity';
 import { runTask } from '@/lib/db';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
@@ -172,38 +173,43 @@ const Dashboard = () => {
     await Promise.all([loadDashboard(), refreshMaturity()]);
   }
 
-  // Get template-aware widget emphasis
-  const widgetEmphasis = useMemo(
-    () => getWidgetEmphasis(activeTemplateSlug),
-    [activeTemplateSlug]
+  // Get template-aware widget emphasis (slug → category fallback → "other")
+  const widgetEmphasis = useMemo(() => {
+    const identity = activeTemplateSlug ? getTemplateIdentity(activeTemplateSlug) : null;
+    return getTemplateWidgetEmphasis({
+      templateSlug: activeTemplateSlug as any,
+      templateCategory: identity?.category ?? null,
+    });
+  }, [activeTemplateSlug]);
+
+  // Sort all widgets by emphasis, then split into groups
+  const sortedWidgets = useMemo(
+    () => sortWidgetsByEmphasis(widgets, widgetEmphasis),
+    [widgets, widgetEmphasis]
   );
 
-  // Group and filter widgets by zone, applying template emphasis
-  const focusWidget = widgets.find(w => w.key === 'focus_today' && !isWidgetHidden(w.key, widgetEmphasis));
-  
-  const kpiWidgets = useMemo(() => {
-    const kpis = widgets.filter(w => 
-      ['kpi_weekly_income', 'kpi_monthly_income', 'income_trend_chart'].includes(w.key) &&
-      !isWidgetHidden(w.key, widgetEmphasis)
-    );
-    return sortWidgetsByEmphasis(kpis, widgetEmphasis);
-  }, [widgets, widgetEmphasis]);
+  // Hero widgets (top 3 most relevant for this template)
+  const heroWidgets = useMemo(
+    () => sortedWidgets.filter(w => isWidgetHero(w.key, widgetEmphasis)),
+    [sortedWidgets, widgetEmphasis]
+  );
 
-  const primaryWidgets = useMemo(() => {
-    const primary = widgets.filter(w => 
-      ['client_list', 'project_board', 'appointments_today', 'task_list'].includes(w.key) &&
-      !isWidgetHidden(w.key, widgetEmphasis)
-    );
-    return sortWidgetsByEmphasis(primary, widgetEmphasis);
-  }, [widgets, widgetEmphasis]);
+  // Secondary widgets (supporting context)
+  const secondaryWidgets = useMemo(
+    () => sortedWidgets.filter(w => 
+      widgetEmphasis.secondary.includes(w.key as any) && !isWidgetHero(w.key, widgetEmphasis)
+    ),
+    [sortedWidgets, widgetEmphasis]
+  );
 
-  const secondaryWidgets = useMemo(() => {
-    const secondary = widgets.filter(w => 
-      ['follow_up_queue', 'assistant_suggestions', 'activity_feed'].includes(w.key) &&
-      !isWidgetHidden(w.key, widgetEmphasis)
-    );
-    return sortWidgetsByEmphasis(secondary, widgetEmphasis);
-  }, [widgets, widgetEmphasis]);
+  // Remaining widgets (everything else, available but lower priority)
+  const remainingWidgets = useMemo(
+    () => sortedWidgets.filter(w => 
+      !isWidgetHero(w.key, widgetEmphasis) && 
+      !widgetEmphasis.secondary.includes(w.key as any)
+    ),
+    [sortedWidgets, widgetEmphasis]
+  );
 
   // Mode-based display logic
   const isNewUser = mode === 'new';
@@ -380,26 +386,26 @@ const Dashboard = () => {
               />
             )}
 
-            {/* Early proof - show income even if 0 */}
-            {kpiWidgets.length > 0 && (
+            {/* Hero widgets - most relevant for active template */}
+            {heroWidgets.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {kpiWidgets.slice(0, 2).map((widget) => {
+                {heroWidgets.slice(0, 3).map((widget) => {
                   const Component = WidgetComponent[widget.key];
                   return Component ? <Component key={widget.key} config={widget.config} /> : null;
                 })}
               </div>
             )}
 
-            {/* Basic work widgets */}
+            {/* Secondary widgets */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-6">
-                {primaryWidgets.slice(0, 2).map((widget) => {
+                {displayedSecondaryWidgets.slice(0, 2).map((widget) => {
                   const Component = WidgetComponent[widget.key];
                   return Component ? <Component key={widget.key} config={widget.config} /> : null;
                 })}
               </div>
               <div className="space-y-6">
-                {displayedSecondaryWidgets.slice(0, 2).map((widget) => {
+                {displayedSecondaryWidgets.slice(2, 4).map((widget) => {
                   const Component = WidgetComponent[widget.key];
                   return Component ? <Component key={widget.key} config={widget.config} /> : null;
                 })}
@@ -416,12 +422,8 @@ const Dashboard = () => {
             {/* Reactivation gets the Next Step Card (resume nudge) */}
             {isReactivation && <DashboardNextStepCard activeTemplateSlug={activeTemplateSlug} />}
 
-            {/* Focus Today - top priority */}
-            {focusWidget && (
-              <div key={focusWidget.key}>
-                <FocusToday />
-              </div>
-            )}
+            {/* Focus Today - top priority (if it's a hero widget) */}
+            {heroWidgets.find(w => w.key === 'focus_today') && <FocusToday />}
 
             {/* Exception-based suggestions (not hand-holding) */}
             {!suggestionLoading && suggestion && (
@@ -437,10 +439,10 @@ const Dashboard = () => {
             {/* Power user gets Next Step Card only if there's something actionable */}
             {isPowerUser && tier !== 'power' && <DashboardNextStepCard activeTemplateSlug={activeTemplateSlug} />}
 
-            {/* KPI Row - prominent for power users */}
-            {kpiWidgets.length > 0 && (
+            {/* Hero widgets row - most relevant for active template */}
+            {heroWidgets.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {kpiWidgets.map((widget) => {
+                {heroWidgets.filter(w => w.key !== 'focus_today').map((widget) => {
                   const Component = WidgetComponent[widget.key];
                   return Component ? <Component key={widget.key} config={widget.config} /> : null;
                 })}
@@ -449,17 +451,17 @@ const Dashboard = () => {
 
             {/* Main Work Area - 2 column layout */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Left Column - Primary work widgets */}
+              {/* Left Column - Secondary widgets */}
               <div className="space-y-6">
-                {primaryWidgets.map((widget) => {
+                {displayedSecondaryWidgets.slice(0, 2).map((widget) => {
                   const Component = WidgetComponent[widget.key];
                   return Component ? <Component key={widget.key} config={widget.config} /> : null;
                 })}
               </div>
 
-              {/* Right Column - Secondary widgets (no assistant suggestions for power users) */}
+              {/* Right Column - Remaining widgets */}
               <div className="space-y-6">
-                {displayedSecondaryWidgets.map((widget) => {
+                {remainingWidgets.slice(0, 2).map((widget) => {
                   const Component = WidgetComponent[widget.key];
                   return Component ? <Component key={widget.key} config={widget.config} /> : null;
                 })}
