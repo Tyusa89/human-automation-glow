@@ -64,16 +64,19 @@ async function insertSuggestionIfNoneActive(
   suggestion_key: string,
   payload: SuggestionPayload
 ) {
-  // Check if this suggestion was already dismissed or accepted — don't repeat
-  const { data: prior } = await supabase
+  // 30-day cooldown: don't repeat a suggestion acted on within the last 30 days
+  const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+  const { data: recentlyActed } = await supabase
     .from("user_dashboard_suggestions")
     .select("id")
     .eq("user_id", userId)
     .eq("suggestion_key", suggestion_key)
-    .in("status", ["dismissed", "accepted"])
+    .in("status", ["accepted", "dismissed"])
+    .gte("acted_at", cutoff)
     .limit(1);
 
-  if (prior && prior.length > 0) return;
+  if (recentlyActed?.length) return; // 30-day cooldown gate
 
   // Insert new active suggestion; if unique constraint blocks, ignore
   const { error } = await supabase.from("user_dashboard_suggestions").insert({
