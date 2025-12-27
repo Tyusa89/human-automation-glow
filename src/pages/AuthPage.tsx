@@ -241,7 +241,7 @@ export default function AuthPage() {
       <div className="w-full max-w-md space-y-6 bg-card p-8 rounded-xl border border-border/50 shadow-lg">
         <div className="text-center">
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg mb-4">
-            B
+            E
           </div>
           <h1 className="text-2xl font-bold text-foreground mb-1">{brand.name}</h1>
           <p className="text-sm text-muted-foreground">{brand.tagline}</p>

@@ -1,6 +1,6 @@
 export const brand = {
-  name: "Baseframe",
-  tagline: "Powered by EcoNest",
+  name: "EcoNest",
+  tagline: "Your AI-powered business assistant",
   logoUrl: "/logo-econest.svg",
   primary: {
     bg: "bg-primary",
