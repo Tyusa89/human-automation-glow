@@ -37,6 +37,7 @@ import NotFound from '@/pages/NotFound';
 import ErrorBoundary from "./components/ErrorBoundary";
 import { TemplateDetail } from '@/components/templates/TemplateDetail';
 import TemplateSetupWizard from '@/pages/templates/TemplateSetupWizard';
+import TemplateActivation from '@/pages/templates/TemplateActivation';
 import ZapierIntercomIntegration from '@/pages/templates/ZapierIntercomIntegration';
 import SocialMediaScheduler from '@/pages/templates/SocialMediaScheduler';
 import EmailCampaignBuilder from '@/pages/templates/EmailCampaignBuilder';
@@ -78,6 +79,7 @@ const App = () => {
               <Route path="/product" element={<ProductPage />} />
               <Route path="/solutions" element={<SolutionsPage />} />
               <Route path="/templates" element={<TemplatesPage />} />
+              <Route path="/templates/:templateId/activate" element={<TemplateActivation />} />
               <Route path="/templates/:templateId/setup" element={<TemplateSetupWizard />} />
               <Route path="/template-success" element={<TemplateSuccess />} />
               <Route path="/demo/zapier-intercom" element={<ZapierIntercomIntegration />} />
