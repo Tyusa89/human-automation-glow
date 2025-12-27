@@ -119,9 +119,36 @@ export const pricing = [
 ];
 
 export const addOns = [
-  { name: "Extra events", description: "+10,000 / mo", price: "$10/mo" },
-  { name: "Extra seats", description: "+1 member", price: "$5/mo" },
-  { name: "Security pack", description: "Extended logs & retention controls", price: "$49/mo" }
+  { 
+    name: "Automation Events", 
+    price: "$10/month",
+    description: "Scale your workflows without changing plans.",
+    features: [
+      "+10,000 automation events per month",
+      "Ideal for higher-volume workflows and active systems",
+      "Applies across all Baseframe automations"
+    ]
+  },
+  { 
+    name: "Team Seat", 
+    price: "$5/month",
+    description: "Bring more operators into your Baseframe workspace.",
+    features: [
+      "Add 1 additional team member",
+      "Shared access to workflows and dashboards",
+      "Role-based collaboration"
+    ]
+  },
+  { 
+    name: "Compliance & Security Pack", 
+    price: "$49/month",
+    description: "Advanced governance for regulated or high-trust operations.",
+    features: [
+      "Extended audit logs and activity history",
+      "Custom retention controls",
+      "Enhanced security oversight for teams"
+    ]
+  }
 ];
 
 export const faqItems = [

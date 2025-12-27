@@ -192,20 +192,34 @@ export default function PricingPage() {
 
         {/* Add-ons */}
         <div className="mb-16">
-          <h2 className="text-2xl font-bold mb-8">Add-ons</h2>
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-white mb-2">Add-ons</h2>
+            <p className="text-slate-400">Extend your Baseframe capabilities as your operations grow.</p>
+          </div>
           <div className="grid md:grid-cols-3 gap-6">
             {addOns.map((addon) => (
               <Card key={addon.name} className="bg-slate-800/50 border-slate-700/50">
                 <CardContent className="p-6">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-white">{addon.name}</h3>
-                    <span className="text-amber-400 font-bold">{addon.price}</span>
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="font-semibold text-white text-lg">{addon.name}</h3>
+                    <span className="text-amber-400 font-bold whitespace-nowrap">{addon.price}</span>
                   </div>
-                  <p className="text-slate-400 text-sm">{addon.description}</p>
+                  <p className="text-slate-300 text-sm mb-4">{addon.description}</p>
+                  <div className="space-y-2">
+                    {addon.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-start gap-2 text-sm">
+                        <Check className="w-4 h-4 flex-shrink-0 mt-0.5 text-emerald-400" />
+                        <span className="text-slate-400">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
+          <p className="text-xs text-slate-500 text-center mt-6">
+            Add-ons are optional and can be enabled at any time. Only pay for the scale and controls you need.
+          </p>
         </div>
 
         {/* FAQ */}
