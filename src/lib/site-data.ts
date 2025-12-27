@@ -11,89 +11,83 @@ export const integrations = [
 
 export const pricing = [
   { 
-    name: "Starter", 
-    price: "Free", 
-    monthlyPrice: "Free",
-    yearlyPrice: "Free",
-    blurb: "Kick the tires and get organized", 
-    features: {
-      templates: "1 starter template",
-      actions: "Up to 500 per month",
-      seats: "1 user",
-      webhooks: "Included",
-      docs: "Up to 25 documents",
-      automation: "Basic workflows (1 scheduled automation)",
-      dashboard: "Personalized setup & manual customization",
-      support: "Community email",
-      security: "API keys + basic encryption"
-    },
+    name: "Free",
+    displayName: "Beginner",
+    blurb: "For getting started",
+    monthlyPrice: "0",
+    yearlyPrice: "0",
+    dotColor: "green",
+    includes: [
+      "Beginner templates",
+      "Basic dashboards",
+      "Manual tracking",
+      "Learning mode"
+    ],
+    unlockedTemplates: [
+      "Appointment Booker",
+      "Report Generator",
+      "All Beginner templates"
+    ],
+    limits: [
+      "No automation-heavy tools",
+      "No advanced analytics"
+    ],
     buttonText: "Get started free",
     buttonVariant: "outline",
+    helperText: "No credit card required.",
     popular: false
   },
   { 
-    name: "Growth", 
-    price: "$29/mo", 
+    name: "Pro",
+    displayName: "Intermediate",
+    blurb: "For automation & operations",
     monthlyPrice: "29",
     yearlyPrice: "290",
-    blurb: "Launch real workflows and stay organized", 
-    features: {
-      templates: "Up to 3 templates",
-      actions: "Up to 10,000 per month",
-      seats: "Up to 3 users",
-      webhooks: "Included",
-      docs: "Up to 250 documents",
-      automation: "Advanced workflows (up to 5 scheduled automations)",
-      dashboard: "Personalized dashboard with customization controls",
-      support: "Standard email",
-      security: "Secrets vault + basic audit logging"
-    },
-    buttonText: "Choose Growth",
-    buttonVariant: "outline",
-    popular: false
-  },
-  { 
-    name: "Business", 
-    price: "$79/mo", 
-    monthlyPrice: "79",
-    yearlyPrice: "790",
-    blurb: "Scale automation with intelligence across teams", 
-    features: {
-      templates: "Unlimited templates",
-      actions: "Up to 50,000 per month",
-      seats: "Up to 10 users",
-      webhooks: "Custom webhooks included",
-      docs: "Up to 2,000 documents",
-      automation: "Custom workflows, retries, and up to 15 schedules",
-      dashboard: "Adaptive dashboard with smart suggestions",
-      insights: "Activity tracking & behavior-based recommendations",
-      support: "Priority email + Slack",
-      security: "Audit logs, role-based access, data export"
-    },
-    buttonText: "Choose Business",
-    buttonVariant: "default",
+    yearlyMonthly: "24",
+    dotColor: "orange",
+    includes: [
+      "Everything in Free",
+      "Cross-tool syncing",
+      "Operational tracking",
+      "Intermediate workflows"
+    ],
+    unlockedTemplates: [
+      "Data Sync Tool",
+      "Expense Tracker",
+      "Customer Support Widget",
+      "All Beginner + Intermediate"
+    ],
+    limits: [],
+    buttonText: "Upgrade to Pro",
+    buttonVariant: "orange",
+    helperText: "Pro is the most popular plan for automation and operations.",
     popular: true
   },
   { 
-    name: "Pro", 
-    price: "$199/mo", 
-    monthlyPrice: "199",
-    yearlyPrice: "1990",
-    blurb: "Advanced control for high-volume operations", 
-    features: {
-      templates: "Unlimited templates",
-      actions: "Up to 200,000 per month",
-      seats: "Up to 25 users",
-      webhooks: "All webhooks + API access",
-      docs: "Unlimited documents",
-      automation: "Unlimited workflows, schedules, and queue workers",
-      dashboard: "Advanced intelligence & optimization suggestions",
-      insights: "High-volume monitoring and operational visibility",
-      support: "Dedicated success manager + SLA",
-      security: "SSO / SAML, granular RBAC, SOC-2–friendly controls"
-    },
-    buttonText: "Talk to sales",
-    buttonVariant: "outline",
+    name: "Business",
+    displayName: "Advanced",
+    blurb: "For scale, analytics, and insight",
+    monthlyPrice: "99",
+    yearlyPrice: "990",
+    yearlyMonthly: "82",
+    dotColor: "purple",
+    includes: [
+      "Everything in Pro",
+      "Advanced dashboards",
+      "KPIs & trend analysis",
+      "Complex automations"
+    ],
+    unlockedTemplates: [
+      "Analytics Dashboard",
+      "Workflow Automation",
+      "Data Sync Warehouse",
+      "Lead Qualification Bot",
+      "All templates"
+    ],
+    limits: [],
+    buttonText: "Upgrade to Business",
+    buttonVariant: "purple",
+    helperText: "Most teams start on Pro and upgrade when analytics become mission-critical.",
     popular: false
   }
 ];

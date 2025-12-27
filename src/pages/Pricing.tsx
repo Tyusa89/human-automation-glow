@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Check, Lock } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { pricing, addOns, faqItems } from "@/lib/site-data";
 
@@ -12,119 +13,177 @@ export default function PricingPage() {
   const [isYearly, setIsYearly] = useState(false);
 
   const handleSelectPlan = (tierName: string, price: string | number) => {
-    if (tierName === "Starter") {
+    if (tierName === "Free") {
       navigate("/auth");
     } else {
       navigate(`/payment?plan=${tierName}&billing=${isYearly ? "yearly" : "monthly"}&price=${price}`);
     }
   };
 
+  const getDotColor = (color: string) => {
+    switch (color) {
+      case "green": return "bg-emerald-500";
+      case "orange": return "bg-amber-500";
+      case "purple": return "bg-purple-500";
+      default: return "bg-slate-500";
+    }
+  };
+
+  const getButtonStyles = (variant: string) => {
+    switch (variant) {
+      case "orange":
+        return "bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold border-0";
+      case "purple":
+        return "bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold border-0";
+      case "outline":
+      default:
+        return "bg-slate-800 border-slate-600 text-white hover:bg-slate-700 font-semibold";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Pricing</h1>
-          <p className="text-xl text-slate-400 mb-8">Simple plans that scale with you. Switch anytime.</p>
-          
-          {/* Toggle */}
-          <div className="inline-flex items-center bg-slate-800 rounded-lg p-1">
-            <button
-              onClick={() => setIsYearly(false)}
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
-                !isYearly 
-                  ? "bg-primary text-white" 
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setIsYearly(true)}
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
-                isYearly 
-                  ? "bg-primary text-white" 
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              Yearly
-              <span className="ml-2 text-xs bg-slate-700 px-2 py-1 rounded">save</span>
-            </button>
-          </div>
+      <div className="max-w-6xl mx-auto px-4 py-16">
+        {/* Toggle */}
+        <div className="flex items-center justify-center gap-4 mb-12">
+          <span className={`text-sm font-medium ${!isYearly ? "text-white" : "text-slate-400"}`}>
+            Monthly
+          </span>
+          <Switch
+            checked={isYearly}
+            onCheckedChange={setIsYearly}
+            className="data-[state=checked]:bg-emerald-500"
+          />
+          <span className={`text-sm font-medium ${isYearly ? "text-white" : "text-slate-400"}`}>
+            Annual
+          </span>
+          <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
+            Save 17%
+          </Badge>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <div className="grid md:grid-cols-3 gap-6 mb-16">
           {pricing.map((tier) => (
             <Card 
               key={tier.name} 
-              className={`relative bg-slate-800 border-slate-700 ${
-                tier.popular ? "border-primary border-2" : ""
+              className={`relative bg-slate-800/50 border-slate-700/50 overflow-visible ${
+                tier.popular ? "border-amber-500/50 border-2" : ""
               }`}
             >
               {tier.popular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-primary text-white px-3 py-1">Most popular</Badge>
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-amber-500 text-slate-900 px-4 py-1 font-semibold">
+                    Most popular
+                  </Badge>
                 </div>
               )}
               
-              <CardHeader className="pb-4">
-                <CardTitle className="text-white text-xl">{tier.name}</CardTitle>
-                <p className="text-slate-400 text-sm">{tier.blurb}</p>
-                <div className="text-white">
-                  {tier.name === "Starter" ? (
-                    <span className="text-3xl font-bold">Free</span>
-                  ) : (
-                    <div>
-                      <span className="text-3xl font-bold">
-                        ${isYearly ? tier.yearlyPrice : tier.monthlyPrice}
-                      </span>
-                      <span className="text-slate-400">
-                        {isYearly ? "/yr" : "/mo"}
-                      </span>
-                    </div>
+              <CardContent className="p-6 pt-8">
+                {/* Status dot and tier name */}
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-2.5 h-2.5 rounded-full ${getDotColor(tier.dotColor)}`} />
+                  <span className={`text-sm font-medium ${
+                    tier.dotColor === "green" ? "text-emerald-400" :
+                    tier.dotColor === "orange" ? "text-amber-400" :
+                    "text-purple-400"
+                  }`}>
+                    {tier.name}
+                  </span>
+                </div>
+
+                {/* Display name */}
+                <h2 className="text-3xl font-bold text-white mb-1">
+                  {tier.displayName}
+                </h2>
+                
+                {/* Blurb */}
+                <p className="text-slate-400 text-sm mb-4">{tier.blurb}</p>
+
+                {/* Price */}
+                <div className="mb-6">
+                  <span className="text-4xl font-bold text-white">
+                    ${isYearly ? tier.yearlyPrice : tier.monthlyPrice}
+                  </span>
+                  <span className="text-slate-400 text-lg">
+                    /{isYearly ? "year" : "month"}
+                  </span>
+                  {isYearly && tier.yearlyMonthly && (
+                    <span className="text-emerald-400 text-sm ml-2">
+                      (${tier.yearlyMonthly}/mo)
+                    </span>
                   )}
                 </div>
-              </CardHeader>
-              
-              <CardContent className="space-y-3">
-                {Object.entries(tier.features).map(([key, value]) => {
-                  const labelMap: Record<string, string> = {
-                    templates: "Templates",
-                    actions: "Automation actions",
-                    seats: "Seats",
-                    webhooks: "Webhooks",
-                    docs: "Docs",
-                    automation: "Automation",
-                    dashboard: "Dashboard",
-                    insights: "Insights",
-                    support: "Support",
-                    security: "Security"
-                  };
-                  return (
-                    <div key={key} className="flex items-start gap-3 text-sm">
-                      <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                      <div>
-                        <span className="text-slate-300 font-medium">{labelMap[key] || key}: </span>
-                        <span className="text-slate-400">{value}</span>
+
+                {/* Includes section */}
+                <div className="mb-6">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                    Includes
+                  </p>
+                  <div className="space-y-2">
+                    {tier.includes.map((item, idx) => (
+                      <div key={idx} className="flex items-start gap-2 text-sm">
+                        <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${
+                          tier.dotColor === "green" ? "text-emerald-400" :
+                          tier.dotColor === "orange" ? "text-amber-400" :
+                          "text-purple-400"
+                        }`} />
+                        <span className="text-slate-300">{item}</span>
                       </div>
-                    </div>
-                  );
-                })}
-                
-                <div className="pt-4">
-                  <Button 
-                    variant={tier.buttonVariant as "default" | "outline"}
-                    onClick={() => handleSelectPlan(tier.name, isYearly ? tier.yearlyPrice : tier.monthlyPrice)}
-                    className={`w-full ${
-                      tier.popular 
-                        ? "bg-primary hover:bg-primary/90 text-white" 
-                        : "border-slate-600 text-slate-300 hover:bg-slate-700"
-                    }`}
-                  >
-                    {tier.buttonText}
-                  </Button>
+                    ))}
+                  </div>
                 </div>
+
+                {/* Unlocked Templates section */}
+                <div className="mb-6">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                    Unlocked Templates
+                  </p>
+                  <div className="space-y-2">
+                    {tier.unlockedTemplates.map((item, idx) => (
+                      <div key={idx} className="flex items-start gap-2 text-sm">
+                        <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${
+                          tier.dotColor === "green" ? "text-emerald-400" :
+                          tier.dotColor === "orange" ? "text-amber-400" :
+                          "text-purple-400"
+                        }`} />
+                        <span className="text-slate-300">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Limits section (only for Free tier) */}
+                {tier.limits && tier.limits.length > 0 && (
+                  <div className="mb-6">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                      Limit
+                    </p>
+                    <div className="space-y-2">
+                      {tier.limits.map((item, idx) => (
+                        <div key={idx} className="flex items-start gap-2 text-sm">
+                          <Lock className="w-4 h-4 flex-shrink-0 mt-0.5 text-slate-500" />
+                          <span className="text-slate-400">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* CTA Button */}
+                <Button 
+                  onClick={() => handleSelectPlan(tier.name, isYearly ? tier.yearlyPrice : tier.monthlyPrice)}
+                  className={`w-full py-6 ${getButtonStyles(tier.buttonVariant)}`}
+                >
+                  {tier.buttonText}
+                </Button>
+
+                {/* Helper text */}
+                {tier.helperText && (
+                  <p className="text-xs text-slate-500 text-center mt-3">
+                    {tier.helperText}
+                  </p>
+                )}
               </CardContent>
             </Card>
           ))}
@@ -135,11 +194,11 @@ export default function PricingPage() {
           <h2 className="text-2xl font-bold mb-8">Add-ons</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {addOns.map((addon) => (
-              <Card key={addon.name} className="bg-slate-800 border-slate-700">
+              <Card key={addon.name} className="bg-slate-800/50 border-slate-700/50">
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-semibold text-white">{addon.name}</h3>
-                    <span className="text-primary font-bold">{addon.price}</span>
+                    <span className="text-amber-400 font-bold">{addon.price}</span>
                   </div>
                   <p className="text-slate-400 text-sm">{addon.description}</p>
                 </CardContent>
@@ -156,9 +215,9 @@ export default function PricingPage() {
               <AccordionItem 
                 key={index} 
                 value={`item-${index}`}
-                className="bg-slate-800 border-slate-700 rounded-lg px-6"
+                className="bg-slate-800/50 border-slate-700/50 rounded-lg px-6"
               >
-                <AccordionTrigger className="text-white hover:text-primary">
+                <AccordionTrigger className="text-white hover:text-amber-400">
                   {item.question}
                 </AccordionTrigger>
                 <AccordionContent className="text-slate-400">
