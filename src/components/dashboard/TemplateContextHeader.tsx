@@ -1,51 +1,14 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, AlertCircle, Repeat } from "lucide-react";
 import { getTemplateIdentity, type TemplateIdentity } from "@/config/templates/templateIdentity";
-import { resolveNextStep, type NextStepKind } from "@/lib/maturity/resolveNextStep";
+import { resolveNextStep } from "@/lib/maturity/resolveNextStep";
+import { getPrimaryActionBlocker } from "@/lib/maturity/blockers";
 import { useUserMaturity } from "@/hooks/useUserMaturity";
 import { Button } from "@/components/ui/button";
 
 type Props = {
   activeTemplateSlug?: string | null;
 };
-
-// Map NextStepKind → blocker info for the template context panel
-function getBlocker(kind: NextStepKind): { reason: string; ctaLabel: string; href: string } | null {
-  switch (kind) {
-    case "complete_profile":
-      return {
-        reason: "Complete your profile to unlock this action.",
-        ctaLabel: "Finish setup",
-        href: "/create-profile",
-      };
-    case "add_first_template":
-      return {
-        reason: "Activate a template to get started.",
-        ctaLabel: "Browse templates",
-        href: "/templates",
-      };
-    case "enable_appointments":
-      return {
-        reason: "Enable appointments to use this feature.",
-        ctaLabel: "Enable appointments",
-        href: "/appointments/settings",
-      };
-    case "fix_automation_errors":
-      return {
-        reason: "Fix automation errors before running workflows.",
-        ctaLabel: "View errors",
-        href: "/automations/runs",
-      };
-    case "run_first_automation":
-      return {
-        reason: "Run your first automation to unlock results.",
-        ctaLabel: "Run automation",
-        href: "/automations",
-      };
-    default:
-      return null;
-  }
-}
 
 // Get secondary actions based on template category
 function getSecondaryActions(template: TemplateIdentity): { label: string; href: string }[] {
@@ -81,7 +44,7 @@ export default function TemplateContextHeader({ activeTemplateSlug }: Props) {
 
   // Check if user has a blocker
   const nextStep = resolveNextStep(signals);
-  const blocker = getBlocker(nextStep.kind);
+  const blocker = getPrimaryActionBlocker(nextStep.kind);
   const isBlocked = !!blocker;
 
   const secondaryActions = getSecondaryActions(template);
