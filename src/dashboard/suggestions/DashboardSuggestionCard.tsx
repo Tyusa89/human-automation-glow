@@ -27,7 +27,7 @@ export default function DashboardSuggestionCard({ suggestion, onChanged }: Props
         // Put it slightly above current minimum sort_order if possible.
         const { data: rowsRaw } = await supabase
           .from("user_dashboard_widgets")
-          .select("sort_order, widget_key, enabled")
+          .select("sort_order, widget_key, enabled, config")
           .eq("user_id", userId);
 
         const rows = (rowsRaw as any[]) ?? [];
@@ -44,13 +44,16 @@ export default function DashboardSuggestionCard({ suggestion, onChanged }: Props
           targetSort = 35;
         }
 
+        // Preserve existing config if widget already exists
+        const existing = rows.find((r) => r.widget_key === widget);
+
         await supabase.from("user_dashboard_widgets").upsert(
           {
             user_id: userId,
             widget_key: widget,
             enabled: true,
             sort_order: targetSort,
-            config: {}
+            config: existing?.config ?? {}
           },
           { onConflict: "user_id,widget_key" }
         );

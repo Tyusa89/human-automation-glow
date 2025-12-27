@@ -64,7 +64,18 @@ async function insertSuggestionIfNoneActive(
   suggestion_key: string,
   payload: SuggestionPayload
 ) {
-  // Keep it simple: insert; if unique constraint blocks duplicates, ignore
+  // Check if this suggestion was already dismissed or accepted — don't repeat
+  const { data: prior } = await supabase
+    .from("user_dashboard_suggestions")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("suggestion_key", suggestion_key)
+    .in("status", ["dismissed", "accepted"])
+    .limit(1);
+
+  if (prior && prior.length > 0) return;
+
+  // Insert new active suggestion; if unique constraint blocks, ignore
   const { error } = await supabase.from("user_dashboard_suggestions").insert({
     user_id: userId,
     suggestion_key,
@@ -75,7 +86,6 @@ async function insertSuggestionIfNoneActive(
   // If it fails because already exists (unique partial index), ignore
   if (error) {
     // Postgrest errors vary; don't crash
-    // You can console.debug(error) if you want
   }
 }
 
