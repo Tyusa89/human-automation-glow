@@ -3,49 +3,51 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
-  CheckCircle2, Calendar, Users, Bot, ArrowRight, Sparkles,
-  Briefcase, Palette, Wrench, HelpCircle,
-  ListTodo, Target, DollarSign, UserCheck, Clock, Frown
+  CheckCircle2, ArrowRight, Rocket, Settings2, Globe,
+  Briefcase, Palette, Wrench, HelpCircle, Users
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { seedWidgetsOnOnboardingComplete } from "@/dashboard";
 import { brand } from "@/components/Brand";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const workTypes = [
-  { id: 'consultant', label: 'Consultant / Coach', description: 'Client sessions, follow-ups, monthly retainers', icon: Briefcase },
-  { id: 'freelancer', label: 'Freelancer', description: 'Project-based work, invoicing, deliverables', icon: Users },
-  { id: 'creative', label: 'Creative / Designer', description: 'Projects, deadlines, client feedback', icon: Palette },
-  { id: 'local-service', label: 'Local Service Provider', description: 'Appointments, daily jobs, on-site work', icon: Wrench },
-  { id: 'other', label: 'Other', description: 'General business management', icon: HelpCircle },
+  { id: 'consultant', label: 'Consultant / Coach', icon: Briefcase },
+  { id: 'freelancer', label: 'Freelancer', icon: Users },
+  { id: 'creative', label: 'Creative / Designer', icon: Palette },
+  { id: 'local-service', label: 'Local Service', icon: Wrench },
+  { id: 'other', label: 'Other', icon: HelpCircle },
 ];
 
-const hardestThings = [
-  { id: 'organized', label: 'Staying organized', description: 'Too many things to track', icon: ListTodo },
-  { id: 'focus', label: 'Knowing what to focus on', description: 'Unclear priorities each day', icon: Target },
-  { id: 'income', label: 'Tracking income & expenses', description: 'Money in, money out confusion', icon: DollarSign },
-  { id: 'followups', label: 'Client follow-ups', description: 'Dropping the ball on replies', icon: UserCheck },
-  { id: 'time', label: 'Time management', description: 'Never enough hours', icon: Clock },
-  { id: 'overwhelmed', label: 'Feeling overwhelmed', description: 'Too much at once', icon: Frown },
-];
-
-const setupGoals = [
-  { id: 'appointments', label: 'Appointment Booking', description: 'Let clients book time with you', icon: Calendar },
-  { id: 'leads', label: 'Lead Capture & CRM', description: 'Track and manage leads', icon: Users },
-  { id: 'ai-assistant', label: 'AI Assistant', description: 'Automate customer support', icon: Bot },
-];
-
-type OnboardingStep = 'welcome' | 'work-type' | 'hardest' | 'goals';
+type OnboardingStep = 'setup' | 'preferences';
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const [step, setStep] = useState<OnboardingStep>('welcome');
-  const [selectedWorkType, setSelectedWorkType] = useState<string | null>(null);
-  const [selectedHardest, setSelectedHardest] = useState<string[]>([]);
-  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
+  const [step, setStep] = useState<OnboardingStep>('setup');
   const [loading, setLoading] = useState(false);
   const [checkingStatus, setCheckingStatus] = useState(true);
+  
+  // Step 1: Setup
+  const [projectName, setProjectName] = useState('My Workspace');
+  const [selectedWorkType, setSelectedWorkType] = useState('consultant');
+  const [timezone, setTimezone] = useState(() => 
+    Intl.DateTimeFormat().resolvedOptions().timeZone
+  );
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  
+  // Step 2: Preferences (optional)
+  const [emailReminders, setEmailReminders] = useState(true);
+  const [smsAlerts, setSmsAlerts] = useState(false);
+  const [aiAssistant, setAiAssistant] = useState(true);
 
   useEffect(() => {
     checkOnboardingStatus();
@@ -61,7 +63,7 @@ export default function Onboarding() {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('onboarding_completed')
+        .select('onboarding_completed, full_name')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -69,25 +71,16 @@ export default function Onboarding() {
         navigate('/');
         return;
       }
+      
+      // Pre-fill project name if we have user's name
+      if (profile?.full_name) {
+        setProjectName(`${profile.full_name}'s Workspace`);
+      }
     } catch (error) {
       console.error('Error checking onboarding status:', error);
     } finally {
       setCheckingStatus(false);
     }
-  };
-
-  const toggleHardest = (id: string) => {
-    setSelectedHardest(prev => {
-      if (prev.includes(id)) return prev.filter(h => h !== id);
-      if (prev.length >= 2) return prev; // Max 2 selections
-      return [...prev, id];
-    });
-  };
-
-  const toggleGoal = (id: string) => {
-    setSelectedGoals(prev =>
-      prev.includes(id) ? prev.filter(g => g !== id) : [...prev, id]
-    );
   };
 
   const handleComplete = async () => {
@@ -100,11 +93,15 @@ export default function Onboarding() {
         onboarding_completed: true,
         onboarding_step: 'complete',
         onboarding_completed_at: new Date().toISOString(),
-        setup_goals: selectedGoals,
         work_type: selectedWorkType,
-        hardest_things: selectedHardest,
-        // Map to new schema fields
-        primary_challenges: selectedHardest,
+        timezone,
+        preferences: {
+          project_name: projectName,
+          email_reminders: emailReminders,
+          sms_alerts: smsAlerts,
+          ai_assistant: aiAssistant,
+        },
+        assistant_level: aiAssistant ? 'balanced' as const : 'quiet' as const,
       };
 
       const { error } = await supabase
@@ -114,36 +111,17 @@ export default function Onboarding() {
 
       if (error) throw error;
 
-      // Seed default widgets based on onboarding answers
+      // Seed default widgets
       await seedWidgetsOnOnboardingComplete(user.id, {
         work_type: selectedWorkType,
-        hardest_things: selectedHardest,
-        primary_challenges: selectedHardest,
       });
 
-      toast.success('Setup complete! Welcome to Baseframe.');
+      toast.success('You\'re all set! Welcome to EcoNest.');
       navigate('/');
     } catch (error: any) {
       toast.error(error.message || 'Failed to complete setup');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const steps: OnboardingStep[] = ['welcome', 'work-type', 'hardest', 'goals'];
-  const currentStepIndex = steps.indexOf(step);
-
-  const goNext = () => {
-    const nextIndex = currentStepIndex + 1;
-    if (nextIndex < steps.length) {
-      setStep(steps[nextIndex]);
-    }
-  };
-
-  const goBack = () => {
-    const prevIndex = currentStepIndex - 1;
-    if (prevIndex >= 0) {
-      setStep(steps[prevIndex]);
     }
   };
 
@@ -157,255 +135,202 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex items-center justify-center p-4">
-      <div className="w-full max-w-lg">
+      <div className="w-full max-w-md">
         {/* Brand Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg mb-4">
-            B
+        <div className="text-center mb-6">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg mb-3">
+            <Rocket className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl font-bold">{brand.name}</h1>
-          <p className="text-sm text-muted-foreground">{brand.tagline}</p>
+          <h1 className="text-xl font-bold">{brand.name}</h1>
         </div>
 
-        {/* Step: Welcome */}
-        {step === 'welcome' && (
+        {/* Step 1: Setup */}
+        {step === 'setup' && (
           <Card className="border-border/50 shadow-lg">
-            <CardHeader className="text-center pb-2">
-              <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                <Sparkles className="h-5 w-5 text-primary" />
-              </div>
-              <CardTitle className="text-xl">Welcome to {brand.name}</CardTitle>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg">Set up your workspace</CardTitle>
               <CardDescription>
-                Let's personalize your workspace in under 2 minutes.
+                Takes about 30 seconds
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 pt-4">
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
-                  <span>Dashboard tailored to your work</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
-                  <span>Focus on what matters most</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
-                  <span>AI-powered automation</span>
+            <CardContent className="space-y-5">
+              {/* Project Name */}
+              <div className="space-y-2">
+                <Label htmlFor="project-name">Workspace name</Label>
+                <Input
+                  id="project-name"
+                  value={projectName}
+                  onChange={(e) => setProjectName(e.target.value)}
+                  placeholder="My Workspace"
+                />
+              </div>
+
+              {/* Work Type - Compact Pills */}
+              <div className="space-y-2">
+                <Label>What do you do?</Label>
+                <div className="flex flex-wrap gap-2">
+                  {workTypes.map(type => {
+                    const Icon = type.icon;
+                    const isSelected = selectedWorkType === type.id;
+                    return (
+                      <button
+                        key={type.id}
+                        onClick={() => setSelectedWorkType(type.id)}
+                        className={cn(
+                          "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-all",
+                          isSelected
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted hover:bg-muted/80 text-muted-foreground"
+                        )}
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                        {type.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
+
+              {/* Timezone - Auto-detected */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Globe className="h-4 w-4 text-muted-foreground" />
+                  Timezone
+                </Label>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-2 rounded-lg">
+                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  {timezone}
+                </div>
+              </div>
+
+              {/* Advanced Settings - Collapsible */}
+              <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
+                <CollapsibleTrigger asChild>
+                  <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <Settings2 className="h-3.5 w-3.5" />
+                    Advanced settings
+                    <ArrowRight className={cn(
+                      "h-3 w-3 transition-transform",
+                      showAdvanced && "rotate-90"
+                    )} />
+                  </button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-3">
+                  <div className="space-y-3 p-3 bg-muted/30 rounded-lg text-sm">
+                    <div className="space-y-1">
+                      <Label htmlFor="timezone-input" className="text-xs">Override timezone</Label>
+                      <Input
+                        id="timezone-input"
+                        value={timezone}
+                        onChange={(e) => setTimezone(e.target.value)}
+                        className="h-8 text-sm"
+                      />
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
               <Button 
                 className="w-full" 
                 size="lg"
-                onClick={goNext}
+                onClick={() => setStep('preferences')}
               >
-                Get Started
+                Continue
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button
-                variant="ghost"
-                className="w-full text-muted-foreground"
-                onClick={handleComplete}
-              >
-                Skip for now
-              </Button>
             </CardContent>
           </Card>
         )}
 
-        {/* Step: Work Type */}
-        {step === 'work-type' && (
+        {/* Step 2: Preferences (Optional) */}
+        {step === 'preferences' && (
           <Card className="border-border/50 shadow-lg">
-            <CardHeader className="text-center pb-2">
-              <CardTitle className="text-xl">What kind of work do you do?</CardTitle>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg">Customize your experience</CardTitle>
               <CardDescription>
-                This helps us show the right widgets and features.
+                Optional — you can change these anytime
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 pt-4">
-              <div className="space-y-3">
-                {workTypes.map(type => {
-                  const Icon = type.icon;
-                  const isSelected = selectedWorkType === type.id;
-                  return (
-                    <button
-                      key={type.id}
-                      onClick={() => setSelectedWorkType(type.id)}
-                      className={cn(
-                        "w-full p-4 border-2 rounded-xl text-left transition-all",
-                        "hover:border-primary/50 hover:bg-muted/50",
-                        isSelected
-                          ? "border-primary bg-primary/5"
-                          : "border-border"
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={cn(
-                          "flex h-10 w-10 items-center justify-center rounded-lg",
-                          isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
-                        )}>
-                          <Icon className="h-5 w-5" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="font-medium">{type.label}</div>
-                          <div className="text-sm text-muted-foreground">{type.description}</div>
-                        </div>
-                        {isSelected && (
-                          <CheckCircle2 className="h-5 w-5 text-primary" />
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
+            <CardContent className="space-y-5">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="email-reminders">Email reminders</Label>
+                    <p className="text-xs text-muted-foreground">Daily digest & task reminders</p>
+                  </div>
+                  <Switch
+                    id="email-reminders"
+                    checked={emailReminders}
+                    onCheckedChange={setEmailReminders}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="sms-alerts">SMS alerts</Label>
+                    <p className="text-xs text-muted-foreground">Urgent notifications only</p>
+                  </div>
+                  <Switch
+                    id="sms-alerts"
+                    checked={smsAlerts}
+                    onCheckedChange={setSmsAlerts}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="ai-assistant">AI Assistant</Label>
+                    <p className="text-xs text-muted-foreground">Smart suggestions & automation</p>
+                  </div>
+                  <Switch
+                    id="ai-assistant"
+                    checked={aiAssistant}
+                    onCheckedChange={setAiAssistant}
+                  />
+                </div>
               </div>
 
               <div className="flex gap-2 pt-2">
-                <Button variant="outline" className="flex-1" onClick={goBack}>
-                  Back
-                </Button>
                 <Button 
-                  className="flex-1" 
-                  onClick={goNext}
-                  disabled={!selectedWorkType}
+                  variant="outline" 
+                  onClick={() => setStep('setup')}
                 >
-                  Continue
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Step: Hardest Things */}
-        {step === 'hardest' && (
-          <Card className="border-border/50 shadow-lg">
-            <CardHeader className="text-center pb-2">
-              <CardTitle className="text-xl">What's hardest for you right now?</CardTitle>
-              <CardDescription>
-                Pick up to 2. We'll prioritize these on your dashboard.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-4">
-              <div className="grid grid-cols-2 gap-3">
-                {hardestThings.map(thing => {
-                  const Icon = thing.icon;
-                  const isSelected = selectedHardest.includes(thing.id);
-                  const isDisabled = selectedHardest.length >= 2 && !isSelected;
-                  return (
-                    <button
-                      key={thing.id}
-                      onClick={() => toggleHardest(thing.id)}
-                      disabled={isDisabled}
-                      className={cn(
-                        "p-3 border-2 rounded-xl text-left transition-all",
-                        "hover:border-primary/50 hover:bg-muted/50",
-                        isSelected
-                          ? "border-primary bg-primary/5"
-                          : "border-border",
-                        isDisabled && "opacity-50 cursor-not-allowed"
-                      )}
-                    >
-                      <div className={cn(
-                        "flex h-8 w-8 items-center justify-center rounded-lg mb-2",
-                        isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
-                      )}>
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <div className="font-medium text-sm">{thing.label}</div>
-                      <div className="text-xs text-muted-foreground">{thing.description}</div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="flex gap-2 pt-2">
-                <Button variant="outline" className="flex-1" onClick={goBack}>
-                  Back
-                </Button>
-                <Button 
-                  className="flex-1" 
-                  onClick={goNext}
-                  disabled={selectedHardest.length === 0}
-                >
-                  Continue
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Step: Goals */}
-        {step === 'goals' && (
-          <Card className="border-border/50 shadow-lg">
-            <CardHeader className="text-center pb-2">
-              <CardTitle className="text-xl">What do you want to set up?</CardTitle>
-              <CardDescription>
-                Select all that apply. You can always add more later.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-4">
-              <div className="space-y-3">
-                {setupGoals.map(goal => {
-                  const Icon = goal.icon;
-                  const isSelected = selectedGoals.includes(goal.id);
-                  return (
-                    <button
-                      key={goal.id}
-                      onClick={() => toggleGoal(goal.id)}
-                      className={cn(
-                        "w-full p-4 border-2 rounded-xl text-left transition-all",
-                        "hover:border-primary/50 hover:bg-muted/50",
-                        isSelected
-                          ? "border-primary bg-primary/5"
-                          : "border-border"
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={cn(
-                          "flex h-10 w-10 items-center justify-center rounded-lg",
-                          isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
-                        )}>
-                          <Icon className="h-5 w-5" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="font-medium">{goal.label}</div>
-                          <div className="text-sm text-muted-foreground">{goal.description}</div>
-                        </div>
-                        {isSelected && (
-                          <CheckCircle2 className="h-5 w-5 text-primary" />
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="flex gap-2 pt-2">
-                <Button variant="outline" className="flex-1" onClick={goBack}>
                   Back
                 </Button>
                 <Button
                   className="flex-1"
+                  size="lg"
                   onClick={handleComplete}
                   disabled={loading}
                 >
-                  {loading ? 'Setting up...' : 'Complete Setup'}
+                  {loading ? 'Creating...' : 'Launch Workspace'}
+                  {!loading && <Rocket className="ml-2 h-4 w-4" />}
                 </Button>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Progress indicator */}
+        {/* Progress indicator - Simplified */}
         <div className="flex justify-center gap-2 mt-6">
-          {steps.map((s, i) => (
-            <div
-              key={s}
-              className={cn(
-                "h-2 w-8 rounded-full transition-colors",
-                i <= currentStepIndex ? "bg-primary" : "bg-muted"
-              )}
-            />
-          ))}
+          <div className={cn(
+            "h-1.5 w-12 rounded-full transition-colors",
+            "bg-primary"
+          )} />
+          <div className={cn(
+            "h-1.5 w-12 rounded-full transition-colors",
+            step === 'preferences' ? "bg-primary" : "bg-muted"
+          )} />
+        </div>
+        
+        {/* Skip option - subtle */}
+        <div className="text-center mt-4">
+          <button
+            onClick={handleComplete}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Skip and use defaults
+          </button>
         </div>
       </div>
     </div>
