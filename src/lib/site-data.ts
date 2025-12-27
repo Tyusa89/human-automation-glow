@@ -89,6 +89,32 @@ export const pricing = [
     buttonVariant: "purple",
     helperText: "Most teams start on Pro and upgrade when analytics become mission-critical.",
     popular: false
+  },
+  { 
+    name: "Enterprise",
+    displayName: "Operator",
+    blurb: "High-volume ops",
+    monthlyPrice: "199",
+    yearlyPrice: "1990",
+    yearlyMonthly: "166",
+    dotColor: "cyan",
+    includes: [
+      "Everything in Business",
+      "Dedicated support",
+      "Custom integrations",
+      "SLA guarantees",
+      "Priority processing"
+    ],
+    unlockedTemplates: [
+      "All templates",
+      "Custom template builds",
+      "White-label options"
+    ],
+    limits: [],
+    buttonText: "Contact Sales",
+    buttonVariant: "cyan",
+    helperText: "For teams with high-volume operations and enterprise needs.",
+    popular: false
   }
 ];
 
