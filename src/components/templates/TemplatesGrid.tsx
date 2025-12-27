@@ -4,10 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { Template } from '@/lib/templates';
 import { useUserPlan } from '@/hooks/useUserPlan';
 import { 
-  type PlanTier, 
+  type PlanTier,
+  type Difficulty,
   getUpgradeLabel, 
   isTemplateLocked,
-  getTemplateIdentity 
+  getTemplateIdentity,
+  sortTemplatesForGrid,
+  DIFFICULTY_LABELS,
 } from '@/config/templates/templateIdentity';
 
 interface TemplatesGridProps {
@@ -16,63 +19,57 @@ interface TemplatesGridProps {
   onScaffoldMessage: (message: string) => void;
 }
 
-// Get required plan from template identity map (not from badges)
-function getRequiredPlan(template: Template): PlanTier {
-  const identity = getTemplateIdentity(template.id);
+// Get required plan from template identity map
+function getRequiredPlan(templateId: string): PlanTier {
+  const identity = getTemplateIdentity(templateId);
   return identity?.requiredPlan || "free";
 }
 
-// Difficulty styling
-const difficultyStyles = {
-  Beginner: "bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/40",
-  Intermediate: "bg-amber-500/20 text-amber-400 ring-1 ring-amber-500/40",
-  Advanced: "bg-purple-500/20 text-purple-400 ring-1 ring-purple-500/40",
-} as const;
+// Get difficulty from template identity map
+function getDifficulty(templateId: string): Difficulty {
+  const identity = getTemplateIdentity(templateId);
+  return identity?.difficulty || "beginner";
+}
 
-// Category badge styling  
-const categoryStyles = {
-  Easy: "border-sky-500/50 text-sky-400",
-  Popular: "border-amber-500/50 text-amber-400",
-  Advanced: "border-purple-500/50 text-purple-400",
-} as const;
+// Difficulty styling
+const difficultyStyles: Record<Difficulty, string> = {
+  beginner: "bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/40",
+  intermediate: "bg-amber-500/20 text-amber-400 ring-1 ring-amber-500/40",
+  advanced: "bg-purple-500/20 text-purple-400 ring-1 ring-purple-500/40",
+};
 
 // Tier badge styling
-const tierBadgeStyles = {
+const tierBadgeStyles: Record<PlanTier, string> = {
+  free: "",
   pro: "bg-amber-500/20 text-amber-400 border-amber-500/40",
   business: "bg-purple-500/20 text-purple-400 border-purple-500/40",
-  enterprise: "bg-rose-500/20 text-rose-400 border-rose-500/40",
-} as const;
-
-// Sort order for difficulty
-const difficultyOrder = { Beginner: 0, Intermediate: 1, Advanced: 2 };
+};
 
 export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: TemplatesGridProps) {
   const navigate = useNavigate();
   const { plan: userPlan, loading: planLoading } = useUserPlan();
 
-  // Sort templates by difficulty: Beginner → Intermediate → Advanced
-  const sortedTemplates = [...templates].sort((a, b) => {
-    const orderA = difficultyOrder[(a.difficulty || "Beginner") as keyof typeof difficultyOrder] ?? 0;
-    const orderB = difficultyOrder[(b.difficulty || "Beginner") as keyof typeof difficultyOrder] ?? 0;
-    return orderA - orderB;
-  });
+  // Sort templates: unlocked first, then by tier, then difficulty, then name
+  const sortedTemplateIds = sortTemplatesForGrid(
+    templates.map(t => t.id),
+    userPlan
+  );
+
+  // Map back to template objects
+  const sortedTemplates = sortedTemplateIds
+    .map(id => templates.find(t => t.id === id))
+    .filter((t): t is Template => t !== undefined);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {sortedTemplates.map((t) => {
-        const requiredPlan = getRequiredPlan(t);
+        const identity = getTemplateIdentity(t.id);
+        const requiredPlan = getRequiredPlan(t.id);
+        const difficulty = getDifficulty(t.id);
         const needsUpgrade = isTemplateLocked(requiredPlan, userPlan);
-        const difficulty = t.difficulty || "Beginner";
         
-        // Get category badges (Easy, Popular, Advanced)
-        const categoryBadges = t.badges?.filter(b => 
-          ["Easy", "Popular", "Advanced"].includes(b)
-        ) || [];
-        
-        // Check for tier badges
-        const hasPro = t.badges?.some(b => b.toLowerCase() === "pro");
-        const hasBusiness = t.badges?.some(b => b.toLowerCase() === "business");
-        const hasEnterprise = t.badges?.some(b => b.toLowerCase() === "enterprise");
+        // Show tier badge only if not free
+        const showTierBadge = requiredPlan !== "free";
 
         return (
           <motion.div 
@@ -84,55 +81,31 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
           >
             <div className="rounded-2xl bg-slate-900/90 border border-slate-700/50 p-5 backdrop-blur hover:border-slate-600/70 transition-all duration-300 flex flex-col h-full">
               
-              {/* Header row: category badges + tier badges */}
+              {/* Header row: tier badge + difficulty badge */}
               <div className="flex items-center justify-between gap-2 mb-4">
                 <div className="flex items-center gap-2">
-                  {categoryBadges.map((badge, i) => (
-                    <span 
-                      key={`${t.id}-cat-${i}`}
-                      className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium ${
-                        categoryStyles[badge as keyof typeof categoryStyles] || categoryStyles.Easy
-                      }`}
-                    >
-                      {badge}
-                    </span>
-                  ))}
-                  {hasPro && (
-                    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium ${tierBadgeStyles.pro}`}>
-                      Pro
-                    </span>
-                  )}
-                  {hasBusiness && (
-                    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium ${tierBadgeStyles.business}`}>
-                      Business
-                    </span>
-                  )}
-                  {hasEnterprise && (
-                    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium ${tierBadgeStyles.enterprise}`}>
-                      Enterprise
+                  {showTierBadge && (
+                    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium ${tierBadgeStyles[requiredPlan]}`}>
+                      {requiredPlan === "pro" ? "Pro" : "Business"}
                     </span>
                   )}
                 </div>
-              </div>
-
-              {/* Title row with difficulty badge */}
-              <div className="flex items-start justify-between gap-3 mb-2">
-                <h3 className="text-lg font-semibold text-white leading-tight">
-                  {t.title}
-                </h3>
-                <span className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium ${
-                  difficultyStyles[difficulty as keyof typeof difficultyStyles] || difficultyStyles.Beginner
-                }`}>
-                  {difficulty}
+                <span className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium ${difficultyStyles[difficulty]}`}>
+                  {DIFFICULTY_LABELS[difficulty]}
                 </span>
               </div>
+
+              {/* Title */}
+              <h3 className="text-lg font-semibold text-white leading-tight mb-2">
+                {identity?.name || t.title}
+              </h3>
               
               {/* Description */}
               <p className="text-sm text-slate-400 line-clamp-2 mb-5 flex-grow">
-                {t.tagline || t.description}
+                {identity?.description || t.tagline || t.description}
               </p>
 
-              {/* Action buttons */}
+              {/* Action buttons - always same structure: Preview (left) + Primary action (right) */}
               <div className="flex items-center gap-3">
                 <button 
                   onClick={() => onPreview(t.id)}
@@ -167,7 +140,7 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
                 )}
               </div>
 
-              {/* Upgrade note for templates user doesn't have access to */}
+              {/* Upgrade note for locked templates */}
               {needsUpgrade && (
                 <p className="mt-3 text-xs text-slate-500 leading-relaxed">
                   {requiredPlan === "business" 
