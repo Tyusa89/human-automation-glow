@@ -29,6 +29,7 @@ import {
 } from '@/dashboard';
 import { getActivationComplete } from '@/dashboard/activation';
 import { resolveMaturityTier } from '@/lib/maturity/resolveMaturity';
+import { resolveDashboardNextStep, shouldShowChecklist } from '@/lib/templates/resolveDashboardNextStep';
 import { runTask } from '@/lib/db';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
@@ -191,6 +192,10 @@ const Dashboard = () => {
 
   // Compute maturity tier for display logic
   const tier = resolveMaturityTier(signals);
+  
+  // Compute the unified next step for checklist visibility
+  const nextStep = resolveDashboardNextStep(signals, activeTemplateSlug);
+  const showChecklist = shouldShowChecklist(nextStep);
 
   // Power user mode: filter out beginner-focused widgets
   const displayedSecondaryWidgets = isNewUser 
@@ -323,8 +328,8 @@ const Dashboard = () => {
             {/* Next Step Card - one clear action (template-aware) */}
             <DashboardNextStepCard activeTemplateSlug={activeTemplateSlug} />
             
-            {/* Setup Checklist - hide when template is active (one authority rule) */}
-            {!activationComplete && !activeTemplateSlug && <SetupChecklist />}
+            {/* Setup Checklist - only show for setup-phase steps */}
+            {showChecklist && <SetupChecklist />}
             
             {/* Small link for activated users who want to revisit setup */}
             {activationComplete && (
