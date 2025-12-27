@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { registry } from "@/lib/registry";
-import { ExternalLink, BookOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -116,43 +115,33 @@ export default function TemplateSetupWizard() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-5xl px-6 py-10">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <div className="text-xs text-muted-foreground uppercase tracking-wider">ADVANCED SETTINGS • {tpl.name}</div>
-            <h1 className="mt-1 text-3xl font-bold">Customize Configuration</h1>
-            <p className="text-sm text-muted-foreground mt-1">Optional — your system is already configured with smart defaults</p>
-          </div>
-          <a 
-            href="/support"
-            className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 rounded-lg text-primary-foreground font-medium transition-colors"
-          >
-            <BookOpen size={16} />
-            Learn How to Use Templates
-            <ExternalLink size={14} />
-          </a>
+      <div className="mx-auto max-w-3xl px-6 py-10">
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold">Template settings (optional)</h1>
+          <p className="text-muted-foreground mt-1">
+            Power-user controls — you can change these anytime.
+          </p>
         </div>
         
-        <div className="mt-8">
-          <div className="text-sm text-muted-foreground mb-2">
-            Step {step + 1} of {tpl.steps.length}
-          </div>
-          <h2 className="text-2xl font-bold mb-6">{current.title}</h2>
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold">{current.title}</h2>
           
           <div className="space-y-4">
             {current.fields.map((field, i) => (
               <div key={i} className="text-muted-foreground">
                 {field.kind === "review" ? (
                   <div className="space-y-4">
-                    <div className="text-lg font-semibold mb-4 text-foreground">Review your configuration:</div>
-                    {Object.entries(formState).map(([key, value]) => (
-                      <div key={key} className="flex justify-between py-2 border-b border-border">
-                        <span className="font-medium text-foreground">{key}:</span>
-                        <span className="text-muted-foreground">
-                          {Array.isArray(value) ? value.join(", ") : String(value)}
-                        </span>
-                      </div>
-                    ))}
+                    <div className="text-base font-medium mb-4 text-foreground">Summary</div>
+                    <div className="bg-muted/30 rounded-lg p-4 space-y-3">
+                      {Object.entries(formState).map(([key, value]) => (
+                        <div key={key} className="flex justify-between py-1">
+                          <span className="text-muted-foreground">{key}:</span>
+                          <span className="text-foreground font-medium">
+                            {Array.isArray(value) ? value.join(", ") : String(value)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <div>
@@ -203,13 +192,12 @@ export default function TemplateSetupWizard() {
             ))}
           </div>
 
-          <div className="flex justify-between mt-8">
+          <div className="flex justify-between mt-8 pt-6 border-t border-border">
             <button 
-              onClick={() => setStep(Math.max(0, step - 1))}
-              disabled={step === 0}
-              className="px-6 py-3 bg-muted text-foreground rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted/80 transition-colors"
+              onClick={() => step === 0 ? nav(`/templates/${templateId}/activate`) : setStep(step - 1)}
+              className="px-6 py-3 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors"
             >
-              Previous
+              {step === 0 ? "Back" : "Previous"}
             </button>
             
             {isLastStep && isReviewStep ? (
@@ -218,7 +206,7 @@ export default function TemplateSetupWizard() {
                 disabled={isGenerating}
                 className="px-6 py-3 bg-primary text-primary-foreground rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
               >
-                {isGenerating ? "Saving..." : "Save Configuration"}
+                {isGenerating ? "Saving..." : "Save settings"}
               </button>
             ) : (
               <button 
