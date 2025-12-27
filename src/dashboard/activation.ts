@@ -1,5 +1,24 @@
 /**
- * Activation inputs - matches exact database schema fields
+ * Activation signals - matches useUserMaturity signals
+ */
+export type ActivationSignals = {
+  profileCompleted: boolean;
+  activeTemplatesCount: number;
+  hasSuccessfulAutomationRun: boolean;
+  hasFirstValueEvent: boolean;
+};
+
+export function getActivationComplete(s: ActivationSignals): boolean {
+  return (
+    !!s.profileCompleted &&
+    (s.activeTemplatesCount ?? 0) >= 1 &&
+    (!!s.hasSuccessfulAutomationRun || !!s.hasFirstValueEvent)
+  );
+}
+
+/**
+ * Legacy type for backward compatibility with components
+ * that use the old ActivationInputs pattern
  */
 export type ActivationInputs = {
   profile: {
@@ -13,34 +32,8 @@ export type ActivationInputs = {
 };
 
 /**
- * A user is "activation complete" when ALL of these are true:
- * - Profile is completed (full_name + company + onboarding_completed)
- * - At least one active template installed
- * - Either a successful automation run OR a first value event
- * 
- * After activation complete:
- * - Setup checklist disappears forever
- * - Dashboard shifts to power user mode
- * - NBA shows optimization actions instead of activation actions
- * - Power-user suggestions start appearing
- */
-export function getActivationComplete(i: ActivationInputs): boolean {
-  const profileCompleted = !!(
-    i.profile?.full_name &&
-    i.profile?.company &&
-    i.profile?.onboarding_completed
-  );
-
-  return (
-    profileCompleted &&
-    (i.activeTemplatesCount ?? 0) >= 1 &&
-    (i.hasSuccessfulRun || i.hasFirstValueEvent)
-  );
-}
-
-/**
  * Legacy aliases for backward compatibility
- * @deprecated Use ActivationInputs and getActivationComplete instead
+ * @deprecated Use ActivationSignals and getActivationComplete instead
  */
 export type ActivationState = {
   profileCompleted: boolean;
