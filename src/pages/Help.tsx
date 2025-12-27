@@ -7,103 +7,102 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 export default function Help() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-background to-background">
-      <div className="container mx-auto px-4 py-12">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            EcoNest AI Help Center
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Learn how to use EcoNest AI, set up templates, and get answers to frequently asked questions.
-          </p>
-        </div>
+    <div className="container mx-auto px-4 py-12">
+      {/* Hero Section */}
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-white mb-4">
+          EcoNest AI Help Center
+        </h1>
+        <p className="text-xl text-white/70 max-w-2xl mx-auto">
+          Learn how to use EcoNest AI, set up templates, and get answers to frequently asked questions.
+        </p>
+      </div>
 
-        {/* Main Content Tabs */}
-        <Tabs defaultValue="getting-started" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="getting-started">Getting Started</TabsTrigger>
-            <TabsTrigger value="templates">Templates</TabsTrigger>
-            <TabsTrigger value="features">Features</TabsTrigger>
-            <TabsTrigger value="faq">FAQ</TabsTrigger>
-          </TabsList>
+      {/* Main Content Tabs */}
+      <Tabs defaultValue="getting-started" className="w-full">
+        <TabsList className="grid w-full grid-cols-4 bg-white/5 border border-white/10">
+          <TabsTrigger value="getting-started" className="data-[state=active]:bg-white/10 text-white">Getting Started</TabsTrigger>
+          <TabsTrigger value="templates" className="data-[state=active]:bg-white/10 text-white">Templates</TabsTrigger>
+          <TabsTrigger value="features" className="data-[state=active]:bg-white/10 text-white">Features</TabsTrigger>
+          <TabsTrigger value="faq" className="data-[state=active]:bg-white/10 text-white">FAQ</TabsTrigger>
+        </TabsList>
 
-          {/* Getting Started Tab */}
-          <TabsContent value="getting-started" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Play className="w-5 h-5" />
-                  Welcome to EcoNest AI
-                </CardTitle>
-                <CardDescription>
-                  Your complete guide to getting started with EcoNest AI platform
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Step 1: Create Your Account</h3>
-                    <p className="text-muted-foreground">
-                      Sign up for your EcoNest AI account to access all templates and features. 
-                      You can use email or Google authentication for quick access.
-                    </p>
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Step 2: Explore Templates</h3>
-                    <p className="text-muted-foreground">
-                      Browse our collection of pre-built templates for analytics, automation, 
-                      data sync, and more. Each template is designed for specific business needs.
-                    </p>
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Step 3: Set Up Your First Project</h3>
-                    <p className="text-muted-foreground">
-                      Choose a template and follow the setup wizard to configure your project. 
-                      The wizard will guide you through all necessary settings and integrations.
-                    </p>
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Step 4: Launch & Monitor</h3>
-                    <p className="text-muted-foreground">
-                      Deploy your project and use our dashboard to monitor performance, 
-                      view analytics, and manage your automated workflows.
-                    </p>
-                  </div>
+        {/* Getting Started Tab */}
+        <TabsContent value="getting-started" className="space-y-6">
+          <Card className="bg-white/5 border-white/10">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-white">
+                <Play className="w-5 h-5" />
+                Welcome to EcoNest AI
+              </CardTitle>
+              <CardDescription className="text-white/70">
+                Your complete guide to getting started with EcoNest AI platform
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-white">Step 1: Create Your Account</h3>
+                  <p className="text-white/70">
+                    Sign up for your EcoNest AI account to access all templates and features. 
+                    You can use email or Google authentication for quick access.
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Start Checklist</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm">✓</div>
-                    <span>Create your EcoNest AI account</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm">2</div>
-                    <span>Complete your profile setup</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm">3</div>
-                    <span>Browse available templates</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm">4</div>
-                    <span>Set up your first project</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm">5</div>
-                    <span>Launch and monitor your solution</span>
-                  </div>
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-white">Step 2: Explore Templates</h3>
+                  <p className="text-white/70">
+                    Browse our collection of pre-built templates for analytics, automation, 
+                    data sync, and more. Each template is designed for specific business needs.
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-white">Step 3: Set Up Your First Project</h3>
+                  <p className="text-white/70">
+                    Choose a template and follow the setup wizard to configure your project. 
+                    The wizard will guide you through all necessary settings and integrations.
+                  </p>
+                </div>
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-white">Step 4: Launch & Monitor</h3>
+                  <p className="text-white/70">
+                    Deploy your project and use our dashboard to monitor performance, 
+                    view analytics, and manage your automated workflows.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/5 border-white/10">
+            <CardHeader>
+              <CardTitle className="text-white">Quick Start Checklist</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-sm">✓</div>
+                  <span className="text-white">Create your EcoNest AI account</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-white/20 text-white/60 flex items-center justify-center text-sm">2</div>
+                  <span className="text-white/80">Complete your profile setup</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-white/20 text-white/60 flex items-center justify-center text-sm">3</div>
+                  <span className="text-white/80">Browse available templates</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-white/20 text-white/60 flex items-center justify-center text-sm">4</div>
+                  <span className="text-white/80">Set up your first project</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-white/20 text-white/60 flex items-center justify-center text-sm">5</div>
+                  <span className="text-white/80">Launch and monitor your solution</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
           {/* Templates Tab */}
           <TabsContent value="templates" className="space-y-6">
@@ -665,25 +664,24 @@ schedule: "*/15 * * * *"  # every 15 minutes`}
         </Tabs>
 
         {/* Contact Support Section */}
-        <Card className="mt-12">
+        <Card className="mt-12 bg-white/5 border-white/10">
           <CardHeader className="text-center">
-            <CardTitle>Still Need Help?</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-white">Still Need Help?</CardTitle>
+            <CardDescription className="text-white/70">
               Our support team is here to help you succeed with EcoNest AI
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
             <div className="flex justify-center gap-4">
-              <Button asChild>
+              <Button asChild className="bg-emerald-500 hover:bg-emerald-600 text-white">
                 <a href="/contact">Contact Support</a>
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline" asChild className="border-white/20 text-white hover:bg-white/10">
                 <a href="mailto:support@econest.ai">Email Us</a>
               </Button>
             </div>
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
-}
+    );
+  }
