@@ -89,13 +89,8 @@ export default function AppHeader() {
             </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-white/10" />
             <DropdownMenuItem asChild>
-              <Link to="/docs" className="text-white hover:text-emerald-400 cursor-pointer">
-                Docs
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/help" className="text-white hover:text-emerald-400 cursor-pointer">
-                Help
+              <Link to="/support" className="text-white hover:text-emerald-400 cursor-pointer">
+                Support
               </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>

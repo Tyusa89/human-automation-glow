@@ -27,6 +27,7 @@ import SolutionsGuide from '@/pages/docs/SolutionsGuide';
 import TroubleshootingGuide from '@/pages/docs/TroubleshootingGuide';
 import TrustPage from '@/pages/Trust';
 import HelpPage from '@/pages/Help';
+import SupportPage from '@/pages/Support';
 import ContactPage from '@/pages/ContactPage';
 import CreateProfile from '@/pages/CreateProfile';
 import SetupPage from '@/pages/Setup';
@@ -96,6 +97,7 @@ const App = () => {
               <Route path="/docs/solutions" element={<SolutionsGuide />} />
               <Route path="/docs/troubleshooting" element={<TroubleshootingGuide />} />
               <Route path="/help" element={<HelpPage />} />
+              <Route path="/support" element={<SupportPage />} />
               <Route path="/trust" element={<TrustPage />} />
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/pricing" element={<PricingPage />} />
