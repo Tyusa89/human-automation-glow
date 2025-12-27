@@ -154,7 +154,7 @@ export default function TemplateActivation() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-lg border-border/50 shadow-xl">
+      <Card className="w-full max-w-lg border-primary/20 shadow-xl bg-card/95 backdrop-blur-sm">
         <CardContent className="pt-8 pb-8">
           
           {/* Screen A: Template Details */}
