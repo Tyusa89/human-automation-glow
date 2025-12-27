@@ -277,22 +277,23 @@ export default function AppointmentsPage() {
                   Add service
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="bg-slate-800 border-slate-700">
                 <DialogHeader>
-                  <DialogTitle>Add New Service</DialogTitle>
+                  <DialogTitle className="text-white">Add New Service</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <Label htmlFor="serviceName">Service Name</Label>
+                    <Label htmlFor="serviceName" className="text-slate-200">Service Name</Label>
                     <Input
                       id="serviceName"
                       value={newServiceName}
                       onChange={(e) => setNewServiceName(e.target.value)}
                       placeholder="e.g. 30-min Consultation"
+                      className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="serviceDuration">Duration (minutes)</Label>
+                    <Label htmlFor="serviceDuration" className="text-slate-200">Duration (minutes)</Label>
                     <Input
                       id="serviceDuration"
                       type="number"
@@ -300,9 +301,10 @@ export default function AppointmentsPage() {
                       onChange={(e) => setNewServiceDuration(Number(e.target.value))}
                       min={5}
                       max={480}
+                      className="bg-slate-700/50 border-slate-600 text-white"
                     />
                   </div>
-                  <Button onClick={handleAddService} className="w-full">
+                  <Button onClick={handleAddService} className="w-full bg-emerald-600 hover:bg-emerald-700">
                     Add Service
                   </Button>
                 </div>
