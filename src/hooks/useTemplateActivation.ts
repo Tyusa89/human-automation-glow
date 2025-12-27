@@ -5,10 +5,13 @@ import { toast } from "sonner";
 
 type ActivationState = "idle" | "activating" | "success" | "error";
 
+type ActivationResult = 
+  | { ok: true; slug: string }
+  | { ok: false; error: Error };
+
 interface UseTemplateActivationOptions {
   onSuccess?: (slug: string) => void;
   onError?: (error: Error) => void;
-  redirectOnSuccess?: string | null; // null = no redirect
 }
 
 export function useTemplateActivation(options: UseTemplateActivationOptions = {}) {
@@ -16,7 +19,7 @@ export function useTemplateActivation(options: UseTemplateActivationOptions = {}
   const [state, setState] = useState<ActivationState>("idle");
   const [error, setError] = useState<string | null>(null);
 
-  const activate = useCallback(async (slug: string) => {
+  const activate = useCallback(async (slug: string): Promise<ActivationResult> => {
     setState("activating");
     setError(null);
 
@@ -25,7 +28,7 @@ export function useTemplateActivation(options: UseTemplateActivationOptions = {}
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate("/auth");
-        return false;
+        return { ok: false, error: new Error("Not authenticated") };
       }
 
       // Use RPC to atomically activate (deactivates others first)
@@ -39,26 +42,21 @@ export function useTemplateActivation(options: UseTemplateActivationOptions = {}
       }
 
       setState("success");
-      toast.success("Template activated");
+      toast.success("Activated — ready when you are.");
 
       // Call success callback
       options.onSuccess?.(slug);
 
-      // Redirect if configured
-      if (options.redirectOnSuccess !== null) {
-        const redirectTo = options.redirectOnSuccess || `/template-success?template=${slug}`;
-        setTimeout(() => navigate(redirectTo), 500);
-      }
-
-      return true;
+      return { ok: true, slug };
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to activate template";
       console.error("Template activation error:", err);
       setError(message);
       setState("error");
       toast.error(message);
-      options.onError?.(err instanceof Error ? err : new Error(message));
-      return false;
+      const error = err instanceof Error ? err : new Error(message);
+      options.onError?.(error);
+      return { ok: false, error };
     }
   }, [navigate, options]);
 

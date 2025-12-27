@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Play, Lock, Loader2 } from "lucide-react";
+import { Play, Lock, Loader2, ArrowRight, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Template } from '@/lib/templates';
 import { useUserPlan } from '@/hooks/useUserPlan';
@@ -20,7 +20,9 @@ interface TemplatesGridProps {
   templates: Template[];
   onPreview: (templateId: string) => void;
   onScaffoldMessage: (message: string) => void;
-  /** If provided, activates inline using RPC. Otherwise navigates to /activate page. */
+  /** Current active template slug */
+  activeTemplateSlug?: string | null;
+  /** Called when activation succeeds */
   onActivateSuccess?: (slug: string) => void;
 }
 
@@ -50,13 +52,12 @@ const tierBadgeStyles: Record<PlanTier, string> = {
   business: "bg-purple-500/20 text-purple-400 border-purple-500/40",
 };
 
-export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, onActivateSuccess }: TemplatesGridProps) {
+export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, activeTemplateSlug, onActivateSuccess }: TemplatesGridProps) {
   const navigate = useNavigate();
   const { plan: userPlan, loading: planLoading } = useUserPlan();
   const [activatingId, setActivatingId] = useState<string | null>(null);
 
-  const { activate, isActivating } = useTemplateActivation({
-    redirectOnSuccess: null,
+  const { activate } = useTemplateActivation({
     onSuccess: (slug) => {
       setActivatingId(null);
       onScaffoldMessage(`${slug} activated`);
@@ -68,14 +69,8 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, onActiv
   });
 
   const handleActivate = async (templateId: string) => {
-    if (onActivateSuccess) {
-      // Inline activation via RPC
-      setActivatingId(templateId);
-      await activate(templateId);
-    } else {
-      // Navigate to activation page
-      navigate(`/templates/${encodeURIComponent(templateId)}/activate`);
-    }
+    setActivatingId(templateId);
+    await activate(templateId);
   };
 
   // Sort templates: unlocked first, then by tier, then difficulty, then name
@@ -96,6 +91,7 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, onActiv
         const requiredPlan = getRequiredPlan(t.id);
         const difficulty = getDifficulty(t.id);
         const needsUpgrade = isTemplateLocked(requiredPlan, userPlan);
+        const isActive = t.id === activeTemplateSlug;
         
         // Show tier badge only if not free
         const showTierBadge = requiredPlan !== "free";
@@ -108,7 +104,19 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, onActiv
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="rounded-2xl bg-slate-900/90 border border-slate-700/50 p-5 backdrop-blur hover:border-slate-600/70 transition-all duration-300 flex flex-col h-full">
+            <div className={`relative rounded-2xl bg-slate-900/90 border p-5 backdrop-blur transition-all duration-300 flex flex-col h-full ${
+              isActive 
+                ? "border-emerald-500/50 ring-1 ring-emerald-500/20" 
+                : "border-slate-700/50 hover:border-slate-600/70"
+            }`}>
+              
+              {/* Active pill */}
+              {isActive && (
+                <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2.5 py-1 text-xs font-medium text-emerald-400">
+                  <Check className="h-3 w-3" />
+                  Active
+                </span>
+              )}
               
               {/* Header row: tier badge + difficulty badge */}
               <div className="flex items-center justify-between gap-2 mb-4">
@@ -119,9 +127,11 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, onActiv
                     </span>
                   )}
                 </div>
-                <span className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium ${difficultyStyles[difficulty]}`}>
-                  {DIFFICULTY_LABELS[difficulty]}
-                </span>
+                {!isActive && (
+                  <span className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium ${difficultyStyles[difficulty]}`}>
+                    {DIFFICULTY_LABELS[difficulty]}
+                  </span>
+                )}
               </div>
 
               {/* Title */}
@@ -134,7 +144,7 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, onActiv
                 {identity?.description || t.tagline || t.description}
               </p>
 
-              {/* Action buttons - always same structure: Preview (left) + Primary action (right) */}
+              {/* Action buttons */}
               <div className="flex items-center gap-3">
                 <button 
                   onClick={() => navigate(`/templates/${t.id}`)}
@@ -143,7 +153,15 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, onActiv
                   Preview
                 </button>
                 
-                {needsUpgrade ? (
+                {isActive ? (
+                  <button 
+                    onClick={() => navigate("/dashboard")}
+                    className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 transition-colors"
+                  >
+                    Go to Dashboard
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </button>
+                ) : needsUpgrade ? (
                   <button 
                     onClick={() => navigate(getUpgradeHref(requiredPlan))}
                     className={`inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${

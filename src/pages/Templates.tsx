@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Filter, Sparkles, CheckCircle2, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ export default function TemplatesPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [templates, setTemplates] = useState<Template[]>(fallbackRegistry);
+  const [activeTemplateSlug, setActiveTemplateSlug] = useState<string | null>(null);
 
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string>("All");
@@ -22,15 +23,34 @@ export default function TemplatesPage() {
   const selected = templates.find(t => t.id === selectedId) ?? null;
   const [scaffoldMsg, setScaffoldMsg] = useState<string | null>(null);
 
-  // Template activation hook
+  // Template activation hook - no redirect, we handle state inline
   const { activate, isActivating } = useTemplateActivation({
-    redirectOnSuccess: null, // We handle redirect ourselves
     onSuccess: (slug) => {
-      setScaffoldMsg(`${slug} activated successfully`);
+      setActiveTemplateSlug(slug);
       setSelectedId(null);
-      navigate(`/template-success?template=${slug}`);
     },
   });
+
+  // Fetch active template for current user
+  const fetchActiveTemplate = useCallback(async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from("user_templates")
+        .select("template_id, templates(slug)")
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (data?.templates && typeof data.templates === "object" && "slug" in data.templates) {
+        setActiveTemplateSlug(data.templates.slug as string);
+      }
+    } catch (e) {
+      console.warn("Failed to fetch active template:", e);
+    }
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -50,8 +70,9 @@ export default function TemplatesPage() {
         if (alive) setLoading(false);
       }
     })();
+    fetchActiveTemplate();
     return () => { alive = false; };
-  }, []);
+  }, [fetchActiveTemplate]);
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
@@ -65,7 +86,10 @@ export default function TemplatesPage() {
 
   const handleActivate = async (templateId: string) => {
     setScaffoldMsg("");
-    await activate(templateId);
+    const result = await activate(templateId);
+    if (result.ok) {
+      setScaffoldMsg(`${result.slug} activated`);
+    }
   };
 
   return (
@@ -126,7 +150,8 @@ export default function TemplatesPage() {
         templates={filtered} 
         onPreview={setSelectedId}
         onScaffoldMessage={setScaffoldMsg}
-        onActivateSuccess={(slug) => navigate(`/template-success?template=${slug}`)}
+        activeTemplateSlug={activeTemplateSlug}
+        onActivateSuccess={(slug) => setActiveTemplateSlug(slug)}
       />
 
       {scaffoldMsg && (
