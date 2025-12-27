@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal, Settings, Download, RefreshCw, ArrowLeft, Activity, Sliders, Zap, Calendar, FileText } from 'lucide-react';
 import { SetupChecklist } from '@/components/dashboard/SetupChecklist';
-import NextBestActionCard from '@/components/dashboard/NextBestActionCard';
+import { DashboardNextStepCard } from '@/components/dashboard/DashboardNextStepCard';
 import { useDashboardSuggestion, DashboardSuggestionCard } from '@/dashboard/suggestions';
 import { 
   FocusToday, 
@@ -27,8 +27,7 @@ import {
   type ResolvedWidget 
 } from '@/dashboard';
 import { getActivationComplete } from '@/dashboard/activation';
-import { getNextBestAction } from '@/dashboard/nextBestAction';
-import { isDismissed, dismiss as dismissNBA } from '@/dashboard/nbaDismiss';
+import { resolveMaturityTier } from '@/lib/maturity/resolveMaturity';
 import { runTask } from '@/lib/db';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
@@ -177,19 +176,8 @@ const Dashboard = () => {
     hasFirstValueEvent: !!signals.hasFirstValueEvent,
   });
 
-  // Compute NBA using exact inputs
-  const nba = getNextBestAction({
-    profileCompleted: !!signals.profileCompleted,
-    activeTemplatesCount: signals.activeTemplatesCount ?? 0,
-    hasSuccessfulRun: !!signals.hasSuccessfulAutomationRun,
-    hasFirstValueEvent: !!signals.hasFirstValueEvent,
-    hasLeads: !!signals.hasLeads,
-    hasAppointments: (signals.upcomingAppointmentsCount ?? 0) > 0,
-    hasPayments: !!signals.hasFirstValueEvent,
-  });
-
-  const [nbaDismissTick, setNbaDismissTick] = useState(0);
-  const showNBA = !!(nba && userId && !isDismissed(userId, nba.eventKey) && nbaDismissTick >= 0);
+  // Compute maturity tier for display logic
+  const tier = resolveMaturityTier(signals);
 
   // Power user mode: filter out beginner-focused widgets
   const displayedSecondaryWidgets = isNewUser 
@@ -315,16 +303,8 @@ const Dashboard = () => {
         {/* ============================================ */}
         {isNewUser && (
           <>
-            {/* Next Best Action - THE missing "what do I do next" */}
-            {showNBA && nba && (
-              <NextBestActionCard
-                action={nba}
-                onDismiss={() => {
-                  if (userId) dismissNBA(userId, nba.eventKey);
-                  setNbaDismissTick((x) => x + 1);
-                }}
-              />
-            )}
+            {/* Next Step Card - one clear action */}
+            <DashboardNextStepCard />
             
             {/* Setup Checklist - only show if NOT activation complete */}
             {!activationComplete && <SetupChecklist />}
@@ -383,16 +363,8 @@ const Dashboard = () => {
         {/* ============================================ */}
         {(isPowerUser || isReactivation) && (
           <>
-            {/* Reactivation gets the Next Best Action (resume nudge) */}
-            {isReactivation && showNBA && nba && (
-              <NextBestActionCard
-                action={nba}
-                onDismiss={() => {
-                  if (userId) dismissNBA(userId, nba.eventKey);
-                  setNbaDismissTick((x) => x + 1);
-                }}
-              />
-            )}
+            {/* Reactivation gets the Next Step Card (resume nudge) */}
+            {isReactivation && <DashboardNextStepCard />}
 
             {/* Focus Today - top priority */}
             {focusWidget && (
@@ -412,16 +384,8 @@ const Dashboard = () => {
               />
             )}
 
-            {/* Power user also gets Next Best Action for Tier 2/3 signals */}
-            {isPowerUser && showNBA && nba && (
-              <NextBestActionCard
-                action={nba}
-                onDismiss={() => {
-                  if (userId) dismissNBA(userId, nba.eventKey);
-                  setNbaDismissTick((x) => x + 1);
-                }}
-              />
-            )}
+            {/* Power user gets Next Step Card only if there's something actionable */}
+            {isPowerUser && tier !== 'power' && <DashboardNextStepCard />}
 
             {/* KPI Row - prominent for power users */}
             {kpiWidgets.length > 0 && (
