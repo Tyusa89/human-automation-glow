@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   getTemplateIdentity, 
-  getUpgradeLabel, 
+  getUpgradeLabel,
+  getUpgradeHref,
   isTemplateLocked,
   DIFFICULTY_LABELS,
   type PlanTier,
@@ -147,7 +148,7 @@ export default function TemplatePreview() {
               <Button 
                 size="lg"
                 variant="outline"
-                onClick={() => navigate("/pricing")}
+                onClick={() => navigate(getUpgradeHref(identity.requiredPlan))}
                 className={`${
                   identity.requiredPlan === "business" 
                     ? "border-purple-500/50 text-purple-400 hover:bg-purple-500/10" 
@@ -253,7 +254,7 @@ export default function TemplatePreview() {
           </div>
           {locked ? (
             <Button 
-              onClick={() => navigate("/pricing")}
+              onClick={() => navigate(getUpgradeHref(identity.requiredPlan))}
               className={`${
                 identity.requiredPlan === "business" 
                   ? "bg-purple-600 hover:bg-purple-700" 
