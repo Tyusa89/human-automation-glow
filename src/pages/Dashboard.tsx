@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { MoreHorizontal, Settings, Download, RefreshCw, ArrowLeft, Activity, Sliders, Zap, Calendar, FileText } from 'lucide-react';
 import { SetupChecklist } from '@/components/dashboard/SetupChecklist';
 import { DashboardNextStepCard } from '@/components/dashboard/DashboardNextStepCard';
+import TemplateContextHeader from '@/components/dashboard/TemplateContextHeader';
 import { useDashboardSuggestion, DashboardSuggestionCard } from '@/dashboard/suggestions';
 import { 
   FocusToday, 
@@ -70,6 +71,7 @@ const Dashboard = () => {
   const [widgets, setWidgets] = useState<ResolvedWidget[]>([]);
   const [profileLoading, setProfileLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const [activeTemplateSlug, setActiveTemplateSlug] = useState<string | null>(null);
   
   const { 
     suggestion, 
@@ -92,8 +94,8 @@ const Dashboard = () => {
     if (!user) return;
     setUserId(user.id);
     
-    // Fetch profile and widget overrides in parallel
-    const [profileResult, widgetResult] = await Promise.all([
+    // Fetch profile, widget overrides, and active template in parallel
+    const [profileResult, widgetResult, templateResult] = await Promise.all([
       supabase
         .from('profiles')
         .select('business_type, client_volume, monthly_revenue_range, tracking_method, success_goal, assistant_level, primary_challenges, work_type, hardest_things')
@@ -102,11 +104,22 @@ const Dashboard = () => {
       supabase
         .from('user_dashboard_widgets')
         .select('widget_key, enabled, sort_order, config')
+        .eq('user_id', user.id),
+      supabase
+        .from('user_templates')
+        .select('template_id, is_active, templates(slug)')
         .eq('user_id', user.id)
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle()
     ]);
     
     const userProfile = (profileResult.data as UserProfile) || {};
     setProfile(userProfile);
+    
+    // Get active template slug from joined templates table
+    const activeSlug = (templateResult.data?.templates as any)?.slug ?? null;
+    setActiveTemplateSlug(activeSlug);
     
     // Get rule-based widgets
     const ruleKeys = getDashboardConfig(userProfile);
@@ -302,6 +315,9 @@ const Dashboard = () => {
         {/* ============================================ */}
         {/* 🟢 NEW USER MODE: Activation-focused layout */}
         {/* ============================================ */}
+        {/* Template Context Header - shows active template context */}
+        <TemplateContextHeader activeTemplateSlug={activeTemplateSlug} />
+
         {isNewUser && (
           <>
             {/* Next Step Card - one clear action */}
