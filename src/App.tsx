@@ -51,6 +51,7 @@ import TemplateSuccess from '@/pages/TemplateSuccess';
 import BookPage from '@/pages/Book';
 import DashboardAppointments from '@/pages/DashboardAppointments';
 import AdminAppointments from '@/pages/AdminAppointments';
+import AppointmentsPage from '@/pages/Appointments';
 
 const queryClient = new QueryClient();
 
@@ -106,6 +107,7 @@ const App = () => {
                 <Route path="/setup" element={<RequireAuth><SetupPage /></RequireAuth>} />
                 <Route path="/create-profile" element={<RequireAuth><CreateProfile /></RequireAuth>} />
                 <Route path="/book" element={<BookPage />} />
+                <Route path="/appointments" element={<RequireAuth><AppointmentsPage /></RequireAuth>} />
                 <Route path="/dashboard/appointments" element={<RequireAuth><DashboardAppointments /></RequireAuth>} />
                 <Route path="/admin/appointments" element={<RequireAuth><RequireAdmin><AdminAppointments /></RequireAdmin></RequireAuth>} />
 
