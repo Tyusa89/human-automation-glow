@@ -39,9 +39,9 @@ const activities = [
 
 export function ActivityFeed() {
   return (
-    <Card className="border-accent/20">
+    <Card className="border-white/10 bg-[hsl(220,91%,15%)]/80 backdrop-blur">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-semibold flex items-center gap-2">
+        <CardTitle className="text-base font-semibold flex items-center gap-2 text-white">
           <Activity className="h-4 w-4" />
           Recent Activity
         </CardTitle>
@@ -52,14 +52,14 @@ export function ActivityFeed() {
             const Icon = activity.icon;
             return (
               <div key={i} className="flex items-start gap-3">
-                <div className={`flex h-8 w-8 items-center justify-center rounded-full bg-muted ${activity.color}`}>
+                <div className={`flex h-8 w-8 items-center justify-center rounded-full bg-white/10 ${activity.color}`}>
                   <Icon className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium">{activity.title}</p>
-                  <p className="text-xs text-muted-foreground truncate">{activity.detail}</p>
+                  <p className="text-sm font-medium text-white">{activity.title}</p>
+                  <p className="text-xs text-slate-400 truncate">{activity.detail}</p>
                 </div>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">
+                <span className="text-xs text-slate-500 whitespace-nowrap">
                   {formatDistanceToNow(activity.timestamp, { addSuffix: true })}
                 </span>
               </div>

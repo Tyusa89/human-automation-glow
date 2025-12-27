@@ -25,9 +25,9 @@ export function AssistantSuggestions() {
   if (visibleSuggestions.length === 0) return null;
   
   return (
-    <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5">
+    <Card className="border-primary/30 bg-gradient-to-br from-[hsl(220,91%,18%)] to-[hsl(220,91%,12%)]">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-semibold flex items-center gap-2">
+        <CardTitle className="text-base font-semibold flex items-center gap-2 text-white">
           <Sparkles className="h-4 w-4 text-primary" />
           Suggestions for you
         </CardTitle>
@@ -37,21 +37,21 @@ export function AssistantSuggestions() {
           {visibleSuggestions.map((suggestion) => (
             <div 
               key={suggestion.id} 
-              className="p-3 rounded-lg bg-background/80 border border-border/50"
+              className="p-3 rounded-lg bg-white/5 border border-white/10"
             >
               <div className="flex items-start justify-between gap-2 mb-2">
-                <p className="text-sm font-medium">{suggestion.title}</p>
+                <p className="text-sm font-medium text-white">{suggestion.title}</p>
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                  className="h-6 w-6 p-0 text-slate-400 hover:text-white hover:bg-white/10"
                   onClick={() => setDismissed([...dismissed, suggestion.id])}
                 >
                   <X className="h-3 w-3" />
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground mb-3">{suggestion.description}</p>
-              <Button size="sm" variant="outline" className="h-7 text-xs gap-1">
+              <p className="text-xs text-slate-400 mb-3">{suggestion.description}</p>
+              <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-white/20 text-white hover:bg-white/10">
                 {suggestion.action}
                 <ArrowRight className="h-3 w-3" />
               </Button>
