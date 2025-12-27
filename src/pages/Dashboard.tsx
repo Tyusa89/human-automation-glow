@@ -26,6 +26,7 @@ import {
   type UserProfile,
   type ResolvedWidget 
 } from '@/dashboard';
+import { isActivationComplete, toActivationState } from '@/dashboard/activation';
 import { runTask } from '@/lib/db';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
@@ -166,6 +167,9 @@ const Dashboard = () => {
   const isReactivation = mode === 'reactivation';
   const isPowerUser = mode === 'power';
 
+  // Compute activation complete using single source of truth
+  const activationComplete = isActivationComplete(toActivationState(signals));
+
   // Power user mode: filter out beginner-focused widgets
   const displayedSecondaryWidgets = isNewUser 
     ? secondaryWidgets 
@@ -293,8 +297,8 @@ const Dashboard = () => {
             {/* Next Best Action - THE missing "what do I do next" */}
             <NextBestAction signals={signals} mode={mode} />
             
-            {/* Setup Checklist - prominent for new users */}
-            <SetupChecklist />
+            {/* Setup Checklist - only show if NOT activation complete */}
+            {!activationComplete && <SetupChecklist />}
             
             {/* Suggestion Banner */}
             {!suggestionLoading && suggestion && (

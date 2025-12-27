@@ -3,7 +3,7 @@ import { getDashboardConfig, UserProfile } from "@/dashboard/dashboardRules";
 import { resolveDashboardWidgets } from "@/dashboard/mergeDashboardConfig";
 import { WidgetKey, WIDGETS } from "@/dashboard/widgetRegistry";
 import { SuggestionPayload } from "./types";
-
+import { isActivationComplete, ActivationState } from "@/dashboard/activation";
 type DbWidgetRow = {
   widget_key: string;
   enabled: boolean;
@@ -113,12 +113,12 @@ export async function evaluateAndUpsertSuggestionOncePerDay(userId: string) {
   // 2) Fetch profile
   const { data: profileData } = await supabase
     .from("profiles")
-    .select("business_type, client_volume, monthly_revenue_range, tracking_method, success_goal, assistant_level, primary_challenges, work_type, hardest_things")
+    .select("business_type, client_volume, monthly_revenue_range, tracking_method, success_goal, assistant_level, primary_challenges, work_type, hardest_things, full_name, company, onboarding_completed")
     .eq("user_id", userId)
     .maybeSingle();
 
   if (!profileData) return;
-  const profile = profileData as unknown as UserProfile;
+  const profile = profileData as unknown as UserProfile & { full_name?: string; company?: string; onboarding_completed?: boolean };
 
   // 3) Fetch widget overrides (can be empty)
   const { data: widgetRowsRaw } = await supabase
@@ -129,7 +129,26 @@ export async function evaluateAndUpsertSuggestionOncePerDay(userId: string) {
   const widgetRows = (widgetRowsRaw as DbWidgetRow[]) ?? [];
   const hasCustomizedALot = widgetRows.length >= 5;
 
-  // 4) Fetch last 7 days of events
+  // 4) Fetch activation signals to check if user is activated
+  const [templatesResult, runsResult, leadsResult, appointmentsResult] = await Promise.all([
+    supabase.from("user_templates").select("id", { count: "exact" }).eq("user_id", userId).eq("is_active", true),
+    supabase.from("workflow_runs").select("id").eq("owner_id", userId).eq("status", "completed").limit(1),
+    supabase.from("leads").select("id").eq("owner_id", userId).limit(1),
+    supabase.from("appointments").select("id").limit(1),
+  ]);
+
+  const activationState: ActivationState = {
+    profileCompleted: !!(profile.full_name && profile.company && profile.onboarding_completed),
+    activeTemplatesCount: templatesResult.count ?? 0,
+    hasSuccessfulRun: (runsResult.data?.length ?? 0) > 0,
+    hasFirstValueEvent: (leadsResult.data?.length ?? 0) > 0 || (appointmentsResult.data?.length ?? 0) > 0,
+  };
+
+  // If not activated yet, don't show "power user" suggestions.
+  // Let the dashboard checklist + NBA handle activation.
+  if (!isActivationComplete(activationState)) return;
+
+  // 5) Fetch last 7 days of events
   const since = isoDaysAgo(7);
   const { data: eventsRaw } = await supabase
     .from("user_events")

@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { CheckCircle2, Circle, Calendar, Users, Bot, Settings, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { isActivationComplete, type ActivationState } from "@/dashboard/activation";
 
 interface ChecklistItem {
   id: string;
@@ -36,23 +37,54 @@ export function SetupChecklist() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name, company')
-        .eq('user_id', user.id)
-        .maybeSingle();
+      // Fetch all data needed for checklist + activation check
+      const [profileResult, leadsResult, templatesResult, runsResult] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('full_name, company, onboarding_completed')
+          .eq('user_id', user.id)
+          .maybeSingle(),
+        supabase
+          .from('leads')
+          .select('id')
+          .eq('owner_id', user.id)
+          .limit(1),
+        supabase
+          .from('user_templates')
+          .select('id', { count: 'exact' })
+          .eq('user_id', user.id)
+          .eq('is_active', true),
+        supabase
+          .from('workflow_runs')
+          .select('id')
+          .eq('owner_id', user.id)
+          .eq('status', 'completed')
+          .limit(1),
+      ]);
 
-      const { data: leads } = await supabase
-        .from('leads')
-        .select('id')
-        .eq('owner_id', user.id)
-        .limit(1);
+      const profile = profileResult.data;
+      const hasLeads = (leadsResult.data?.length ?? 0) > 0;
+      const activeTemplatesCount = templatesResult.count ?? 0;
+      const hasSuccessfulRun = (runsResult.data?.length ?? 0) > 0;
+
+      // Check if activation is complete - if so, hide forever
+      const activationState: ActivationState = {
+        profileCompleted: !!(profile?.full_name && profile?.company && profile?.onboarding_completed),
+        activeTemplatesCount,
+        hasSuccessfulRun,
+        hasFirstValueEvent: hasLeads, // leads count as first value
+      };
+
+      if (isActivationComplete(activationState)) {
+        setDismissed(true);
+        return;
+      }
 
       setItems(prev => prev.map(item => {
         if (item.id === 'profile' && profile?.full_name && profile?.company) {
           return { ...item, completed: true };
         }
-        if (item.id === 'leads' && leads && leads.length > 0) {
+        if (item.id === 'leads' && hasLeads) {
           return { ...item, completed: true };
         }
         return item;
