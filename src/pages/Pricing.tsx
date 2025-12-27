@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, Lock } from "lucide-react";
+import { Check, Lock, Info } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { pricing, addOns, faqItems } from "@/lib/site-data";
 
 export default function PricingPage() {
@@ -201,7 +202,19 @@ export default function PricingPage() {
               <Card key={addon.name} className="bg-slate-800/50 border-slate-700/50">
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-semibold text-white text-lg">{addon.name}</h3>
+                    <div className="flex items-center gap-1.5">
+                      <h3 className="font-semibold text-white text-lg">{addon.name}</h3>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="w-4 h-4 text-slate-500 hover:text-slate-300 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs bg-slate-900 border-slate-700 text-slate-200">
+                            <p className="text-sm">{addon.tooltip}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                     <span className="text-amber-400 font-bold whitespace-nowrap">{addon.price}</span>
                   </div>
                   <p className="text-slate-300 text-sm mb-4">{addon.description}</p>

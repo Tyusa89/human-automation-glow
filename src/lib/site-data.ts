@@ -123,6 +123,8 @@ export const addOns = [
     name: "Automation Events", 
     price: "$10/month",
     description: "Scale your workflows without changing plans.",
+    tooltip: "Automation events are individual actions performed by your workflows, such as syncing data, sending messages, updating records, or triggering integrations. Add more events when your workflows run more frequently or at higher volume.",
+    tooltipShort: "Additional actions your workflows can perform each month.",
     features: [
       "+10,000 automation events per month",
       "Ideal for higher-volume workflows and active systems",
@@ -133,6 +135,8 @@ export const addOns = [
     name: "Team Seat", 
     price: "$5/month",
     description: "Bring more operators into your Baseframe workspace.",
+    tooltip: "A team seat allows another person to access your Baseframe workspace. Each seat includes shared access to workflows, dashboards, and collaboration tools.",
+    tooltipShort: "Adds another member to your Baseframe workspace.",
     features: [
       "Add 1 additional team member",
       "Shared access to workflows and dashboards",
@@ -143,6 +147,8 @@ export const addOns = [
     name: "Compliance & Security Pack", 
     price: "$49/month",
     description: "Advanced governance for regulated or high-trust operations.",
+    tooltip: "This add-on provides advanced audit logs, longer data retention, and enhanced security controls. Recommended for teams with compliance, reporting, or governance requirements.",
+    tooltipShort: "Advanced logs, retention controls, and security oversight.",
     features: [
       "Extended audit logs and activity history",
       "Custom retention controls",
