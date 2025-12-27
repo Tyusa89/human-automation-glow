@@ -8,6 +8,7 @@ import {
   ListTodo, Target, DollarSign, UserCheck, Clock, Frown
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { seedWidgetsOnOnboardingComplete } from "@/dashboard";
 import { brand } from "@/components/Brand";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -95,18 +96,30 @@ export default function Onboarding() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      const profileData = {
+        onboarding_completed: true,
+        onboarding_step: 'complete',
+        onboarding_completed_at: new Date().toISOString(),
+        setup_goals: selectedGoals,
+        work_type: selectedWorkType,
+        hardest_things: selectedHardest,
+        // Map to new schema fields
+        primary_challenges: selectedHardest,
+      };
+
       const { error } = await supabase
         .from('profiles')
-        .update({
-          onboarding_completed: true,
-          onboarding_step: 'complete',
-          setup_goals: selectedGoals,
-          work_type: selectedWorkType,
-          hardest_things: selectedHardest,
-        })
+        .update(profileData)
         .eq('user_id', user.id);
 
       if (error) throw error;
+
+      // Seed default widgets based on onboarding answers
+      await seedWidgetsOnOnboardingComplete(user.id, {
+        work_type: selectedWorkType,
+        hardest_things: selectedHardest,
+        primary_challenges: selectedHardest,
+      });
 
       toast.success('Setup complete! Welcome to Baseframe.');
       navigate('/');

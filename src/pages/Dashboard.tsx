@@ -18,12 +18,32 @@ import {
   ActivityFeed, 
   AssistantSuggestions 
 } from '@/components/dashboard/widgets';
-import { getDashboardConfig, UserProfile } from '@/dashboard/dashboardRules';
+import { 
+  getDashboardConfig, 
+  resolveDashboardWidgets, 
+  type UserProfile,
+  type ResolvedWidget 
+} from '@/dashboard';
 import { runTask } from '@/lib/db';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
 import { useToast } from '@/hooks/use-toast';
 import { useRole, isAdminLike } from '@/hooks/useRole';
+
+// Widget component map - using any for flexibility with different widget props
+const WidgetComponent: Record<string, React.FC<any>> = {
+  focus_today: FocusToday,
+  kpi_weekly_income: WeeklyIncome,
+  kpi_monthly_income: MonthlyIncome,
+  income_trend_chart: IncomeChart,
+  client_list: ClientList,
+  follow_up_queue: FollowUpQueue,
+  appointments_today: AppointmentsToday,
+  task_list: TaskList,
+  project_board: ProjectBoard,
+  activity_feed: ActivityFeed,
+  assistant_suggestions: AssistantSuggestions,
+};
 
 const Dashboard = () => {
   useEnsureProfile();
@@ -33,6 +53,7 @@ const Dashboard = () => {
   const admin = isAdminLike(role);
   const [lastKpi, setLastKpi] = useState<any>(null);
   const [profile, setProfile] = useState<UserProfile>({});
+  const [widgets, setWidgets] = useState<ResolvedWidget[]>([]);
   const [profileLoading, setProfileLoading] = useState(true);
 
   async function loadLastKpi() {
@@ -45,25 +66,39 @@ const Dashboard = () => {
     setLastKpi(data?.[0]?.payload || null);
   }
 
-  async function loadProfile() {
+  async function loadDashboard() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     
-    const { data } = await supabase
-      .from('profiles')
-      .select('business_type, client_volume, monthly_revenue_range, tracking_method, success_goal, assistant_level, primary_challenges, work_type, hardest_things')
-      .eq('user_id', user.id)
-      .maybeSingle();
+    // Fetch profile and widget overrides in parallel
+    const [profileResult, widgetResult] = await Promise.all([
+      supabase
+        .from('profiles')
+        .select('business_type, client_volume, monthly_revenue_range, tracking_method, success_goal, assistant_level, primary_challenges, work_type, hardest_things')
+        .eq('user_id', user.id)
+        .maybeSingle(),
+      supabase
+        .from('user_dashboard_widgets')
+        .select('widget_key, enabled, sort_order, config')
+        .eq('user_id', user.id)
+    ]);
     
-    if (data) {
-      setProfile(data as UserProfile);
-    }
+    const userProfile = (profileResult.data as UserProfile) || {};
+    setProfile(userProfile);
+    
+    // Get rule-based widgets
+    const ruleKeys = getDashboardConfig(userProfile);
+    
+    // Merge with DB overrides
+    const resolvedWidgets = resolveDashboardWidgets(ruleKeys, widgetResult.data);
+    setWidgets(resolvedWidgets);
+    
     setProfileLoading(false);
   }
 
   useEffect(() => { 
     loadLastKpi(); 
-    loadProfile();
+    loadDashboard();
   }, []);
 
   useEffect(() => {
@@ -96,8 +131,11 @@ const Dashboard = () => {
     }
   }
 
-  // Get widgets from rules engine
-  const widgets = getDashboardConfig(profile);
+  // Group widgets by zone
+  const focusWidget = widgets.find(w => w.key === 'focus_today');
+  const kpiWidgets = widgets.filter(w => ['kpi_weekly_income', 'kpi_monthly_income', 'income_trend_chart'].includes(w.key));
+  const primaryWidgets = widgets.filter(w => ['client_list', 'project_board', 'appointments_today', 'task_list'].includes(w.key));
+  const secondaryWidgets = widgets.filter(w => ['follow_up_queue', 'assistant_suggestions', 'activity_feed'].includes(w.key));
 
   if (profileLoading) {
     return (
@@ -142,9 +180,9 @@ const Dashboard = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 bg-background border border-border">
-                <DropdownMenuItem onClick={() => loadLastKpi()} className="cursor-pointer">
+                <DropdownMenuItem onClick={() => loadDashboard()} className="cursor-pointer">
                   <RefreshCw className="mr-2 h-4 w-4" />
-                  Refresh Data
+                  Refresh Dashboard
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleRunDaily} className="cursor-pointer">
                   <Download className="mr-2 h-4 w-4" />
@@ -168,34 +206,42 @@ const Dashboard = () => {
       </div>
 
       <div className="container mx-auto px-4 py-6 space-y-6">
-        {/* Focus Today - if enabled, shows at very top */}
-        {widgets.includes("focus_today") && <FocusToday />}
+        {/* Focus Today - top priority */}
+        {focusWidget && (
+          <div key={focusWidget.key}>
+            <FocusToday />
+          </div>
+        )}
 
         {/* Setup Checklist */}
         <SetupChecklist />
 
         {/* KPI Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {widgets.includes("kpi_weekly_income") && <WeeklyIncome />}
-          {widgets.includes("kpi_monthly_income") && <MonthlyIncome />}
-          {widgets.includes("income_trend_chart") && <IncomeChart />}
-        </div>
+        {kpiWidgets.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {kpiWidgets.map((widget) => {
+              const Component = WidgetComponent[widget.key];
+              return Component ? <Component key={widget.key} config={widget.config} /> : null;
+            })}
+          </div>
+        )}
 
         {/* Main Work Area - 2 column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Column - Primary work widget */}
+          {/* Left Column - Primary work widgets */}
           <div className="space-y-6">
-            {widgets.includes("client_list") && <ClientList />}
-            {widgets.includes("project_board") && <ProjectBoard />}
-            {widgets.includes("appointments_today") && <AppointmentsToday />}
-            {widgets.includes("task_list") && <TaskList />}
+            {primaryWidgets.map((widget) => {
+              const Component = WidgetComponent[widget.key];
+              return Component ? <Component key={widget.key} config={widget.config} /> : null;
+            })}
           </div>
 
           {/* Right Column - Secondary widgets */}
           <div className="space-y-6">
-            {widgets.includes("follow_up_queue") && <FollowUpQueue />}
-            {widgets.includes("assistant_suggestions") && <AssistantSuggestions />}
-            {widgets.includes("activity_feed") && <ActivityFeed />}
+            {secondaryWidgets.map((widget) => {
+              const Component = WidgetComponent[widget.key];
+              return Component ? <Component key={widget.key} config={widget.config} /> : null;
+            })}
           </div>
         </div>
 
