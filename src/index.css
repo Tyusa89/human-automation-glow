@@ -17,7 +17,7 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 210 40% 15%;
 
-    --primary: 158 64% 52%;
+    --primary: 164 70% 36%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96%;
@@ -26,7 +26,7 @@ All colors MUST be HSL.
     --muted: 210 40% 96%;
     --muted-foreground: 210 20% 45%;
 
-    --accent: 158 64% 52%;
+    --accent: 164 70% 36%;
     --accent-foreground: 0 0% 100%;
     
     /* Enhanced gradients for better design */
@@ -79,8 +79,8 @@ All colors MUST be HSL.
     --popover: 220 23% 18%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 158 64% 52%;
-    --primary-foreground: 220 26% 14%;
+    --primary: 164 70% 36%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 220 20% 25%;
     --secondary-foreground: 0 0% 90%;
@@ -88,8 +88,8 @@ All colors MUST be HSL.
     --muted: 220 20% 25%;
     --muted-foreground: 0 0% 65%;
 
-    --accent: 158 64% 52%;
-    --accent-foreground: 220 26% 14%;
+    --accent: 164 70% 36%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
