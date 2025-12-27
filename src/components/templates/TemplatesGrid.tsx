@@ -39,12 +39,22 @@ const tierBadgeStyles = {
   business: "bg-purple-500/20 text-purple-400 border-purple-500/40",
 } as const;
 
+// Sort order for difficulty
+const difficultyOrder = { Beginner: 0, Intermediate: 1, Advanced: 2 };
+
 export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: TemplatesGridProps) {
   const navigate = useNavigate();
 
+  // Sort templates by difficulty: Beginner → Intermediate → Advanced
+  const sortedTemplates = [...templates].sort((a, b) => {
+    const orderA = difficultyOrder[(a.difficulty || "Beginner") as keyof typeof difficultyOrder] ?? 0;
+    const orderB = difficultyOrder[(b.difficulty || "Beginner") as keyof typeof difficultyOrder] ?? 0;
+    return orderA - orderB;
+  });
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-      {templates.map((t) => {
+      {sortedTemplates.map((t) => {
         const tier = getTier(t);
         const isPaid = tier !== "free";
         const difficulty = t.difficulty || "Beginner";
