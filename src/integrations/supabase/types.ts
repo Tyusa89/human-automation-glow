@@ -662,6 +662,9 @@ export type Database = {
       }
       profiles: {
         Row: {
+          assistant_level: Database["public"]["Enums"]["assistant_level"] | null
+          business_type: Database["public"]["Enums"]["business_type"] | null
+          client_volume: Database["public"]["Enums"]["client_volume"] | null
           company: string | null
           created_at: string
           "econest AI": string | null
@@ -669,15 +672,29 @@ export type Database = {
           full_name: string | null
           hardest_things: string[] | null
           id: string
+          locale: string | null
+          monthly_revenue_range:
+            | Database["public"]["Enums"]["monthly_revenue_range"]
+            | null
           onboarding_completed: boolean | null
+          onboarding_completed_at: string | null
           onboarding_step: string | null
           preferences: Json | null
+          primary_challenges: string[] | null
           setup_goals: string[] | null
+          success_goal: Database["public"]["Enums"]["success_goal"] | null
+          timezone: string | null
+          tracking_method: Database["public"]["Enums"]["tracking_method"] | null
           updated_at: string
           user_id: string | null
           work_type: string | null
         }
         Insert: {
+          assistant_level?:
+            | Database["public"]["Enums"]["assistant_level"]
+            | null
+          business_type?: Database["public"]["Enums"]["business_type"] | null
+          client_volume?: Database["public"]["Enums"]["client_volume"] | null
           company?: string | null
           created_at?: string
           "econest AI"?: string | null
@@ -685,15 +702,31 @@ export type Database = {
           full_name?: string | null
           hardest_things?: string[] | null
           id?: string
+          locale?: string | null
+          monthly_revenue_range?:
+            | Database["public"]["Enums"]["monthly_revenue_range"]
+            | null
           onboarding_completed?: boolean | null
+          onboarding_completed_at?: string | null
           onboarding_step?: string | null
           preferences?: Json | null
+          primary_challenges?: string[] | null
           setup_goals?: string[] | null
+          success_goal?: Database["public"]["Enums"]["success_goal"] | null
+          timezone?: string | null
+          tracking_method?:
+            | Database["public"]["Enums"]["tracking_method"]
+            | null
           updated_at?: string
           user_id?: string | null
           work_type?: string | null
         }
         Update: {
+          assistant_level?:
+            | Database["public"]["Enums"]["assistant_level"]
+            | null
+          business_type?: Database["public"]["Enums"]["business_type"] | null
+          client_volume?: Database["public"]["Enums"]["client_volume"] | null
           company?: string | null
           created_at?: string
           "econest AI"?: string | null
@@ -701,10 +734,21 @@ export type Database = {
           full_name?: string | null
           hardest_things?: string[] | null
           id?: string
+          locale?: string | null
+          monthly_revenue_range?:
+            | Database["public"]["Enums"]["monthly_revenue_range"]
+            | null
           onboarding_completed?: boolean | null
+          onboarding_completed_at?: string | null
           onboarding_step?: string | null
           preferences?: Json | null
+          primary_challenges?: string[] | null
           setup_goals?: string[] | null
+          success_goal?: Database["public"]["Enums"]["success_goal"] | null
+          timezone?: string | null
+          tracking_method?:
+            | Database["public"]["Enums"]["tracking_method"]
+            | null
           updated_at?: string
           user_id?: string | null
           work_type?: string | null
@@ -1003,6 +1047,66 @@ export type Database = {
         }
         Relationships: []
       }
+      user_dashboard_widgets: {
+        Row: {
+          config: Json
+          created_at: string
+          enabled: boolean
+          id: string
+          sort_order: number
+          updated_at: string
+          user_id: string
+          widget_key: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          sort_order?: number
+          updated_at?: string
+          user_id: string
+          widget_key: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          sort_order?: number
+          updated_at?: string
+          user_id?: string
+          widget_key?: string
+        }
+        Relationships: []
+      }
+      user_events: {
+        Row: {
+          created_at: string
+          event_data: Json
+          event_source: string | null
+          event_type: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_data?: Json
+          event_source?: string | null
+          event_type: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_data?: Json
+          event_source?: string | null
+          event_type?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           assigned_at: string | null
@@ -1175,6 +1279,31 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "owner" | "user"
+      assistant_level: "quiet" | "balanced" | "active"
+      business_type:
+        | "consultant"
+        | "coach"
+        | "freelancer"
+        | "creative_designer"
+        | "local_service_provider"
+        | "other"
+      client_volume: "1_3" | "4_10" | "11_25" | "25_plus"
+      monthly_revenue_range:
+        | "starting_inconsistent"
+        | "under_5000"
+        | "5000_10000"
+        | "10000_plus"
+      success_goal:
+        | "consistent_income"
+        | "less_stress"
+        | "fewer_dropped_balls"
+        | "more_time"
+        | "preparing_to_grow"
+      tracking_method:
+        | "spreadsheets"
+        | "accounting_software"
+        | "notes_memory"
+        | "nothing_consistently"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1303,6 +1432,35 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "owner", "user"],
+      assistant_level: ["quiet", "balanced", "active"],
+      business_type: [
+        "consultant",
+        "coach",
+        "freelancer",
+        "creative_designer",
+        "local_service_provider",
+        "other",
+      ],
+      client_volume: ["1_3", "4_10", "11_25", "25_plus"],
+      monthly_revenue_range: [
+        "starting_inconsistent",
+        "under_5000",
+        "5000_10000",
+        "10000_plus",
+      ],
+      success_goal: [
+        "consistent_income",
+        "less_stress",
+        "fewer_dropped_balls",
+        "more_time",
+        "preparing_to_grow",
+      ],
+      tracking_method: [
+        "spreadsheets",
+        "accounting_software",
+        "notes_memory",
+        "nothing_consistently",
+      ],
     },
   },
 } as const
