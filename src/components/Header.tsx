@@ -218,6 +218,11 @@ export default function AppHeader() {
                   </Link>
                 </DropdownMenuItem>
               )}
+              <DropdownMenuItem asChild>
+                <Link to="/support" className="text-white hover:text-emerald-400 cursor-pointer">
+                  Support
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-white/10" />
               <DropdownMenuItem onClick={handleLogout} className="text-red-400 cursor-pointer">
                 Sign Out

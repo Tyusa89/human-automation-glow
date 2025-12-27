@@ -19,15 +19,13 @@ import IntegrationsPage from '@/pages/Integrations';
 import ServicesPage from '@/pages/Services';
 import PricingPage from '@/pages/Pricing';
 import PaymentPage from '@/pages/Payment';
-import DocsHub from '@/pages/docs/DocsHub';
+import SupportHub from '@/pages/SupportHub';
 import TemplatesGuide from '@/pages/docs/TemplatesGuide';
 import GettingStarted from '@/pages/docs/GettingStarted';
 import IntegrationsGuide from '@/pages/docs/IntegrationsGuide';
 import SolutionsGuide from '@/pages/docs/SolutionsGuide';
 import TroubleshootingGuide from '@/pages/docs/TroubleshootingGuide';
 import TrustPage from '@/pages/Trust';
-import HelpPage from '@/pages/Help';
-import SupportPage from '@/pages/Support';
 import ContactPage from '@/pages/ContactPage';
 import CreateProfile from '@/pages/CreateProfile';
 import SetupPage from '@/pages/Setup';
@@ -54,6 +52,7 @@ import AdminAppointments from '@/pages/AdminAppointments';
 import AppointmentsPage from '@/pages/Appointments';
 import Onboarding from '@/pages/Onboarding';
 import DashboardSettings from '@/pages/DashboardSettings';
+import RedirectTo from '@/components/routing/RedirectTo';
 
 const queryClient = new QueryClient();
 
@@ -90,14 +89,24 @@ const App = () => {
               <Route path="/demo/analytics-dashboard" element={<AnalyticsDashboard />} />
               <Route path="/templates/:slug" element={<TemplateDetail />} />
               <Route path="/integrations" element={<IntegrationsPage />} />
-              <Route path="/docs" element={<DocsHub />} />
-              <Route path="/docs/getting-started" element={<GettingStarted />} />
-              <Route path="/docs/templates" element={<TemplatesGuide />} />
-              <Route path="/docs/integrations" element={<IntegrationsGuide />} />
-              <Route path="/docs/solutions" element={<SolutionsGuide />} />
-              <Route path="/docs/troubleshooting" element={<TroubleshootingGuide />} />
-              <Route path="/help" element={<HelpPage />} />
-              <Route path="/support" element={<SupportPage />} />
+              
+              {/* Support hub routes */}
+              <Route path="/support" element={<SupportHub />} />
+              <Route path="/support/getting-started" element={<GettingStarted />} />
+              <Route path="/support/templates" element={<TemplatesGuide />} />
+              <Route path="/support/integrations" element={<IntegrationsGuide />} />
+              <Route path="/support/solutions" element={<SolutionsGuide />} />
+              <Route path="/support/troubleshooting" element={<TroubleshootingGuide />} />
+              
+              {/* Redirects from old routes */}
+              <Route path="/docs" element={<RedirectTo to="/support" />} />
+              <Route path="/docs/getting-started" element={<RedirectTo to="/support/getting-started" />} />
+              <Route path="/docs/templates" element={<RedirectTo to="/support/templates" />} />
+              <Route path="/docs/integrations" element={<RedirectTo to="/support/integrations" />} />
+              <Route path="/docs/solutions" element={<RedirectTo to="/support/solutions" />} />
+              <Route path="/docs/troubleshooting" element={<RedirectTo to="/support/troubleshooting" />} />
+              <Route path="/help" element={<RedirectTo to="/support" />} />
+              
               <Route path="/trust" element={<TrustPage />} />
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/pricing" element={<PricingPage />} />
