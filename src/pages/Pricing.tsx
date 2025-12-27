@@ -88,17 +88,25 @@ export default function PricingPage() {
               </CardHeader>
               
               <CardContent className="space-y-3">
-                {tier.features.map((feature, index) => {
-                  const featureLabels = [
-                    "Templates", "Events", "Seats", "Webhooks", 
-                    "Docs", "Automation", "Support", "Security"
-                  ];
+                {Object.entries(tier.features).map(([key, value]) => {
+                  const labelMap: Record<string, string> = {
+                    templates: "Templates",
+                    actions: "Automation actions",
+                    seats: "Seats",
+                    webhooks: "Webhooks",
+                    docs: "Docs",
+                    automation: "Automation",
+                    dashboard: "Dashboard",
+                    insights: "Insights",
+                    support: "Support",
+                    security: "Security"
+                  };
                   return (
-                    <div key={index} className="flex items-start gap-3 text-sm">
+                    <div key={key} className="flex items-start gap-3 text-sm">
                       <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                       <div>
-                        <span className="text-slate-300 font-medium">{featureLabels[index]}: </span>
-                        <span className="text-slate-400">{feature}</span>
+                        <span className="text-slate-300 font-medium">{labelMap[key] || key}: </span>
+                        <span className="text-slate-400">{value}</span>
                       </div>
                     </div>
                   );
