@@ -467,40 +467,66 @@ export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
 
 // Sorting ranks
 const PLAN_RANK: Record<PlanTier, number> = { free: 0, pro: 1, business: 2 };
-const DIFFICULTY_RANK: Record<Difficulty, number> = { beginner: 0, intermediate: 1, advanced: 2 };
+const DIFFICULTY_RANK: Record<Difficulty, number> = {
+  beginner: 0,
+  intermediate: 1,
+  advanced: 2,
+};
+
+// Optional: keeps the grid feeling intentional (Baseframe-style)
+const CATEGORY_RANK: Record<TemplateCategory, number> = {
+  dashboards: 0,
+  ops: 1,
+  bots: 2,
+  ecommerce: 3,
+  other: 4,
+};
 
 /**
  * Sort templates for display in the grid.
- * Order: Unlocked first, then by locked tier (pro before business), then difficulty, then name.
+ * Order:
+ *  1) Unlocked first
+ *  2) If locked: Pro before Business
+ *  3) Category (dashboards → ops → bots → ecommerce → other)
+ *  4) Difficulty (beginner → intermediate → advanced)
+ *  5) Name (A → Z)
  */
-export function sortTemplatesForGrid(
-  templateIds: string[],
-  userPlan: PlanTier
-): string[] {
+export function sortTemplatesForGrid(templateIds: string[], userPlan: PlanTier): string[] {
   return [...templateIds].sort((a, b) => {
-    const identityA = getTemplateIdentity(a);
-    const identityB = getTemplateIdentity(b);
-    
-    if (!identityA || !identityB) return 0;
+    const A = getTemplateIdentity(a);
+    const B = getTemplateIdentity(b);
 
-    const lockedA = isTemplateLocked(identityA.requiredPlan, userPlan);
-    const lockedB = isTemplateLocked(identityB.requiredPlan, userPlan);
+    // Push unknown templates to the bottom deterministically
+    if (!A && !B) return a.localeCompare(b);
+    if (!A) return 1;
+    if (!B) return -1;
 
-    // 1. Unlocked before locked
+    const lockedA = isTemplateLocked(A.requiredPlan, userPlan);
+    const lockedB = isTemplateLocked(B.requiredPlan, userPlan);
+
+    // 1) Unlocked before locked
     if (lockedA !== lockedB) return lockedA ? 1 : -1;
 
-    // 2. If both locked, sort by tier (pro before business)
+    // 2) If both locked, sort by tier (pro before business)
     if (lockedA && lockedB) {
-      const tierDiff = PLAN_RANK[identityA.requiredPlan] - PLAN_RANK[identityB.requiredPlan];
+      const tierDiff = PLAN_RANK[A.requiredPlan] - PLAN_RANK[B.requiredPlan];
       if (tierDiff !== 0) return tierDiff;
     }
 
-    // 3. Sort by difficulty (beginner → intermediate → advanced)
-    const diffDiff = DIFFICULTY_RANK[identityA.difficulty] - DIFFICULTY_RANK[identityB.difficulty];
+    // 3) Category order
+    const catDiff = (CATEGORY_RANK[A.category] ?? 999) - (CATEGORY_RANK[B.category] ?? 999);
+    if (catDiff !== 0) return catDiff;
+
+    // 4) Difficulty
+    const diffDiff = DIFFICULTY_RANK[A.difficulty] - DIFFICULTY_RANK[B.difficulty];
     if (diffDiff !== 0) return diffDiff;
 
-    // 4. Alphabetical by name
-    return identityA.name.localeCompare(identityB.name);
+    // 5) Name
+    const nameDiff = A.name.localeCompare(B.name);
+    if (nameDiff !== 0) return nameDiff;
+
+    // Final tiebreaker (stable-ish)
+    return A.slug.localeCompare(B.slug);
   });
 }
 
