@@ -1296,6 +1296,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_template: {
+        Args: { p_template_slug: string; p_user_id: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

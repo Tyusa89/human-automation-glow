@@ -442,6 +442,17 @@ export function getUpgradeLabel(plan: PlanTier): string {
   }
 }
 
+export function getUpgradeHref(plan: PlanTier): string {
+  switch (plan) {
+    case "pro":
+      return "/pricing?plan=pro";
+    case "business":
+      return "/pricing?plan=business";
+    default:
+      return "/pricing";
+  }
+}
+
 export function isTemplateLocked(requiredPlan: PlanTier, userPlan: PlanTier): boolean {
   const rank: Record<PlanTier, number> = { free: 0, pro: 1, business: 2 };
   return rank[userPlan] < rank[requiredPlan];

@@ -87,15 +87,13 @@ export default function TemplateActivation() {
 
       if (fnError) throw fnError;
 
-      // Record the template activation in user_templates
-      await supabase
-        .from("user_templates")
-        .insert({
-          user_id: user.id,
-          template_id: templateId,
-          is_active: true,
-          source: "auto-activation",
-        });
+      // Use RPC to atomically activate this template (deactivates others)
+      const { error: rpcError } = await supabase.rpc("activate_template", {
+        p_user_id: user.id,
+        p_template_slug: templateId,
+      });
+
+      if (rpcError) throw rpcError;
 
       clearInterval(phaseTimer);
       setState("success");

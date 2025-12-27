@@ -6,7 +6,8 @@ import { useUserPlan } from '@/hooks/useUserPlan';
 import { 
   type PlanTier,
   type Difficulty,
-  getUpgradeLabel, 
+  getUpgradeLabel,
+  getUpgradeHref,
   isTemplateLocked,
   getTemplateIdentity,
   sortTemplatesForGrid,
@@ -116,7 +117,7 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
                 
                 {needsUpgrade ? (
                   <button 
-                    onClick={() => navigate('/pricing')}
+                    onClick={() => navigate(getUpgradeHref(requiredPlan))}
                     className={`inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
                       requiredPlan === "business" 
                         ? "border-purple-500/50 text-purple-400 hover:bg-purple-500/10" 
