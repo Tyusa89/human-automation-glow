@@ -2,7 +2,8 @@ import { motion } from "framer-motion";
 import { Play, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Template } from '@/lib/templates';
-import { useUserPlan, planMeetsRequirement, type UserPlan } from '@/hooks/useUserPlan';
+import { useUserPlan, planMeetsRequirement } from '@/hooks/useUserPlan';
+import { type RequiredPlan, getUpgradeLabel, isTemplateLocked } from '@/config/templates/templateIdentity';
 
 interface TemplatesGridProps {
   templates: Template[];
@@ -11,7 +12,7 @@ interface TemplatesGridProps {
 }
 
 // Get required plan from template badges
-function getRequiredPlan(template: Template): UserPlan {
+function getRequiredPlan(template: Template): RequiredPlan {
   const badges = template.badges?.map(b => b.toLowerCase()) || [];
   if (badges.includes("enterprise")) return "enterprise";
   if (badges.includes("business")) return "business";
@@ -58,8 +59,7 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {sortedTemplates.map((t) => {
         const requiredPlan = getRequiredPlan(t);
-        const hasAccess = planMeetsRequirement(userPlan, requiredPlan);
-        const needsUpgrade = !hasAccess && requiredPlan !== 'free';
+        const needsUpgrade = isTemplateLocked(requiredPlan, userPlan);
         const difficulty = t.difficulty || "Beginner";
         
         // Get category badges (Easy, Popular, Advanced)
@@ -151,7 +151,7 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
                     }`}
                   >
                     <Lock className="h-3.5 w-3.5" />
-                    Upgrade to {requiredPlan === "enterprise" ? "Enterprise" : requiredPlan === "business" ? "Business" : "Pro"}
+                    {getUpgradeLabel(requiredPlan)}
                   </button>
                 ) : (
                   <button 

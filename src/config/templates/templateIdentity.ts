@@ -17,6 +17,30 @@ export type PrimaryActionId =
 
 export type RequiredPlan = "free" | "pro" | "business" | "enterprise";
 
+/**
+ * Get the upgrade button label for a given plan tier.
+ */
+export function getUpgradeLabel(plan: RequiredPlan): string {
+  switch (plan) {
+    case "pro":
+      return "Upgrade to Pro";
+    case "business":
+      return "Upgrade to Business";
+    case "enterprise":
+      return "Contact Sales";
+    default:
+      return "Upgrade";
+  }
+}
+
+/**
+ * Check if a template is locked for a user based on their plan.
+ */
+export function isTemplateLocked(requiredPlan: RequiredPlan, userPlan: RequiredPlan): boolean {
+  const rank: Record<RequiredPlan, number> = { free: 0, pro: 1, business: 2, enterprise: 3 };
+  return rank[userPlan] < rank[requiredPlan];
+}
+
 export interface TemplateIdentity {
   slug: string;
   name: string;
