@@ -1,15 +1,4 @@
-export type WidgetKey =
-  | "focus_today"
-  | "kpi_weekly_income"
-  | "kpi_monthly_income"
-  | "income_trend_chart"
-  | "client_list"
-  | "follow_up_queue"
-  | "appointments_today"
-  | "task_list"
-  | "project_board"
-  | "activity_feed"
-  | "assistant_suggestions";
+import { WidgetKey } from "./widgetRegistry";
 
 export type UserProfile = {
   business_type?: string | null;
@@ -86,7 +75,9 @@ export function getDashboardConfig(profile: UserProfile): WidgetKey[] {
   }
 
   if (challenges?.includes("staying_organized") || challenges?.includes("organized")) {
-    widgets.push("task_list");
+    if (!widgets.includes("task_list")) {
+      widgets.push("task_list");
+    }
   }
 
   /* -------------------------------------------------
@@ -94,7 +85,8 @@ export function getDashboardConfig(profile: UserProfile): WidgetKey[] {
   --------------------------------------------------*/
   if (profile.client_volume === "25_plus") {
     // reduce clutter, focus on queues
-    remove(widgets, "task_list");
+    const taskIdx = widgets.indexOf("task_list");
+    if (taskIdx > -1) widgets.splice(taskIdx, 1);
   }
 
   /* -------------------------------------------------
@@ -108,11 +100,6 @@ export function getDashboardConfig(profile: UserProfile): WidgetKey[] {
 }
 
 /* ---------- helpers ---------- */
-function remove(arr: string[], key: string) {
-  const i = arr.indexOf(key);
-  if (i > -1) arr.splice(i, 1);
-}
-
 function dedupe<T>(arr: T[]): T[] {
   return Array.from(new Set(arr));
 }
