@@ -4,6 +4,7 @@ import { Search, Filter, Sparkles, CheckCircle2, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TemplatesGrid } from "@/components/templates/TemplatesGrid";
 import { supabase } from "@/integrations/supabase/client";
+import { useTemplateActivation } from "@/hooks/useTemplateActivation";
 
 import { Template, fallbackRegistry, getAllCategories, TemplateCategory } from '@/lib/templates';
 
@@ -20,6 +21,16 @@ export default function TemplatesPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = templates.find(t => t.id === selectedId) ?? null;
   const [scaffoldMsg, setScaffoldMsg] = useState<string | null>(null);
+
+  // Template activation hook
+  const { activate, isActivating } = useTemplateActivation({
+    redirectOnSuccess: null, // We handle redirect ourselves
+    onSuccess: (slug) => {
+      setScaffoldMsg(`${slug} activated successfully`);
+      setSelectedId(null);
+      navigate(`/template-success?template=${slug}`);
+    },
+  });
 
   useEffect(() => {
     let alive = true;
@@ -52,12 +63,9 @@ export default function TemplatesPage() {
     });
   }, [templates, q, cat]);
 
-  const handleModalUseTemplate = async (templateId: string) => {
+  const handleActivate = async (templateId: string) => {
     setScaffoldMsg("");
-    const template = templates.find(t => t.id === templateId);
-    if (!template) return;
-    // Navigate to instant activation (not wizard)
-    navigate(`/templates/${templateId}/activate`);
+    await activate(templateId);
   };
 
   return (
@@ -118,6 +126,7 @@ export default function TemplatesPage() {
         templates={filtered} 
         onPreview={setSelectedId}
         onScaffoldMessage={setScaffoldMsg}
+        onActivateSuccess={(slug) => navigate(`/template-success?template=${slug}`)}
       />
 
       {scaffoldMsg && (
@@ -157,13 +166,20 @@ export default function TemplatesPage() {
                 Close
               </button>
               <button
-                className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-400 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-400 transition-colors disabled:opacity-50"
+                disabled={isActivating}
                 onClick={async () => {
-                  await handleModalUseTemplate(selected.id);
-                  setSelectedId(null);
+                  await handleActivate(selected.id);
                 }}
               >
-                Activate this system
+                {isActivating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Activating…
+                  </>
+                ) : (
+                  "Activate this system"
+                )}
               </button>
             </div>
           </div>
