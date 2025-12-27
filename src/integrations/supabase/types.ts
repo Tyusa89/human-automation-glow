@@ -1047,6 +1047,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_dashboard_suggestions: {
+        Row: {
+          acted_at: string | null
+          created_at: string
+          id: string
+          payload: Json
+          status: string
+          suggestion_key: string
+          user_id: string
+        }
+        Insert: {
+          acted_at?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json
+          status?: string
+          suggestion_key: string
+          user_id: string
+        }
+        Update: {
+          acted_at?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json
+          status?: string
+          suggestion_key?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_dashboard_widgets: {
         Row: {
           config: Json
