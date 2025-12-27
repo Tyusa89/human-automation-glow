@@ -68,14 +68,11 @@ export function SetupChecklist() {
       const hasSuccessfulRun = (runsResult.data?.length ?? 0) > 0;
 
       // Check if activation is complete - if so, hide forever
+      const profileCompleted = !!(profile?.full_name && profile?.company && profile?.onboarding_completed);
       const activationComplete = getActivationComplete({
-        profile: {
-          full_name: profile?.full_name ?? null,
-          company: profile?.company ?? null,
-          onboarding_completed: profile?.onboarding_completed ?? false,
-        },
+        profileCompleted,
         activeTemplatesCount,
-        hasSuccessfulRun,
+        hasSuccessfulAutomationRun: hasSuccessfulRun,
         hasFirstValueEvent: hasLeads,
       });
 

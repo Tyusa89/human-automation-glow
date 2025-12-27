@@ -171,30 +171,25 @@ const Dashboard = () => {
 
   // Compute activation complete using single source of truth
   const activationComplete = getActivationComplete({
-    profile: {
-      full_name: signals.profileCompleted ? 'set' : null, // simplified - we already have profileCompleted
-      company: signals.profileCompleted ? 'set' : null,
-      onboarding_completed: signals.profileCompleted,
-    },
-    activeTemplatesCount: signals.activeTemplatesCount,
-    hasSuccessfulRun: signals.hasSuccessfulAutomationRun,
-    hasFirstValueEvent: signals.hasFirstValueEvent,
+    profileCompleted: !!signals.profileCompleted,
+    activeTemplatesCount: signals.activeTemplatesCount ?? 0,
+    hasSuccessfulAutomationRun: !!signals.hasSuccessfulAutomationRun,
+    hasFirstValueEvent: !!signals.hasFirstValueEvent,
   });
 
   // Compute NBA using exact inputs
   const nba = getNextBestAction({
-    profileCompleted: signals.profileCompleted,
-    activeTemplatesCount: signals.activeTemplatesCount,
-    hasSuccessfulRun: signals.hasSuccessfulAutomationRun,
-    hasFirstValueEvent: signals.hasFirstValueEvent,
-    hasLeads: signals.hasLeads,
-    hasAppointments: signals.upcomingAppointmentsCount > 0,
-    hasPayments: signals.hasFirstValueEvent, // simplified - uses value event
-    failedRunsCount: signals.automationErrorsCount,
+    profileCompleted: !!signals.profileCompleted,
+    activeTemplatesCount: signals.activeTemplatesCount ?? 0,
+    hasSuccessfulRun: !!signals.hasSuccessfulAutomationRun,
+    hasFirstValueEvent: !!signals.hasFirstValueEvent,
+    hasLeads: !!signals.hasLeads,
+    hasAppointments: (signals.upcomingAppointmentsCount ?? 0) > 0,
+    hasPayments: !!signals.hasFirstValueEvent,
   });
 
-  const [nbaDismissed, setNbaDismissed] = useState(false);
-  const showNBA = !!(nba && userId && !isDismissed(userId, nba.eventKey) && !nbaDismissed);
+  const [nbaDismissTick, setNbaDismissTick] = useState(0);
+  const showNBA = !!(nba && userId && !isDismissed(userId, nba.eventKey) && nbaDismissTick >= 0);
 
   // Power user mode: filter out beginner-focused widgets
   const displayedSecondaryWidgets = isNewUser 
@@ -326,7 +321,7 @@ const Dashboard = () => {
                 action={nba}
                 onDismiss={() => {
                   if (userId) dismissNBA(userId, nba.eventKey);
-                  setNbaDismissed(true);
+                  setNbaDismissTick((x) => x + 1);
                 }}
               />
             )}
@@ -394,7 +389,7 @@ const Dashboard = () => {
                 action={nba}
                 onDismiss={() => {
                   if (userId) dismissNBA(userId, nba.eventKey);
-                  setNbaDismissed(true);
+                  setNbaDismissTick((x) => x + 1);
                 }}
               />
             )}
@@ -423,7 +418,7 @@ const Dashboard = () => {
                 action={nba}
                 onDismiss={() => {
                   if (userId) dismissNBA(userId, nba.eventKey);
-                  setNbaDismissed(true);
+                  setNbaDismissTick((x) => x + 1);
                 }}
               />
             )}

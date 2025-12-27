@@ -137,14 +137,11 @@ export async function evaluateAndUpsertSuggestionOncePerDay(userId: string) {
     supabase.from("appointments").select("id").limit(1),
   ]);
 
+  const profileCompleted = !!(profile.full_name && profile.company && profile.onboarding_completed);
   const activationComplete = getActivationComplete({
-    profile: {
-      full_name: profile.full_name ?? null,
-      company: profile.company ?? null,
-      onboarding_completed: profile.onboarding_completed ?? false,
-    },
+    profileCompleted,
     activeTemplatesCount: templatesResult.count ?? 0,
-    hasSuccessfulRun: (runsResult.data?.length ?? 0) > 0,
+    hasSuccessfulAutomationRun: (runsResult.data?.length ?? 0) > 0,
     hasFirstValueEvent: (leadsResult.data?.length ?? 0) > 0 || (appointmentsResult.data?.length ?? 0) > 0,
   });
 

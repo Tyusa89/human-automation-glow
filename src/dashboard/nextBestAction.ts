@@ -3,9 +3,8 @@ export type NextBestAction = {
   title: string;
   description?: string;
   ctaLabel: string;
-  to?: string;
-  eventKey?: string;
-  priority: number;
+  to: string;
+  eventKey: string;
 };
 
 export type NBAInputs = {
@@ -17,13 +16,9 @@ export type NBAInputs = {
   hasLeads: boolean;
   hasAppointments: boolean;
   hasPayments: boolean;
-
-  // optional operational signals
-  failedRunsCount?: number;
 };
 
 export function getNextBestAction(i: NBAInputs): NextBestAction | null {
-  // 🟢 Activation ladder (new users)
   if (!i.profileCompleted) {
     return {
       key: "complete_profile",
@@ -31,8 +26,7 @@ export function getNextBestAction(i: NBAInputs): NextBestAction | null {
       description: "This unlocks personalization and smarter recommendations.",
       ctaLabel: "Finish profile",
       to: "/create-profile",
-      eventKey: "nba_complete_profile",
-      priority: 10
+      eventKey: "nba_complete_profile"
     };
   }
 
@@ -43,8 +37,7 @@ export function getNextBestAction(i: NBAInputs): NextBestAction | null {
       description: "Templates are the fastest way to launch a working system.",
       ctaLabel: "Browse templates",
       to: "/templates",
-      eventKey: "nba_install_first_template",
-      priority: 20
+      eventKey: "nba_install_first_template"
     };
   }
 
@@ -52,28 +45,24 @@ export function getNextBestAction(i: NBAInputs): NextBestAction | null {
     return {
       key: "run_first_automation",
       title: "Run your first automation",
-      description: "Activate EcoNest by running a template once.",
+      description: "Run a template once to activate EcoNest and unlock insights.",
       ctaLabel: "Open templates",
       to: "/templates",
-      eventKey: "nba_run_first_automation",
-      priority: 30
+      eventKey: "nba_run_first_automation"
     };
   }
 
   if (!i.hasFirstValueEvent) {
-    // pick the most relevant "first value" action
     if (!i.hasAppointments) {
       return {
         key: "book_test_appointment",
         title: "Book a test appointment",
-        description: "Make sure scheduling works end-to-end.",
+        description: "Confirm scheduling works end-to-end.",
         ctaLabel: "Go to appointments",
         to: "/appointments",
-        eventKey: "nba_book_test_appointment",
-        priority: 40
+        eventKey: "nba_book_test_appointment"
       };
     }
-
     if (!i.hasLeads) {
       return {
         key: "add_first_lead",
@@ -81,11 +70,9 @@ export function getNextBestAction(i: NBAInputs): NextBestAction | null {
         description: "Start tracking outreach and follow-ups.",
         ctaLabel: "Add lead",
         to: "/dashboard",
-        eventKey: "nba_add_first_lead",
-        priority: 45
+        eventKey: "nba_add_first_lead"
       };
     }
-
     if (!i.hasPayments) {
       return {
         key: "track_first_payment",
@@ -93,25 +80,10 @@ export function getNextBestAction(i: NBAInputs): NextBestAction | null {
         description: "Enable revenue tracking and weekly insights.",
         ctaLabel: "Open dashboard",
         to: "/dashboard",
-        eventKey: "nba_track_first_payment",
-        priority: 50
+        eventKey: "nba_track_first_payment"
       };
     }
   }
 
-  // 🔵 Operations ladder (power users)
-  if ((i.failedRunsCount ?? 0) > 0) {
-    return {
-      key: "fix_failed_runs",
-      title: "Fix failed automations",
-      description: "Some workflows failed recently. Review and resolve errors.",
-      ctaLabel: "View runs",
-      to: "/owner/approvals",
-      eventKey: "nba_fix_failed_runs",
-      priority: 10
-    };
-  }
-
-  // If nothing urgent, return null (dashboard is calm)
   return null;
 }
