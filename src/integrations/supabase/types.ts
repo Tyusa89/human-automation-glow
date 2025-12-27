@@ -667,6 +667,7 @@ export type Database = {
           "econest AI": string | null
           email: string
           full_name: string | null
+          hardest_things: string[] | null
           id: string
           onboarding_completed: boolean | null
           onboarding_step: string | null
@@ -674,6 +675,7 @@ export type Database = {
           setup_goals: string[] | null
           updated_at: string
           user_id: string | null
+          work_type: string | null
         }
         Insert: {
           company?: string | null
@@ -681,6 +683,7 @@ export type Database = {
           "econest AI"?: string | null
           email: string
           full_name?: string | null
+          hardest_things?: string[] | null
           id?: string
           onboarding_completed?: boolean | null
           onboarding_step?: string | null
@@ -688,6 +691,7 @@ export type Database = {
           setup_goals?: string[] | null
           updated_at?: string
           user_id?: string | null
+          work_type?: string | null
         }
         Update: {
           company?: string | null
@@ -695,6 +699,7 @@ export type Database = {
           "econest AI"?: string | null
           email?: string
           full_name?: string | null
+          hardest_things?: string[] | null
           id?: string
           onboarding_completed?: boolean | null
           onboarding_step?: string | null
@@ -702,6 +707,7 @@ export type Database = {
           setup_goals?: string[] | null
           updated_at?: string
           user_id?: string | null
+          work_type?: string | null
         }
         Relationships: []
       }

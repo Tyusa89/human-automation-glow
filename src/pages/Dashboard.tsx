@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { Users, CheckSquare, BookOpen, Activity, MoreHorizontal, Settings, Download, RefreshCw, ArrowLeft } from 'lucide-react';
+import { Users, CheckSquare, BookOpen, Activity, MoreHorizontal, Settings, Download, RefreshCw, ArrowLeft, Calendar, DollarSign, Clock, Target, UserCheck, ListTodo } from 'lucide-react';
 import LeadsTable from '@/components/LeadsTable';
 import TasksTable from '@/components/TasksTable';
 import KBList from '@/components/KBList';
@@ -19,6 +19,12 @@ import { useEnsureProfile } from '@/hooks/useEnsureProfile';
 import { useToast } from '@/hooks/use-toast';
 import { useRole, isAdminLike } from '@/hooks/useRole';
 
+type UserPreferences = {
+  work_type: string | null;
+  hardest_things: string[];
+  setup_goals: string[];
+};
+
 const Dashboard = () => {
   console.log('=== DASHBOARD COMPONENT LOADED ===');
   useEnsureProfile();
@@ -29,6 +35,11 @@ const Dashboard = () => {
   console.log('Dashboard - role:', role, 'admin:', admin, 'loading:', loading);
   const [activeTab, setActiveTab] = useState('leads');
   const [lastKpi, setLastKpi] = useState<any>(null);
+  const [preferences, setPreferences] = useState<UserPreferences>({
+    work_type: null,
+    hardest_things: [],
+    setup_goals: [],
+  });
 
   async function loadLastKpi() {
     console.log('Loading latest KPI data...');
@@ -42,7 +53,29 @@ const Dashboard = () => {
     setLastKpi(data?.[0]?.payload || null);
   }
 
-  useEffect(() => { loadLastKpi(); }, []);
+  async function loadPreferences() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('work_type, hardest_things, setup_goals')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    
+    if (profile) {
+      setPreferences({
+        work_type: profile.work_type,
+        hardest_things: profile.hardest_things || [],
+        setup_goals: profile.setup_goals || [],
+      });
+    }
+  }
+
+  useEffect(() => { 
+    loadLastKpi(); 
+    loadPreferences();
+  }, []);
 
   // Add real-time subscription for KPI updates
   useEffect(() => {
@@ -108,32 +141,98 @@ const Dashboard = () => {
     }
   }
 
-  const stats = [
-    {
-      title: "Total Leads",
-      value: "24",
-      icon: Users,
-      change: "+12%"
-    },
-    {
-      title: "Active Tasks",
-      value: "8",
-      icon: CheckSquare,
-      change: "+3"
-    },
-    {
-      title: "KB Articles",
-      value: "156",
-      icon: BookOpen,
-      change: "+23"
-    },
-    {
-      title: "System Traces",
-      value: "1,247",
-      icon: Activity,
-      change: "+156"
+  // Widget visibility based on work_type
+  const showClientList = ['consultant', 'freelancer', 'creative'].includes(preferences.work_type || '');
+  const showAppointments = ['consultant', 'local-service'].includes(preferences.work_type || '');
+  const showProjectBoard = ['creative', 'freelancer'].includes(preferences.work_type || '');
+  const showDailyJobs = preferences.work_type === 'local-service';
+
+  // Widget visibility based on hardest_things
+  const showIncomeWidget = preferences.hardest_things.includes('income');
+  const showFollowUpWidget = preferences.hardest_things.includes('followups');
+  const showTaskListWidget = preferences.hardest_things.includes('organized');
+  const showFocusTodayWidget = preferences.hardest_things.includes('focus');
+  const showTimeWidget = preferences.hardest_things.includes('time');
+  const isOverwhelmedMode = preferences.hardest_things.includes('overwhelmed');
+
+  // Focus Today message based on hardest things
+  const getFocusTodayMessage = () => {
+    if (preferences.hardest_things.includes('overwhelmed')) {
+      return "One step at a time. Here's your single focus:";
     }
-  ];
+    if (preferences.hardest_things.includes('focus')) {
+      return "Your top priority today:";
+    }
+    return "Your focus today:";
+  };
+
+  // Dynamic stats based on work type
+  const getStats = () => {
+    const baseStats = [
+      {
+        title: "Total Leads",
+        value: "24",
+        icon: Users,
+        change: "+12%",
+        show: showClientList || preferences.work_type === 'other' || !preferences.work_type,
+      },
+      {
+        title: "Active Tasks",
+        value: "8",
+        icon: CheckSquare,
+        change: "+3",
+        show: showTaskListWidget || !preferences.hardest_things.length,
+      },
+      {
+        title: "This Week's Income",
+        value: "$1,240",
+        icon: DollarSign,
+        change: "+$320",
+        show: showIncomeWidget,
+      },
+      {
+        title: "Upcoming Appointments",
+        value: "5",
+        icon: Calendar,
+        change: "Next: 2pm",
+        show: showAppointments,
+      },
+      {
+        title: "Pending Follow-ups",
+        value: "3",
+        icon: UserCheck,
+        change: "2 overdue",
+        show: showFollowUpWidget,
+      },
+      {
+        title: "Time Logged Today",
+        value: "4.5h",
+        icon: Clock,
+        change: "Goal: 6h",
+        show: showTimeWidget,
+      },
+      {
+        title: "KB Articles",
+        value: "156",
+        icon: BookOpen,
+        change: "+23",
+        show: !isOverwhelmedMode && admin,
+      },
+      {
+        title: "System Traces",
+        value: "1,247",
+        icon: Activity,
+        change: "+156",
+        show: !isOverwhelmedMode && admin,
+      },
+    ];
+
+    // In overwhelmed mode, show max 4 widgets
+    const filteredStats = baseStats.filter(s => s.show);
+    return isOverwhelmedMode ? filteredStats.slice(0, 4) : filteredStats;
+  };
+
+  const stats = getStats();
 
   return (
     <div className="min-h-screen bg-background">
@@ -158,7 +257,9 @@ const Dashboard = () => {
                   Dashboard
                 </h1>
                 <p className="text-muted-foreground">
-                  Monitor your automation, leads, tasks, and system performance
+                  {isOverwhelmedMode 
+                    ? "Let's keep it simple today." 
+                    : "Monitor your automation, leads, tasks, and system performance"}
                 </p>
               </div>
             </div>
@@ -197,19 +298,41 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Focus Today Widget - appears when "focus" or "overwhelmed" is selected */}
+      {(showFocusTodayWidget || isOverwhelmedMode) && (
+        <div className="container mx-auto px-4 py-4">
+          <Card className="border-primary/30 bg-primary/5">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <Target className="h-5 w-5" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-muted-foreground">{getFocusTodayMessage()}</p>
+                  <p className="font-semibold text-foreground">Follow up with 3 pending client responses</p>
+                </div>
+                <Button size="sm">Mark Done</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Setup Checklist & Complete Profile */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <SetupChecklist />
-          <div className="lg:col-span-2">
-            <CompleteProfile />
+      {!isOverwhelmedMode && (
+        <div className="container mx-auto px-4 py-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <SetupChecklist />
+            <div className="lg:col-span-2">
+              <CompleteProfile />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Stats Grid */}
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className={`grid grid-cols-1 md:grid-cols-2 ${isOverwhelmedMode ? 'lg:grid-cols-2' : 'lg:grid-cols-4'} gap-6 mb-8`}>
           {stats.map((stat, index) => {
             const IconComponent = stat.icon;
             return (
@@ -237,29 +360,42 @@ const Dashboard = () => {
           })}
         </div>
 
-        {/* Profile Section */}
-        <div className="container mx-auto px-4 py-6">
-          <ProfileCard />
-        </div>
+        {/* Profile Section - hidden in overwhelmed mode */}
+        {!isOverwhelmedMode && (
+          <div className="container mx-auto px-4 py-6">
+            <ProfileCard />
+          </div>
+        )}
 
-        {/* Main Content Tabs */}
+        {/* Main Content Tabs - simplified in overwhelmed mode */}
         <Card className="border-accent/20">
           <CardContent className="p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className={`grid w-full ${admin ? 'grid-cols-6' : 'grid-cols-4'}`}>
-                <TabsTrigger value="leads">Leads</TabsTrigger>
+              <TabsList className={`grid w-full ${
+                isOverwhelmedMode 
+                  ? 'grid-cols-2' 
+                  : admin 
+                    ? 'grid-cols-6' 
+                    : 'grid-cols-4'
+              }`}>
+                {showClientList && <TabsTrigger value="leads">Leads</TabsTrigger>}
+                {!showClientList && <TabsTrigger value="leads">Clients</TabsTrigger>}
                 <TabsTrigger value="tasks">Tasks</TabsTrigger>
-                <TabsTrigger value="kb">Knowledge Base</TabsTrigger>
-                <TabsTrigger value="spade">SPADE Demo</TabsTrigger>
+                {!isOverwhelmedMode && <TabsTrigger value="kb">Knowledge Base</TabsTrigger>}
+                {!isOverwhelmedMode && <TabsTrigger value="spade">SPADE Demo</TabsTrigger>}
                 {/* Admin-only tabs */}
-                {admin && <TabsTrigger value="traces">Traces</TabsTrigger>}
-                {admin && <TabsTrigger value="results">Results</TabsTrigger>}
+                {admin && !isOverwhelmedMode && <TabsTrigger value="traces">Traces</TabsTrigger>}
+                {admin && !isOverwhelmedMode && <TabsTrigger value="results">Results</TabsTrigger>}
               </TabsList>
               
               <TabsContent value="leads" className="mt-6">
                 <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Recent Leads</h3>
-                  <p className="text-muted-foreground">Latest 25 leads from your contact forms</p>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    {showClientList ? 'Recent Leads' : 'Your Clients'}
+                  </h3>
+                  <p className="text-muted-foreground">
+                    {showClientList ? 'Latest 25 leads from your contact forms' : 'Manage your client relationships'}
+                  </p>
                 </div>
                 <LeadsTable />
               </TabsContent>
@@ -269,38 +405,44 @@ const Dashboard = () => {
                   <h3 className="text-lg font-semibold text-foreground mb-2">Task Management</h3>
                   <p className="text-muted-foreground">Track and manage your automation tasks</p>
                 </div>
-                <div className="mb-4 flex items-center gap-3">
-                  <Button onClick={handleRunDaily}>Run Daily Summary</Button>
-                  {lastKpi && (
-                    <div className="text-sm text-muted-foreground">
-                      Last: {lastKpi.date} · Leads {lastKpi.leads_today} · Tasks {lastKpi.tasks_run} · Avg resp {lastKpi.avg_response_min}m
-                    </div>
-                  )}
-                </div>
+                {!isOverwhelmedMode && (
+                  <div className="mb-4 flex items-center gap-3">
+                    <Button onClick={handleRunDaily}>Run Daily Summary</Button>
+                    {lastKpi && (
+                      <div className="text-sm text-muted-foreground">
+                        Last: {lastKpi.date} · Leads {lastKpi.leads_today} · Tasks {lastKpi.tasks_run} · Avg resp {lastKpi.avg_response_min}m
+                      </div>
+                    )}
+                  </div>
+                )}
                 <TasksTable />
               </TabsContent>
               
-              <TabsContent value="kb" className="mt-6">
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Knowledge Base</h3>
-                  <p className="text-muted-foreground">Search and manage your AI knowledge articles</p>
-                </div>
-                <KBList />
-              </TabsContent>
+              {!isOverwhelmedMode && (
+                <TabsContent value="kb" className="mt-6">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Knowledge Base</h3>
+                    <p className="text-muted-foreground">Search and manage your AI knowledge articles</p>
+                  </div>
+                  <KBList />
+                </TabsContent>
+              )}
               
-              <TabsContent value="spade" className="mt-6">
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">SPADE Processing Demo</h3>
-                  <p className="text-muted-foreground">Demonstrating AI-powered lead processing using SPADE methodology</p>
-                </div>
-                <SPADEProcessor 
-                  userInput="Hi, I'm Mia from LumenCo. We need help automating weekly reports."
-                  context={{ source: 'website', timestamp: new Date().toISOString() }}
-                />
-              </TabsContent>
+              {!isOverwhelmedMode && (
+                <TabsContent value="spade" className="mt-6">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-foreground mb-2">SPADE Processing Demo</h3>
+                    <p className="text-muted-foreground">Demonstrating AI-powered lead processing using SPADE methodology</p>
+                  </div>
+                  <SPADEProcessor 
+                    userInput="Hi, I'm Mia from LumenCo. We need help automating weekly reports."
+                    context={{ source: 'website', timestamp: new Date().toISOString() }}
+                  />
+                </TabsContent>
+              )}
               
               {/* Admin-only tabs content */}
-              {admin && (
+              {admin && !isOverwhelmedMode && (
                 <TabsContent value="traces" className="mt-6">
                   <div className="mb-4">
                     <h3 className="text-lg font-semibold text-foreground mb-2">System Traces</h3>
@@ -310,7 +452,7 @@ const Dashboard = () => {
                 </TabsContent>
               )}
               
-              {admin && (
+              {admin && !isOverwhelmedMode && (
                 <TabsContent value="results" className="mt-6">
                   <div className="mb-4">
                     <h3 className="text-lg font-semibold text-foreground mb-2">Task Results</h3>
