@@ -2,8 +2,13 @@ import { motion } from "framer-motion";
 import { Play, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Template } from '@/lib/templates';
-import { useUserPlan, planMeetsRequirement } from '@/hooks/useUserPlan';
-import { type RequiredPlan, getUpgradeLabel, isTemplateLocked } from '@/config/templates/templateIdentity';
+import { useUserPlan } from '@/hooks/useUserPlan';
+import { 
+  type RequiredPlan, 
+  getUpgradeLabel, 
+  isTemplateLocked,
+  getTemplateIdentity 
+} from '@/config/templates/templateIdentity';
 
 interface TemplatesGridProps {
   templates: Template[];
@@ -11,13 +16,10 @@ interface TemplatesGridProps {
   onScaffoldMessage: (message: string) => void;
 }
 
-// Get required plan from template badges
+// Get required plan from template identity map (not from badges)
 function getRequiredPlan(template: Template): RequiredPlan {
-  const badges = template.badges?.map(b => b.toLowerCase()) || [];
-  if (badges.includes("enterprise")) return "enterprise";
-  if (badges.includes("business")) return "business";
-  if (badges.includes("pro")) return "pro";
-  return "free";
+  const identity = getTemplateIdentity(template.id);
+  return identity?.requiredPlan || "free";
 }
 
 // Difficulty styling
