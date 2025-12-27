@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,7 @@ import {
 import { getActivationComplete } from '@/dashboard/activation';
 import { resolveMaturityTier } from '@/lib/maturity/resolveMaturity';
 import { resolveDashboardNextStep, shouldShowChecklist } from '@/lib/templates/resolveDashboardNextStep';
+import { getWidgetEmphasis, sortWidgetsByEmphasis, isWidgetHidden } from '@/dashboard/templateWidgetEmphasis';
 import { runTask } from '@/lib/db';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
@@ -171,11 +172,38 @@ const Dashboard = () => {
     await Promise.all([loadDashboard(), refreshMaturity()]);
   }
 
-  // Group widgets by zone
-  const focusWidget = widgets.find(w => w.key === 'focus_today');
-  const kpiWidgets = widgets.filter(w => ['kpi_weekly_income', 'kpi_monthly_income', 'income_trend_chart'].includes(w.key));
-  const primaryWidgets = widgets.filter(w => ['client_list', 'project_board', 'appointments_today', 'task_list'].includes(w.key));
-  const secondaryWidgets = widgets.filter(w => ['follow_up_queue', 'assistant_suggestions', 'activity_feed'].includes(w.key));
+  // Get template-aware widget emphasis
+  const widgetEmphasis = useMemo(
+    () => getWidgetEmphasis(activeTemplateSlug),
+    [activeTemplateSlug]
+  );
+
+  // Group and filter widgets by zone, applying template emphasis
+  const focusWidget = widgets.find(w => w.key === 'focus_today' && !isWidgetHidden(w.key, widgetEmphasis));
+  
+  const kpiWidgets = useMemo(() => {
+    const kpis = widgets.filter(w => 
+      ['kpi_weekly_income', 'kpi_monthly_income', 'income_trend_chart'].includes(w.key) &&
+      !isWidgetHidden(w.key, widgetEmphasis)
+    );
+    return sortWidgetsByEmphasis(kpis, widgetEmphasis);
+  }, [widgets, widgetEmphasis]);
+
+  const primaryWidgets = useMemo(() => {
+    const primary = widgets.filter(w => 
+      ['client_list', 'project_board', 'appointments_today', 'task_list'].includes(w.key) &&
+      !isWidgetHidden(w.key, widgetEmphasis)
+    );
+    return sortWidgetsByEmphasis(primary, widgetEmphasis);
+  }, [widgets, widgetEmphasis]);
+
+  const secondaryWidgets = useMemo(() => {
+    const secondary = widgets.filter(w => 
+      ['follow_up_queue', 'assistant_suggestions', 'activity_feed'].includes(w.key) &&
+      !isWidgetHidden(w.key, widgetEmphasis)
+    );
+    return sortWidgetsByEmphasis(secondary, widgetEmphasis);
+  }, [widgets, widgetEmphasis]);
 
   // Mode-based display logic
   const isNewUser = mode === 'new';
