@@ -52,6 +52,7 @@ import BookPage from '@/pages/Book';
 import DashboardAppointments from '@/pages/DashboardAppointments';
 import AdminAppointments from '@/pages/AdminAppointments';
 import AppointmentsPage from '@/pages/Appointments';
+import Onboarding from '@/pages/Onboarding';
 
 const queryClient = new QueryClient();
 
@@ -69,8 +70,9 @@ const App = () => {
             <AppHeader />
             <main>
               <Routes>
-                {/* public - only auth page */}
+                {/* public routes */}
                 <Route path="/auth" element={<AuthPage />} />
+                <Route path="/onboarding" element={<RequireAuth><Onboarding /></RequireAuth>} />
 
                 {/* protected - all app routes require authentication */}
                 <Route path="/" element={<RequireAuth><Index /></RequireAuth>} />
