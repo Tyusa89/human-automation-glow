@@ -253,13 +253,13 @@ export default function AppointmentsPage() {
   }, [appointments]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header */}
         <div className="flex items-start justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Appointments</h1>
-            <p className="text-muted-foreground mt-1">Manage your bookings and availability</p>
+            <h1 className="text-3xl font-bold text-white">Appointments</h1>
+            <p className="text-slate-400 mt-1">Manage your bookings and availability</p>
           </div>
           <div className="flex gap-3">
             <Button 
@@ -313,22 +313,22 @@ export default function AppointmentsPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <Card className="bg-card border-border">
+          <Card className="bg-slate-800/60 border-slate-700/50">
             <CardContent className="p-6">
-              <p className="text-4xl font-bold text-foreground">{todayCount}</p>
-              <p className="text-muted-foreground text-sm mt-1">Today</p>
+              <p className="text-4xl font-bold text-white">{todayCount}</p>
+              <p className="text-slate-400 text-sm mt-1">Today</p>
             </CardContent>
           </Card>
-          <Card className="bg-card border-border">
+          <Card className="bg-slate-800/60 border-slate-700/50">
             <CardContent className="p-6">
-              <p className="text-4xl font-bold text-foreground">{upcomingCount}</p>
-              <p className="text-muted-foreground text-sm mt-1">Upcoming</p>
+              <p className="text-4xl font-bold text-white">{upcomingCount}</p>
+              <p className="text-slate-400 text-sm mt-1">Upcoming</p>
             </CardContent>
           </Card>
-          <Card className="bg-card border-border">
+          <Card className="bg-slate-800/60 border-slate-700/50">
             <CardContent className="p-6">
-              <p className="text-4xl font-bold text-foreground">{services.length}</p>
-              <p className="text-muted-foreground text-sm mt-1">Services</p>
+              <p className="text-4xl font-bold text-white">{services.length}</p>
+              <p className="text-slate-400 text-sm mt-1">Services</p>
             </CardContent>
           </Card>
         </div>
@@ -351,26 +351,26 @@ export default function AppointmentsPage() {
         </div>
 
         {/* Appointments List */}
-        <Card className="bg-card border-border mb-8">
+        <Card className="bg-slate-800/60 border-slate-700/50 mb-8">
           <CardContent className="p-0">
             {loading ? (
-              <div className="p-8 text-center text-muted-foreground">Loading appointments...</div>
+              <div className="p-8 text-center text-slate-400">Loading appointments...</div>
             ) : activeAppointments.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground">
+              <div className="p-8 text-center text-slate-400">
                 No appointments found
               </div>
             ) : (
-              <div className="divide-y divide-border">
+              <div className="divide-y divide-slate-700/50">
                 {activeAppointments.map((apt) => (
-                  <div key={apt.id} className="p-4 flex items-center justify-between hover:bg-muted/30 transition-colors">
+                  <div key={apt.id} className="p-4 flex items-center justify-between hover:bg-slate-700/30 transition-colors">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <StatusBadge status={apt.status} />
-                        <span className="font-semibold text-foreground">
+                        <span className="font-semibold text-white">
                           {apt.service?.name || "Unknown Service"}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-4 text-sm text-slate-400">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
                           {formatDate(apt.start_time)}
@@ -380,7 +380,7 @@ export default function AppointmentsPage() {
                           {formatTimeRange(apt.start_time, apt.end_time)}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+                      <div className="flex items-center gap-4 text-sm text-slate-400 mt-1">
                         <span className="flex items-center gap-1">
                           <User className="h-4 w-4" />
                           {apt.client_name}
@@ -424,22 +424,22 @@ export default function AppointmentsPage() {
         </Card>
 
         {/* Your Services */}
-        <Card className="bg-card border-border">
+        <Card className="bg-slate-800/60 border-slate-700/50">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Your Services</CardTitle>
+            <CardTitle className="text-lg font-semibold text-white">Your Services</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {services.length === 0 ? (
-              <p className="text-muted-foreground text-sm">No services configured yet.</p>
+              <p className="text-slate-400 text-sm">No services configured yet.</p>
             ) : (
               services.map((service) => (
                 <div 
                   key={service.id} 
-                  className="flex items-center justify-between p-4 rounded-lg border border-border bg-muted/20"
+                  className="flex items-center justify-between p-4 rounded-lg border border-slate-700/50 bg-slate-700/30"
                 >
                   <div>
-                    <p className="font-medium text-foreground">{service.name}</p>
-                    <p className="text-sm text-muted-foreground">{service.duration_minutes} min</p>
+                    <p className="font-medium text-white">{service.name}</p>
+                    <p className="text-sm text-slate-400">{service.duration_minutes} min</p>
                   </div>
                   <Badge variant="outline" className="text-emerald-400 border-emerald-500/30">
                     Active
