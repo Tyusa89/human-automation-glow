@@ -237,8 +237,8 @@ const Dashboard = () => {
           <DashboardSuggestionCard 
             suggestion={suggestion} 
             onChanged={async () => {
-              await refreshSuggestion();
-              loadDashboard();
+              await loadDashboard();        // refresh widgets/order first
+              await refreshSuggestion();    // then clear banner (single UI update)
             }} 
           />
         )}
