@@ -5,16 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { TemplatesGrid } from "@/components/templates/TemplatesGrid";
 import { supabase } from "@/integrations/supabase/client";
 
-import { Template, fallbackRegistry } from '@/lib/templates';
+import { Template, fallbackRegistry, getAllCategories, TemplateCategory } from '@/lib/templates';
 
-const categories: Array<Template["category"]> = [
-  "Bots",
-  "Dashboards",
-  "E‑commerce",
-  "Ops",
-  "Auth",
-  "Other",
-];
+const categories: TemplateCategory[] = getAllCategories();
 
 export default function TemplatesPage() {
   const navigate = useNavigate();
