@@ -67,9 +67,9 @@ export const pricing = [
     name: "Business",
     displayName: "Advanced",
     blurb: "For scale, analytics, and insight",
-    monthlyPrice: "99",
-    yearlyPrice: "990",
-    yearlyMonthly: "82",
+    monthlyPrice: "79",
+    yearlyPrice: "790",
+    yearlyMonthly: "66",
     dotColor: "purple",
     includes: [
       "Everything in Pro",
