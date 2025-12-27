@@ -1,25 +1,12 @@
-export type TemplateCategory = "time" | "money" | "leads" | "automation" | "ai";
-
-export type TemplateId =
-  | "appointment_booker"
-  | "availability_manager"
-  | "calendar_sync"
-  | "income_tracker"
-  | "payments_checkout"
-  | "revenue_analytics"
-  | "invoicing"
-  | "lead_capture"
-  | "contact_manager"
-  | "follow_up_system"
-  | "crm_pipeline"
-  | "workflow_automation"
-  | "task_automation"
-  | "system_monitor"
-  | "ai_assistant"
-  | "business_insights"
-  | "recommendation_engine";
+export type TemplateCategory = "money" | "automation" | "leads" | "ai" | "time";
 
 export type PrimaryActionId =
+  | "view_analytics"
+  | "connect_data_source"
+  | "run_sync"
+  | "review_leads"
+  | "test_qualification"
+  | "view_dashboard"
   | "test_booking"
   | "set_availability"
   | "connect_calendar"
@@ -36,48 +23,83 @@ export type PrimaryActionId =
   | "review_recent_runs"
   | "ask_first_question"
   | "review_insights"
-  | "view_recommendations";
+  | "view_recommendations"
+  | "nothing";
 
 export interface TemplateIdentity {
-  id: TemplateId;
-  name: string; // display name
+  slug: string;         // MUST match DB slug
+  name: string;         // display name
   category: TemplateCategory;
 
-  // The one-liner meaning
   primaryJob: string;
 
-  // What the user should do first to feel value
   primaryAction: {
     id: PrimaryActionId;
-    label: string; // button label
-    // optional: route you can wire later
+    label: string;
     href?: string;
   };
 
-  // Optional short description (for template cards/list)
   description?: string;
 }
 
-export const TEMPLATE_IDENTITIES: Record<TemplateId, TemplateIdentity> = {
+/**
+ * Canonical map: keys MUST match DB slugs (kebab-case).
+ * Add the rest of the 17 later by appending to this object.
+ */
+export const TEMPLATE_IDENTITIES = {
+  // ═══════════════════════════════════════════════════════════════
+  // EXISTING DB TEMPLATES
+  // ═══════════════════════════════════════════════════════════════
+  "analytics-dashboard": {
+    slug: "analytics-dashboard",
+    name: "Analytics Dashboard",
+    category: "money",
+    primaryJob: "Understand revenue trends and performance",
+    primaryAction: { id: "view_analytics", label: "View analytics", href: "/dashboard" },
+    description: "See trends, breakdowns, and performance over time.",
+  },
+
+  "data-sync-tool": {
+    slug: "data-sync-tool",
+    name: "Data Sync Tool",
+    category: "automation",
+    primaryJob: "Keep your systems in sync automatically",
+    primaryAction: { id: "connect_data_source", label: "Connect a data source", href: "/settings/integrations" },
+    description: "Sync data across tools to reduce manual work.",
+  },
+
+  "lead-qual-bot": {
+    slug: "lead-qual-bot",
+    name: "Lead Qualification Bot",
+    category: "leads",
+    primaryJob: "Qualify leads automatically so you focus on the best ones",
+    primaryAction: { id: "test_qualification", label: "Test lead qualification", href: "/leads" },
+    description: "Score and prioritize leads based on your criteria.",
+  },
+
+  // ═══════════════════════════════════════════════════════════════
   // TIME / SCHEDULING
-  appointment_booker: {
-    id: "appointment_booker",
+  // ═══════════════════════════════════════════════════════════════
+  "appointment-booker": {
+    slug: "appointment-booker",
     name: "Appointment Booker",
     category: "time",
     primaryJob: "Get clients booked automatically",
     primaryAction: { id: "test_booking", label: "Test a booking" },
     description: "Let clients book time with you without back-and-forth.",
   },
-  availability_manager: {
-    id: "availability_manager",
+
+  "availability-manager": {
+    slug: "availability-manager",
     name: "Availability Manager",
     category: "time",
     primaryJob: "Control when and how clients can book time",
     primaryAction: { id: "set_availability", label: "Set availability" },
     description: "Define your schedule rules and booking windows.",
   },
-  calendar_sync: {
-    id: "calendar_sync",
+
+  "calendar-sync": {
+    slug: "calendar-sync",
     name: "Calendar Sync",
     category: "time",
     primaryJob: "Keep all calendars in sync automatically",
@@ -85,33 +107,38 @@ export const TEMPLATE_IDENTITIES: Record<TemplateId, TemplateIdentity> = {
     description: "Sync events across calendars to avoid conflicts.",
   },
 
+  // ═══════════════════════════════════════════════════════════════
   // MONEY
-  income_tracker: {
-    id: "income_tracker",
+  // ═══════════════════════════════════════════════════════════════
+  "income-tracker": {
+    slug: "income-tracker",
     name: "Income Tracker",
     category: "money",
     primaryJob: "Track and understand your income",
     primaryAction: { id: "record_income", label: "Record income" },
     description: "Log income and see weekly/monthly totals.",
   },
-  payments_checkout: {
-    id: "payments_checkout",
+
+  "payments-checkout": {
+    slug: "payments-checkout",
     name: "Payments / Checkout",
     category: "money",
     primaryJob: "Accept payments from clients",
     primaryAction: { id: "create_payment_link", label: "Create a payment link" },
     description: "Generate checkout links and track payments.",
   },
-  revenue_analytics: {
-    id: "revenue_analytics",
+
+  "revenue-analytics": {
+    slug: "revenue-analytics",
     name: "Revenue Analytics",
     category: "money",
     primaryJob: "Understand revenue trends and performance",
     primaryAction: { id: "view_revenue_breakdown", label: "View revenue breakdown" },
     description: "See trends, distribution, and performance over time.",
   },
-  invoicing: {
-    id: "invoicing",
+
+  "invoicing": {
+    slug: "invoicing",
     name: "Invoicing",
     category: "money",
     primaryJob: "Bill clients professionally and on time",
@@ -119,33 +146,38 @@ export const TEMPLATE_IDENTITIES: Record<TemplateId, TemplateIdentity> = {
     description: "Create invoices and track what's paid or overdue.",
   },
 
+  // ═══════════════════════════════════════════════════════════════
   // LEADS / CRM
-  lead_capture: {
-    id: "lead_capture",
+  // ═══════════════════════════════════════════════════════════════
+  "lead-capture": {
+    slug: "lead-capture",
     name: "Lead Capture",
     category: "leads",
     primaryJob: "Capture new leads automatically",
     primaryAction: { id: "add_lead", label: "Add a lead" },
     description: "Collect leads and start building your pipeline.",
   },
-  contact_manager: {
-    id: "contact_manager",
+
+  "contact-manager": {
+    slug: "contact-manager",
     name: "Contact Manager",
     category: "leads",
     primaryJob: "Organize and manage client contacts",
     primaryAction: { id: "review_contacts", label: "Review contacts" },
     description: "Keep contacts organized with notes and tags.",
   },
-  follow_up_system: {
-    id: "follow_up_system",
+
+  "follow-up-system": {
+    slug: "follow-up-system",
     name: "Follow-Up System",
     category: "leads",
     primaryJob: "Stay in touch with leads and clients automatically",
     primaryAction: { id: "send_follow_up", label: "Send a follow-up" },
     description: "Automate reminders and follow-up messages.",
   },
-  crm_pipeline: {
-    id: "crm_pipeline",
+
+  "crm-pipeline": {
+    slug: "crm-pipeline",
     name: "CRM Pipeline",
     category: "leads",
     primaryJob: "Track leads from first contact to conversion",
@@ -153,25 +185,29 @@ export const TEMPLATE_IDENTITIES: Record<TemplateId, TemplateIdentity> = {
     description: "Manage stages and keep deals moving forward.",
   },
 
+  // ═══════════════════════════════════════════════════════════════
   // AUTOMATION / OPS
-  workflow_automation: {
-    id: "workflow_automation",
+  // ═══════════════════════════════════════════════════════════════
+  "workflow-automation": {
+    slug: "workflow-automation",
     name: "Workflow Automation",
     category: "automation",
     primaryJob: "Automate repetitive business tasks",
     primaryAction: { id: "run_automation", label: "Run an automation" },
     description: "Connect actions and triggers into repeatable workflows.",
   },
-  task_automation: {
-    id: "task_automation",
+
+  "task-automation": {
+    slug: "task-automation",
     name: "Task Automation",
     category: "automation",
     primaryJob: "Automatically manage recurring tasks",
     primaryAction: { id: "create_task_rule", label: "Create a task rule" },
     description: "Generate tasks based on schedules or events.",
   },
-  system_monitor: {
-    id: "system_monitor",
+
+  "system-monitor": {
+    slug: "system-monitor",
     name: "System Monitor",
     category: "automation",
     primaryJob: "Monitor automations and catch issues early",
@@ -179,44 +215,49 @@ export const TEMPLATE_IDENTITIES: Record<TemplateId, TemplateIdentity> = {
     description: "See errors, warnings, and run history in one place.",
   },
 
+  // ═══════════════════════════════════════════════════════════════
   // AI
-  ai_assistant: {
-    id: "ai_assistant",
+  // ═══════════════════════════════════════════════════════════════
+  "ai-assistant": {
+    slug: "ai-assistant",
     name: "AI Assistant",
     category: "ai",
     primaryJob: "Ask questions and get intelligent guidance",
     primaryAction: { id: "ask_first_question", label: "Ask your first question" },
     description: "Get help planning, deciding, and automating.",
   },
-  business_insights: {
-    id: "business_insights",
+
+  "business-insights": {
+    slug: "business-insights",
     name: "Business Insights",
     category: "ai",
     primaryJob: "Get insights about what to improve next",
     primaryAction: { id: "review_insights", label: "Review insights" },
     description: "See actionable insights based on your activity.",
   },
-  recommendation_engine: {
-    id: "recommendation_engine",
+
+  "recommendation-engine": {
+    slug: "recommendation-engine",
     name: "Recommendation Engine",
     category: "ai",
     primaryJob: "Receive personalized recommendations automatically",
     primaryAction: { id: "view_recommendations", label: "View recommendations" },
     description: "Suggestions tailored to your workflow and goals.",
   },
-};
+} as const satisfies Record<string, TemplateIdentity>;
+
+// Strong type = union of all slugs
+export type TemplateSlug = keyof typeof TEMPLATE_IDENTITIES;
 
 /**
- * Safe getter if you ever receive unknown IDs.
- * (Keeps UI from crashing if backend sends a template you haven't mapped yet.)
+ * Safe getter - returns null if slug not found.
  */
-export function getTemplateIdentity(id: string): TemplateIdentity | null {
-  return (TEMPLATE_IDENTITIES as Record<string, TemplateIdentity>)[id] ?? null;
+export function getTemplateIdentity(slug: string): TemplateIdentity | null {
+  return (TEMPLATE_IDENTITIES as Record<string, TemplateIdentity>)[slug] ?? null;
 }
 
 /**
  * One hero widget per category (for later dashboard emphasis).
- * You can change these names to match your widget keys.
  */
 export const CATEGORY_HERO_WIDGET: Record<TemplateCategory, string> = {
   time: "appointments",
