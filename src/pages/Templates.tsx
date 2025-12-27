@@ -63,7 +63,8 @@ export default function TemplatesPage() {
     setScaffoldMsg("");
     const template = templates.find(t => t.id === templateId);
     if (!template) return;
-    navigate(`/templates/${templateId}/setup`);
+    // Navigate to instant activation (not wizard)
+    navigate(`/templates/${templateId}/activate`);
   };
 
   return (
@@ -169,7 +170,7 @@ export default function TemplatesPage() {
                   setSelectedId(null);
                 }}
               >
-                Use this template
+                Activate this system
               </button>
             </div>
           </div>

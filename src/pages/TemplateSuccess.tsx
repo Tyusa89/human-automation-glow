@@ -1,27 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle2, ArrowRight, Home, Eye } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CheckCircle2, ArrowRight, Settings2, LayoutDashboard } from 'lucide-react';
 import { getTemplateById } from '@/lib/templates';
-
-// Map template IDs to their demo routes (only for templates with working demos)
-const templateDemoRoutes: Record<string, string> = {
-  'analytics-dashboard': '/demo/analytics-dashboard',
-  'data-sync-tool': '/demo/data-sync-tool',
-  'inventory-manager': '/demo/inventory-manager',
-  'email-campaign-builder': '/demo/email-campaign-builder',
-  'social-media-scheduler': '/demo/social-media-scheduler',
-  'report-generator': '/demo/report-generator',
-  'zapier-intercom-integration': '/demo/zapier-intercom',
-};
 
 export default function TemplateSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const templateId = searchParams.get('template');
   const [template, setTemplate] = useState(getTemplateById(templateId || ''));
-  const demoRoute = templateId ? templateDemoRoutes[templateId] : null;
 
   useEffect(() => {
     if (templateId) {
@@ -37,95 +25,68 @@ export default function TemplateSuccess() {
       .join(' ');
   };
 
+  const templateName = template?.title || (templateId ? formatTemplateId(templateId) : 'Your system');
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-900 flex items-center justify-center p-6">
-      <Card className="w-full max-w-2xl border-2 shadow-2xl">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
-            <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <Card className="w-full max-w-lg border-border/50 shadow-xl">
+        <CardHeader className="text-center space-y-4 pb-2">
+          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+            <CheckCircle2 className="w-10 h-10 text-primary" />
           </div>
-          <CardTitle className="text-3xl font-bold">Template Generated Successfully!</CardTitle>
-          <CardDescription className="text-lg">
-            {templateId ? (
-              <>Your <span className="font-semibold text-foreground">{template?.title || formatTemplateId(templateId)}</span> template has been configured and is ready to use.</>
-            ) : (
-              'Your template has been configured and is ready to use.'
-            )}
-          </CardDescription>
+          <CardTitle className="text-2xl font-bold">Your system is live</CardTitle>
         </CardHeader>
         
         <CardContent className="space-y-6">
-          {templateId && (
-            <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-              <h3 className="font-semibold text-lg">Template Details</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Template:</span>
-                  <span className="font-medium">{template?.title || formatTemplateId(templateId)}</span>
-                </div>
-                {template?.category && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Category:</span>
-                    <span className="font-medium">{template.category}</span>
-                  </div>
-                )}
-                {template?.difficulty && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Difficulty:</span>
-                    <span className="font-medium">{template.difficulty}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+          {/* Main message */}
+          <div className="text-center">
+            <p className="text-muted-foreground">
+              We've configured <span className="text-foreground font-medium">{templateName}</span> based on your business.
+            </p>
+          </div>
 
-          <div className="space-y-3">
-            <h3 className="font-semibold">Next Steps:</h3>
+          {/* What's ready */}
+          <div className="bg-muted/30 rounded-lg p-4 space-y-3">
+            <h3 className="font-medium text-sm text-foreground">What's ready:</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li className="flex gap-2">
-                <span className="text-primary">•</span>
-                <span>Your template configuration has been saved</span>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <span>Smart defaults applied from your profile</span>
               </li>
-              <li className="flex gap-2">
-                <span className="text-primary">•</span>
-                <span>You can now explore the demo or return to browse more templates</span>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <span>System configured and active</span>
               </li>
-              <li className="flex gap-2">
-                <span className="text-primary">•</span>
-                <span>Sign in to your dashboard to access full features and customization</span>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <span>Ready to use immediately</span>
               </li>
             </ul>
           </div>
 
-          <div className="flex flex-col gap-3 pt-4">
-            {demoRoute && (
+          {/* Primary action */}
+          <div className="flex flex-col gap-3 pt-2">
+            <Button 
+              onClick={() => navigate('/dashboard')} 
+              size="lg"
+              className="w-full"
+            >
+              <LayoutDashboard className="mr-2 h-5 w-5" />
+              Go to Dashboard
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            
+            {/* Secondary action - Advanced settings */}
+            {templateId && (
               <Button 
-                onClick={() => navigate(demoRoute)} 
-                size="lg"
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold"
+                onClick={() => navigate(`/templates/${templateId}/setup?mode=advanced`)} 
+                variant="ghost"
+                className="w-full text-muted-foreground hover:text-foreground"
               >
-                <Eye className="mr-2 h-5 w-5" />
-                View Dashboard Demo
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <Settings2 className="mr-2 h-4 w-4" />
+                Advanced settings
               </Button>
             )}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button 
-                onClick={() => navigate('/templates')} 
-                variant="outline"
-                className="flex-1"
-              >
-                <Home className="mr-2 h-4 w-4" />
-                Browse Templates
-              </Button>
-              <Button 
-                onClick={() => navigate('/auth')} 
-                className="flex-1"
-              >
-                Sign In to Dashboard
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
           </div>
         </CardContent>
       </Card>

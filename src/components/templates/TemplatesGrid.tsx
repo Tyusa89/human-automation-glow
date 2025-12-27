@@ -146,12 +146,12 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
                   <button 
                     onClick={(e) => { 
                       e.stopPropagation(); 
-                      navigate(`/templates/${encodeURIComponent(t.id)}/setup`); 
+                      navigate(`/templates/${encodeURIComponent(t.id)}/activate`); 
                     }} 
                     className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
                   >
                     <Play className="h-3.5 w-3.5" />
-                    Use template
+                    Activate
                   </button>
                 )}
               </div>

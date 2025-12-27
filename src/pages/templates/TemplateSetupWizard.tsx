@@ -35,23 +35,31 @@ export default function TemplateSetupWizard() {
   if (!tpl) {
     // visible error instead of blank page
     return (
-      <div className="min-h-screen grid place-items-center text-rose-300">
-        <div className="text-2xl font-semibold">Unknown template: {raw ?? "undefined"}</div>
-        <button className="mt-4 rounded-lg border border-white/10 px-4 py-2"
-                onClick={() => nav("/templates")}>
-          Back to Templates
-        </button>
+      <div className="min-h-screen bg-background grid place-items-center text-destructive">
+        <div className="text-center">
+          <div className="text-2xl font-semibold">Unknown template: {raw ?? "undefined"}</div>
+          <button className="mt-4 rounded-lg border border-border px-4 py-2 text-foreground hover:bg-muted transition-colors"
+                  onClick={() => nav("/templates")}>
+            Back to Templates
+          </button>
+        </div>
       </div>
     );
   }
 
   if (!tpl.steps || tpl.steps.length === 0) {
     return (
-      <div className="min-h-screen bg-[#0B1220] text-white">
+      <div className="min-h-screen bg-background text-foreground">
         <div className="mx-auto max-w-5xl px-6 py-10">
-          <div className="text-xs text-zinc-400">TEMPLATE • {tpl.name}</div>
-          <h1 className="mt-1 text-4xl font-extrabold">Template Setup</h1>
-          <p className="mt-4 text-zinc-300">Setup wizard coming soon...</p>
+          <div className="text-xs text-muted-foreground uppercase tracking-wider">TEMPLATE • {tpl.name}</div>
+          <h1 className="mt-1 text-3xl font-bold">Advanced Configuration</h1>
+          <p className="mt-4 text-muted-foreground">No advanced settings available for this template.</p>
+          <button 
+            className="mt-6 rounded-lg bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90 transition-colors"
+            onClick={() => nav("/dashboard")}
+          >
+            Go to Dashboard
+          </button>
         </div>
       </div>
     );
@@ -107,16 +115,17 @@ export default function TemplateSetupWizard() {
   const isReviewStep = current.fields.some(f => f.kind === "review");
 
   return (
-    <div className="min-h-screen bg-[#0B1220] text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-5xl px-6 py-10">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <div className="text-xs text-zinc-400">TEMPLATE • {tpl.name}</div>
-            <h1 className="mt-1 text-4xl font-extrabold">Template Setup</h1>
+            <div className="text-xs text-muted-foreground uppercase tracking-wider">ADVANCED SETTINGS • {tpl.name}</div>
+            <h1 className="mt-1 text-3xl font-bold">Customize Configuration</h1>
+            <p className="text-sm text-muted-foreground mt-1">Optional — your system is already configured with smart defaults</p>
           </div>
           <a 
-            href="/help"
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white font-medium transition-colors"
+            href="/support"
+            className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 rounded-lg text-primary-foreground font-medium transition-colors"
           >
             <BookOpen size={16} />
             Learn How to Use Templates
@@ -125,21 +134,21 @@ export default function TemplateSetupWizard() {
         </div>
         
         <div className="mt-8">
-          <div className="text-sm text-zinc-400 mb-2">
+          <div className="text-sm text-muted-foreground mb-2">
             Step {step + 1} of {tpl.steps.length}
           </div>
           <h2 className="text-2xl font-bold mb-6">{current.title}</h2>
           
           <div className="space-y-4">
             {current.fields.map((field, i) => (
-              <div key={i} className="text-zinc-300">
+              <div key={i} className="text-muted-foreground">
                 {field.kind === "review" ? (
                   <div className="space-y-4">
-                    <div className="text-lg font-semibold mb-4">Review your configuration:</div>
+                    <div className="text-lg font-semibold mb-4 text-foreground">Review your configuration:</div>
                     {Object.entries(formState).map(([key, value]) => (
-                      <div key={key} className="flex justify-between py-2 border-b border-zinc-700">
-                        <span className="font-medium">{key}:</span>
-                        <span className="text-zinc-400">
+                      <div key={key} className="flex justify-between py-2 border-b border-border">
+                        <span className="font-medium text-foreground">{key}:</span>
+                        <span className="text-muted-foreground">
                           {Array.isArray(value) ? value.join(", ") : String(value)}
                         </span>
                       </div>
@@ -147,20 +156,20 @@ export default function TemplateSetupWizard() {
                   </div>
                 ) : (
                   <div>
-                    <label className="block mb-2 font-medium">{field.label}</label>
+                    <label className="block mb-2 font-medium text-foreground">{field.label}</label>
                     {field.kind === "text" && (
                       <input 
                         type="text" 
                         value={formState[field.key] || ""}
                         onChange={(e) => updateFormValue(field.key, e.target.value)}
-                        className="w-full p-3 bg-zinc-800 rounded border border-zinc-600 text-white focus:border-blue-500 focus:outline-none"
+                        className="w-full p-3 bg-muted rounded-lg border border-border text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                       />
                     )}
                     {field.kind === "select" && (
                       <select 
                         value={formState[field.key] || ""}
                         onChange={(e) => updateFormValue(field.key, e.target.value)}
-                        className="w-full p-3 bg-zinc-800 rounded border border-zinc-600 text-white focus:border-blue-500 focus:outline-none"
+                        className="w-full p-3 bg-muted rounded-lg border border-border text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                       >
                         {field.options.map(opt => (
                           <option key={opt} value={opt}>{opt}</option>
@@ -181,9 +190,9 @@ export default function TemplateSetupWizard() {
                                   : current.filter((item: string) => item !== opt);
                                 updateFormValue(field.key, updated);
                               }}
-                              className="mr-3 w-4 h-4"
+                              className="mr-3 w-4 h-4 accent-primary"
                             />
-                            <span>{opt}</span>
+                            <span className="text-foreground">{opt}</span>
                           </label>
                         ))}
                       </div>
@@ -198,7 +207,7 @@ export default function TemplateSetupWizard() {
             <button 
               onClick={() => setStep(Math.max(0, step - 1))}
               disabled={step === 0}
-              className="px-6 py-3 bg-zinc-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-600 transition-colors"
+              className="px-6 py-3 bg-muted text-foreground rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted/80 transition-colors"
             >
               Previous
             </button>
@@ -207,15 +216,15 @@ export default function TemplateSetupWizard() {
               <button 
                 onClick={handleGenerate}
                 disabled={isGenerating}
-                className="px-6 py-3 bg-green-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-500 transition-colors"
+                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
               >
-                {isGenerating ? "Generating..." : "Generate Project"}
+                {isGenerating ? "Saving..." : "Save Configuration"}
               </button>
             ) : (
               <button 
                 onClick={() => setStep(Math.min(tpl.steps.length - 1, step + 1))}
                 disabled={step === tpl.steps.length - 1}
-                className="px-6 py-3 bg-blue-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-500 transition-colors"
+                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
               >
                 Next
               </button>
