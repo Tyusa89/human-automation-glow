@@ -37,8 +37,15 @@ const categoryLabels: Record<string, string> = {
   other: "Integrations",
 };
 
-// Setup steps for all templates
-const setupSteps = [
+// Default bullets fallback
+const defaultBullets = [
+  "Designed to get you to first value fast",
+  "Works with your existing EcoNest workspace",
+  "Uses the same Baseframe-clean flow across templates",
+];
+
+// Default setup steps fallback
+const defaultSetupSteps = [
   "Connect required tools (if any)",
   "Confirm settings",
   "Run a test",
@@ -71,6 +78,16 @@ export default function TemplatePreview() {
 
   const identity = useMemo(() => (slug ? getTemplateIdentity(slug) : null), [slug]);
   const locked = identity ? isTemplateLocked(identity.requiredPlan, userPlan) : false;
+
+  // Use template-specific bullets or fallback to defaults
+  const bullets = identity?.previewBullets?.length 
+    ? identity.previewBullets 
+    : defaultBullets;
+
+  // Use template-specific steps or fallback to defaults
+  const steps = identity?.setupSteps?.length 
+    ? identity.setupSteps 
+    : defaultSetupSteps;
 
   if (!identity) {
     return (
@@ -169,18 +186,12 @@ export default function TemplatePreview() {
             <CardContent>
               <p className="text-muted-foreground mb-4">{identity.primaryJob}</p>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
-                  Designed to get you to first value fast
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
-                  Works with your existing EcoNest workspace
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
-                  Uses the same clean flow across templates
-                </li>
+                {bullets.map((bullet, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <Check className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
+                    {bullet}
+                  </li>
+                ))}
               </ul>
             </CardContent>
           </Card>
@@ -193,7 +204,7 @@ export default function TemplatePreview() {
             </CardHeader>
             <CardContent>
               <ol className="space-y-3">
-                {setupSteps.map((step, i) => (
+                {steps.map((step, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-medium">
                       {i + 1}
