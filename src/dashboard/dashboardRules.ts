@@ -20,18 +20,17 @@ export function getDashboardConfig(profile: UserProfile): WidgetKey[] {
     ? profile.primary_challenges 
     : mapLegacyChallenges(profile.hardest_things);
 
-  // Eligible set (the "what")
   const eligible = new Set<WidgetKey>();
 
-  // Always-on baseline
-  eligible.add("activity_feed");
+  // Always-on
   eligible.add("kpi_weekly_income");
+  eligible.add("activity_feed");
 
   if (profile.monthly_revenue_range && profile.monthly_revenue_range !== "starting_inconsistent") {
     eligible.add("kpi_monthly_income");
   }
 
-  // Work type eligibility
+  // Work type
   switch (businessType) {
     case "consultant":
     case "coach":
@@ -50,31 +49,21 @@ export function getDashboardConfig(profile: UserProfile): WidgetKey[] {
       eligible.add("task_list");
   }
 
-  // Pain-point eligibility
-  if (challenges?.includes("knowing_what_to_focus_on") || challenges?.includes("focus")) {
-    eligible.add("focus_today");
-  }
-  if (challenges?.includes("client_follow_ups") || challenges?.includes("followups")) {
-    eligible.add("follow_up_queue");
-  }
-  if (challenges?.includes("tracking_income_expenses") || challenges?.includes("income")) {
-    eligible.add("income_trend_chart");
-  }
-  if (challenges?.includes("staying_organized") || challenges?.includes("organized")) {
-    eligible.add("task_list");
-  }
+  // Challenges
+  const ch = challenges ?? [];
+  if (ch.includes("knowing_what_to_focus_on") || ch.includes("focus")) eligible.add("focus_today");
+  if (ch.includes("client_follow_ups") || ch.includes("followups")) eligible.add("follow_up_queue");
+  if (ch.includes("tracking_income_expenses") || ch.includes("income")) eligible.add("income_trend_chart");
+  if (ch.includes("staying_organized") || ch.includes("organized")) eligible.add("task_list");
 
   // Assistant level
-  if (profile.assistant_level === "active") {
-    eligible.add("assistant_suggestions");
-  }
+  if (profile.assistant_level === "active") eligible.add("assistant_suggestions");
 
-  // Now: compute order (the "where")
   return sortByPriority([...eligible], { ...profile, business_type: businessType, primary_challenges: challenges });
 }
 
 function sortByPriority(keys: WidgetKey[], profile: UserProfile): WidgetKey[] {
-  // Base priority (lower = earlier)
+  // Base order (platform default)
   const base: Record<WidgetKey, number> = {
     focus_today: 10,
     kpi_weekly_income: 20,
@@ -89,53 +78,33 @@ function sortByPriority(keys: WidgetKey[], profile: UserProfile): WidgetKey[] {
     assistant_suggestions: 95
   };
 
-  // Adjustments based on onboarding (small deltas)
+  // Micro-adjustments from onboarding answers
   const bump: Partial<Record<WidgetKey, number>> = {};
 
   const ch = profile.primary_challenges ?? [];
 
-  // If they struggle with focus → Focus Today MUST be first
-  if (ch.includes("knowing_what_to_focus_on") || ch.includes("focus")) {
-    bump["focus_today"] = -8;
-  }
+  if (ch.includes("knowing_what_to_focus_on") || ch.includes("focus")) bump.focus_today = -12;
+  if (ch.includes("tracking_income_expenses") || ch.includes("income")) bump.income_trend_chart = -12;
+  if (ch.includes("client_follow_ups") || ch.includes("followups")) bump.follow_up_queue = -10;
+  if (ch.includes("staying_organized") || ch.includes("organized")) bump.task_list = -10;
 
-  // Income tracking → chart moves up
-  if (ch.includes("tracking_income_expenses") || ch.includes("income")) {
-    bump["income_trend_chart"] = -10;
-  }
-
-  // Follow-ups → follow-up queue moves up
-  if (ch.includes("client_follow_ups") || ch.includes("followups")) {
-    bump["follow_up_queue"] = -10;
-  }
-
-  // Staying organized → tasks move up
-  if (ch.includes("staying_organized") || ch.includes("organized")) {
-    bump["task_list"] = -10;
-  }
-
-  // Work-type emphasis
   if (profile.business_type === "local_service_provider" || profile.business_type === "local-service") {
-    bump["appointments_today"] = -12;
+    bump.appointments_today = -12;
   }
   if (profile.business_type === "creative_designer" || profile.business_type === "creative") {
-    bump["project_board"] = -8;
+    bump.project_board = -8;
   }
   if (["consultant", "coach", "freelancer"].includes(profile.business_type ?? "")) {
-    bump["client_list"] = -8;
+    bump.client_list = -8;
   }
 
-  // High client volume → queues + list become more important
   if (profile.client_volume === "25_plus") {
-    bump["follow_up_queue"] = (bump["follow_up_queue"] ?? 0) - 6;
-    bump["client_list"] = (bump["client_list"] ?? 0) - 4;
-    bump["activity_feed"] = (bump["activity_feed"] ?? 0) - 4;
+    bump.follow_up_queue = (bump.follow_up_queue ?? 0) - 6;
+    bump.client_list = (bump.client_list ?? 0) - 4;
+    bump.activity_feed = (bump.activity_feed ?? 0) - 4;
   }
 
-  // Active assistant → suggestions can appear earlier
-  if (profile.assistant_level === "active") {
-    bump["assistant_suggestions"] = -8;
-  }
+  if (profile.assistant_level === "active") bump.assistant_suggestions = -8;
 
   return keys.sort((a, b) => {
     const pa = (base[a] ?? 1000) + (bump[a] ?? 0);

@@ -19,8 +19,11 @@ export function resolveDashboardWidgets(
   dbRows: DbWidgetRow[] | null | undefined
 ): ResolvedWidget[] {
   const overrides = new Map<string, DbWidgetRow>();
-
   (dbRows ?? []).forEach((r) => overrides.set(r.widget_key, r));
+
+  // Rule-based default ordering (10, 20, 30...)
+  const ruleOrder = new Map<WidgetKey, number>();
+  ruleKeys.forEach((k, idx) => ruleOrder.set(k, (idx + 1) * 10));
 
   const resolved: ResolvedWidget[] = [];
 
@@ -28,8 +31,12 @@ export function resolveDashboardWidgets(
     const def = WIDGETS[key];
     const ovr = overrides.get(key);
 
-    const enabled = ovr !== undefined ? ovr.enabled : def.defaultEnabled;
-    const sortOrder = ovr !== undefined ? ovr.sort_order : def.defaultOrder;
+    const enabled = ovr ? ovr.enabled : def.defaultEnabled;
+
+    // Use DB sort_order if exists, otherwise use rule index order
+    const sortOrder = ovr
+      ? ovr.sort_order
+      : (ruleOrder.get(key) ?? def.defaultOrder);
 
     const config = {
       ...(def.defaultConfig ?? {}),
@@ -38,19 +45,6 @@ export function resolveDashboardWidgets(
 
     resolved.push({ key, enabled, sortOrder, config });
   }
-
-  // For v2: allow "Add widgets" not in rules
-  // for (const [key, ovr] of overrides) {
-  //   if (!ruleKeys.includes(key as WidgetKey) && WIDGETS[key as WidgetKey]) {
-  //     const def = WIDGETS[key as WidgetKey];
-  //     resolved.push({
-  //       key: key as WidgetKey,
-  //       enabled: ovr.enabled,
-  //       sortOrder: ovr.sort_order,
-  //       config: { ...(def.defaultConfig ?? {}), ...(ovr.config ?? {}) }
-  //     });
-  //   }
-  // }
 
   return resolved
     .filter((w) => w.enabled)
