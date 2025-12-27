@@ -4,7 +4,6 @@ import { Eye, Play, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Template } from '@/lib/templates';
 
 interface TemplatesGridProps {
@@ -20,64 +19,71 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {templates.map((t) => (
         <motion.div key={t.id} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="template-card bg-zinc-900/60 border-zinc-800 overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-            <CardHeader className="pb-2">
-              <div className="flex gap-2 mb-2">
+          <div className="rounded-2xl bg-white/5 border border-white/10 p-6 backdrop-blur hover:bg-white/[0.07] transition-all duration-300 hover:scale-[1.02]">
+            {/* Header with badges */}
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <div className="flex gap-2">
                 {t.badges?.map((b, index) => (
-                  <Badge key={`${t.id}-${b}-${index}`} variant="secondary" className="chip">
+                  <span 
+                    key={`${t.id}-${b}-${index}`} 
+                    className="inline-flex items-center rounded-full border border-white/10 bg-white/10 px-2.5 py-1 text-xs text-white/80"
+                  >
                     {b}
-                  </Badge>
+                  </span>
                 ))}
               </div>
-              <CardTitle className="text-lg font-semibold flex items-center justify-between gap-2 text-white mb-1">
-                <span className="text-white">{t.title}</span>
-                <Badge variant="outline" className={`text-[10px] ${
-                  t.difficulty === "Beginner" ? "pill-easy" : 
-                  t.difficulty === "Intermediate" ? "pill-inter" : 
-                  "pill-advanced"
-                }`}>
-                  {t.difficulty || ""}
-                </Badge>
-              </CardTitle>
-              <p className="text-sm text-muted-foreground line-clamp-2">{t.tagline}</p>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {/* Technology tags */}
-              {t.technologies && t.technologies.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {t.technologies.map((tech, i) => (
-                    <Badge key={i} variant="secondary" className="text-xs bg-blue-500/20 text-blue-300 border-blue-500/30">
-                      {tech}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-              
-              {/* Setup time and buttons */}
-              <div className="flex items-center justify-between gap-3">
-                <div className="text-xs text-muted-foreground">
-                  {t.setupTime && `Setup: ${t.setupTime}`}
-                </div>
-                <div className="flex gap-2">
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    onClick={() => onPreview(t.id)}
-                    className="text-xs px-3 py-1 h-8 text-white bg-blue-900 border-blue-800 hover:bg-blue-800 hover:border-blue-700 hover:text-white"
+              <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                t.difficulty === "Beginner" 
+                  ? "bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/30" 
+                  : t.difficulty === "Intermediate" 
+                  ? "bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30" 
+                  : "bg-sky-500/20 text-sky-300 ring-1 ring-sky-500/30"
+              }`}>
+                {t.difficulty || ""}
+              </span>
+            </div>
+
+            {/* Title */}
+            <h3 className="text-lg font-semibold text-white mb-2">{t.title}</h3>
+            
+            {/* Description */}
+            <p className="text-sm text-white/70 line-clamp-2 mb-4">{t.tagline}</p>
+
+            {/* Technology tags */}
+            {t.technologies && t.technologies.length > 0 && (
+              <div className="flex flex-wrap gap-1 mb-4">
+                {t.technologies.map((tech, i) => (
+                  <span 
+                    key={i} 
+                    className="px-2 py-0.5 text-xs rounded-full bg-white/10 text-white/70 ring-1 ring-white/10"
                   >
-                    Preview
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    onClick={(e) => { e.stopPropagation(); navigate(`/templates/${encodeURIComponent(t.id)}/setup`); }} 
-                    className="btn-primary text-xs px-3 py-1 h-8"
-                  >
-                    <Play className="mr-1 h-3 w-3" /> Use template
-                  </Button>
-                </div>
+                    {tech}
+                  </span>
+                ))}
               </div>
-            </CardContent>
-          </Card>
+            )}
+            
+            {/* Footer */}
+            <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10">
+              <span className="text-xs text-white/50">
+                {t.setupTime && `Setup: ${t.setupTime}`}
+              </span>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => onPreview(t.id)}
+                  className="inline-flex items-center rounded-xl bg-white/10 border border-white/10 px-3 py-1.5 text-xs text-white/80 hover:bg-white/15 transition-colors"
+                >
+                  Preview
+                </button>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); navigate(`/templates/${encodeURIComponent(t.id)}/setup`); }} 
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-400 transition-colors"
+                >
+                  <Play className="h-3 w-3" /> Use template
+                </button>
+              </div>
+            </div>
+          </div>
         </motion.div>
       ))}
     </div>
