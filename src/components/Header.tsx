@@ -55,9 +55,6 @@ export default function AppHeader() {
         {/* Core app links for authenticated users */}
         {authed && (
           <>
-            <Link to="/dashboard" className="hover:text-emerald-400 transition-colors text-white px-3 py-1.5 rounded-md hover:bg-white/5 text-sm">
-              Dashboard
-            </Link>
             <TemplatesMegaMenu />
             <IntegrationsMegaMenu />
             <Link to="/appointments" className="hover:text-emerald-400 transition-colors text-white px-3 py-1.5 rounded-md hover:bg-white/5 text-sm">
