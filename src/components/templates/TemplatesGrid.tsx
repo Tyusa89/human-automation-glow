@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Play, Lock } from "lucide-react";
+import { Play, Lock, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Template } from '@/lib/templates';
 import { useUserPlan } from '@/hooks/useUserPlan';
+import { useTemplateActivation } from '@/hooks/useTemplateActivation';
 import { 
   type PlanTier,
   type Difficulty,
@@ -18,6 +20,8 @@ interface TemplatesGridProps {
   templates: Template[];
   onPreview: (templateId: string) => void;
   onScaffoldMessage: (message: string) => void;
+  /** If provided, activates inline using RPC. Otherwise navigates to /activate page. */
+  onActivateSuccess?: (slug: string) => void;
 }
 
 // Get required plan from template identity map
@@ -46,9 +50,33 @@ const tierBadgeStyles: Record<PlanTier, string> = {
   business: "bg-purple-500/20 text-purple-400 border-purple-500/40",
 };
 
-export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: TemplatesGridProps) {
+export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, onActivateSuccess }: TemplatesGridProps) {
   const navigate = useNavigate();
   const { plan: userPlan, loading: planLoading } = useUserPlan();
+  const [activatingId, setActivatingId] = useState<string | null>(null);
+
+  const { activate, isActivating } = useTemplateActivation({
+    redirectOnSuccess: null,
+    onSuccess: (slug) => {
+      setActivatingId(null);
+      onScaffoldMessage(`${slug} activated`);
+      onActivateSuccess?.(slug);
+    },
+    onError: () => {
+      setActivatingId(null);
+    },
+  });
+
+  const handleActivate = async (templateId: string) => {
+    if (onActivateSuccess) {
+      // Inline activation via RPC
+      setActivatingId(templateId);
+      await activate(templateId);
+    } else {
+      // Navigate to activation page
+      navigate(`/templates/${encodeURIComponent(templateId)}/activate`);
+    }
+  };
 
   // Sort templates: unlocked first, then by tier, then difficulty, then name
   const sortedTemplateIds = sortTemplatesForGrid(
@@ -131,12 +159,22 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage }: Templ
                   <button 
                     onClick={(e) => { 
                       e.stopPropagation(); 
-                      navigate(`/templates/${encodeURIComponent(t.id)}/activate`); 
-                    }} 
-                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+                      handleActivate(t.id);
+                    }}
+                    disabled={activatingId === t.id}
+                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
                   >
-                    <Play className="h-3.5 w-3.5" />
-                    Activate
+                    {activatingId === t.id ? (
+                      <>
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        Activating
+                      </>
+                    ) : (
+                      <>
+                        <Play className="h-3.5 w-3.5" />
+                        Activate
+                      </>
+                    )}
                   </button>
                 )}
               </div>
