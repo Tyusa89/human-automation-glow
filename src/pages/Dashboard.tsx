@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal, Settings, Download, RefreshCw, ArrowLeft, Activity, Sliders } from 'lucide-react';
 import { SetupChecklist } from '@/components/dashboard/SetupChecklist';
-import { SuggestionBanner } from '@/components/dashboard/SuggestionBanner';
+import { useDashboardSuggestion, DashboardSuggestionCard } from '@/dashboard/suggestions';
 import { 
   FocusToday, 
   WeeklyIncome, 
@@ -30,7 +30,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useEnsureProfile } from '@/hooks/useEnsureProfile';
 import { useToast } from '@/hooks/use-toast';
 import { useRole, isAdminLike } from '@/hooks/useRole';
-import { useDashboardSuggestions } from '@/hooks/useDashboardSuggestions';
+
 
 // Widget component map - using any for flexibility with different widget props
 const WidgetComponent: Record<string, React.FC<any>> = {
@@ -61,10 +61,9 @@ const Dashboard = () => {
   
   const { 
     suggestion, 
-    acceptSuggestion, 
-    dismissSuggestion,
-    refetch: refetchSuggestions
-  } = useDashboardSuggestions(userId);
+    loading: suggestionLoading,
+    refresh: refreshSuggestion
+  } = useDashboardSuggestion();
 
   async function loadLastKpi() {
     const { data } = await supabase
@@ -234,14 +233,13 @@ const Dashboard = () => {
 
       <div className="container mx-auto px-4 py-6 space-y-6">
         {/* Suggestion Banner */}
-        {suggestion && (
-          <SuggestionBanner
-            suggestion={suggestion}
-            onAccept={async () => {
-              await acceptSuggestion();
-              loadDashboard(); // Refresh dashboard after accepting
-            }}
-            onDismiss={dismissSuggestion}
+        {!suggestionLoading && suggestion && (
+          <DashboardSuggestionCard 
+            suggestion={suggestion} 
+            onChanged={async () => {
+              await refreshSuggestion();
+              loadDashboard();
+            }} 
           />
         )}
 
