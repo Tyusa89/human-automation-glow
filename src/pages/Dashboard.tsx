@@ -124,11 +124,17 @@ const Dashboard = () => {
     const activeSlug = (templateResult.data?.templates as any)?.slug ?? null;
     setActiveTemplateSlug(activeSlug);
     
+    // Get template emphasis for widget ordering
+    const identity = activeSlug ? getTemplateIdentity(activeSlug) : null;
+    const emphasis = identity
+      ? getTemplateWidgetEmphasis({ templateSlug: identity.slug as any, templateCategory: identity.category })
+      : null;
+    
     // Get rule-based widgets
     const ruleKeys = getDashboardConfig(userProfile);
     
-    // Merge with DB overrides
-    const resolvedWidgets = resolveDashboardWidgets(ruleKeys, widgetResult.data);
+    // Merge with DB overrides, applying template emphasis for default ordering
+    const resolvedWidgets = resolveDashboardWidgets(ruleKeys, widgetResult.data, emphasis);
     setWidgets(resolvedWidgets);
     
     setProfileLoading(false);
