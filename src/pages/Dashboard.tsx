@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Settings, Download, RefreshCw, ArrowLeft, Activity } from 'lucide-react';
+import { MoreHorizontal, Settings, Download, RefreshCw, ArrowLeft, Activity, Sliders } from 'lucide-react';
 import { SetupChecklist } from '@/components/dashboard/SetupChecklist';
 import { 
   FocusToday, 
@@ -172,35 +172,51 @@ const Dashboard = () => {
               </div>
             </div>
             
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-10 w-10">
-                  <MoreHorizontal className="h-5 w-5" />
-                  <span className="sr-only">Open menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-background border border-border">
-                <DropdownMenuItem onClick={() => loadDashboard()} className="cursor-pointer">
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Refresh Dashboard
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleRunDaily} className="cursor-pointer">
-                  <Download className="mr-2 h-4 w-4" />
-                  Generate Daily Report
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/onboarding')}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Update Preferences
-                </DropdownMenuItem>
-                {admin && (
-                  <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/admin')}>
-                    <Activity className="mr-2 h-4 w-4" />
-                    Admin Panel
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/dashboard/settings')}
+                className="gap-2"
+              >
+                <Sliders className="h-4 w-4" />
+                Customize
+              </Button>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-10 w-10">
+                    <MoreHorizontal className="h-5 w-5" />
+                    <span className="sr-only">Open menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-background border border-border">
+                  <DropdownMenuItem onClick={() => loadDashboard()} className="cursor-pointer">
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    Refresh Dashboard
                   </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuItem onClick={handleRunDaily} className="cursor-pointer">
+                    <Download className="mr-2 h-4 w-4" />
+                    Generate Daily Report
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/dashboard/settings')}>
+                    <Sliders className="mr-2 h-4 w-4" />
+                    Customize Widgets
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/onboarding')}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    Update Preferences
+                  </DropdownMenuItem>
+                  {admin && (
+                    <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/admin')}>
+                      <Activity className="mr-2 h-4 w-4" />
+                      Admin Panel
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </div>
