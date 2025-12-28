@@ -4,7 +4,9 @@ import { Play, Lock, Loader2, ArrowRight, Check, LayoutDashboard, Cog, Bot, Shop
 import { useNavigate } from "react-router-dom";
 import { Template } from '@/lib/templates';
 import { useUserPlan } from '@/hooks/useUserPlan';
+import { useActiveTemplateCount } from '@/hooks/useActiveTemplateCount';
 import { useTemplateActivation } from '@/hooks/useTemplateActivation';
+import { canActivateTemplate } from '@/lib/templateActivation';
 import { 
   type PlanTier,
   type Difficulty,
@@ -88,13 +90,18 @@ const tierBadgeStyles: Record<PlanTier, string> = {
 export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, activeTemplateSlug, onActivateSuccess }: TemplatesGridProps) {
   const navigate = useNavigate();
   const { plan: userPlan, loading: planLoading } = useUserPlan();
+  const { count: activeCount, refetch: refetchCount } = useActiveTemplateCount();
   const [activatingId, setActivatingId] = useState<string | null>(null);
+
+  // Check if user can activate more templates (Beginner/Free = 1 max)
+  const activationCheck = canActivateTemplate({ userPlan, activeTemplateCount: activeCount });
 
   const { activate } = useTemplateActivation({
     onSuccess: (slug) => {
       setActivatingId(null);
       onScaffoldMessage(`${slug} activated`);
       onActivateSuccess?.(slug);
+      refetchCount(); // Refresh count after activation
     },
     onError: () => {
       setActivatingId(null);
@@ -102,6 +109,20 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, activeT
   });
 
   const handleActivate = async (templateId: string) => {
+    // If this template is already active, allow "re-activation"
+    if (templateId === activeTemplateSlug) {
+      setActivatingId(templateId);
+      await activate(templateId);
+      return;
+    }
+    
+    // Check activation limit for free plan
+    if (!activationCheck.allowed) {
+      // Show limit reached message
+      navigate(`/templates/${templateId}?limit=reached`);
+      return;
+    }
+    
     setActivatingId(templateId);
     await activate(templateId);
   };
@@ -163,12 +184,20 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, activeT
 
             {/* Templates Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {categoryTemplates.map((t) => {
+            {categoryTemplates.map((t) => {
                 const identity = getTemplateIdentity(t.id);
                 const requiredPlan = getRequiredPlan(t.id);
                 const difficulty = getDifficulty(t.id);
-                const needsUpgrade = isTemplateLocked(requiredPlan, userPlan);
                 const isActive = t.id === activeTemplateSlug;
+                
+                // For Pro/Business templates, check plan-based lock
+                const needsPlanUpgrade = requiredPlan !== "free" && isTemplateLocked(requiredPlan, userPlan);
+                
+                // For Free templates, check if user hit their active limit (only for free plan users)
+                const hitActiveLimit = requiredPlan === "free" && !isActive && !activationCheck.allowed;
+                
+                // Combined: needs upgrade OR hit limit
+                const needsUpgrade = needsPlanUpgrade;
                 
                 // Show tier badge only if not free
                 const showTierBadge = requiredPlan !== "free";
@@ -249,6 +278,16 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, activeT
                           >
                             <Lock className="h-3.5 w-3.5" />
                             {getUpgradeLabel(requiredPlan)}
+                          </button>
+                        ) : hitActiveLimit ? (
+                          <button 
+                            onClick={() => navigate(`/templates/${t.id}?limit=reached`)}
+                            disabled
+                            className="inline-flex items-center gap-2 rounded-lg border border-slate-600 px-4 py-2 text-sm font-medium text-slate-400 cursor-not-allowed"
+                            title="Beginner can run 1 template at a time. Deactivate your current template or upgrade to run multiple."
+                          >
+                            <Lock className="h-3.5 w-3.5" />
+                            Running 1/1
                           </button>
                         ) : (
                           <button 
