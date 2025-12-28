@@ -25,6 +25,7 @@ export function getDashboardConfig(profile: UserProfile): WidgetKey[] {
   // Always-on
   eligible.add("kpi_weekly_income");
   eligible.add("activity_feed");
+  eligible.add("templates_quick_access");
 
   if (profile.monthly_revenue_range && profile.monthly_revenue_range !== "starting_inconsistent") {
     eligible.add("kpi_monthly_income");
@@ -68,6 +69,7 @@ function sortByPriority(keys: WidgetKey[], profile: UserProfile): WidgetKey[] {
     focus_today: 10,
     kpi_weekly_income: 20,
     kpi_monthly_income: 30,
+    templates_quick_access: 35,
     income_trend_chart: 40,
     appointments_today: 45,
     follow_up_queue: 50,

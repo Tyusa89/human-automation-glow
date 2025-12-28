@@ -1161,6 +1161,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_template_activity: {
+        Row: {
+          created_at: string
+          last_opened_at: string
+          open_count: number
+          saved: boolean
+          saved_at: string | null
+          template_slug: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          last_opened_at?: string
+          open_count?: number
+          saved?: boolean
+          saved_at?: string | null
+          template_slug: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          last_opened_at?: string
+          open_count?: number
+          saved?: boolean
+          saved_at?: string | null
+          template_slug?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_templates: {
         Row: {
           agent_config_override: Json | null

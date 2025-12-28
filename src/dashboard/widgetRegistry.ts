@@ -9,7 +9,8 @@ export type WidgetKey =
   | "task_list"
   | "project_board"
   | "activity_feed"
-  | "assistant_suggestions";
+  | "assistant_suggestions"
+  | "templates_quick_access";
 
 export type WidgetDefinition = {
   key: WidgetKey;
@@ -98,5 +99,12 @@ export const WIDGETS: Record<WidgetKey, WidgetDefinition> = {
     description: "Smart recommendations based on your activity.",
     defaultEnabled: true,
     defaultOrder: 110
+  },
+  templates_quick_access: {
+    key: "templates_quick_access",
+    label: "Templates",
+    description: "Your saved and recently used templates.",
+    defaultEnabled: true,
+    defaultOrder: 35
   }
 };

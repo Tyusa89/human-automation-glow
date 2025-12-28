@@ -9,3 +9,4 @@ export { TaskList } from './TaskList';
 export { ProjectBoard } from './ProjectBoard';
 export { ActivityFeed } from './ActivityFeed';
 export { AssistantSuggestions } from './AssistantSuggestions';
+export { default as TemplatesQuickAccess } from './TemplatesQuickAccess';

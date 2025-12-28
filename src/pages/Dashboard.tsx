@@ -19,7 +19,8 @@ import {
   TaskList, 
   ProjectBoard, 
   ActivityFeed, 
-  AssistantSuggestions 
+  AssistantSuggestions,
+  TemplatesQuickAccess
 } from '@/components/dashboard/widgets';
 import { 
   getDashboardConfig, 
@@ -53,6 +54,7 @@ const WidgetComponent: Record<string, React.FC<any>> = {
   project_board: ProjectBoard,
   activity_feed: ActivityFeed,
   assistant_suggestions: AssistantSuggestions,
+  templates_quick_access: TemplatesQuickAccess,
 };
 
 // Quick action links for power users
