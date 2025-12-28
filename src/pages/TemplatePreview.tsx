@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { ArrowLeft, Play, Lock, Check, Zap, Shield, Clock } from "lucide-react";
+import { ArrowLeft, Play, Lock, Check, Zap, Shield, Clock, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,13 +8,19 @@ import {
   getTemplateIdentity, 
   getUpgradeLabel,
   getUpgradeHref,
-  isTemplateLocked,
   DIFFICULTY_LABELS,
   type PlanTier,
   type Difficulty,
 } from "@/config/templates/templateIdentity";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { recordTemplateOpen } from "@/lib/templateActivity";
+import { 
+  canActivateTemplate, 
+  requiresPlanUpgrade, 
+  formatActivationLimitMessage,
+  getActivationLimit 
+} from "@/lib/templateActivation";
+import { supabase } from "@/integrations/supabase/client";
 
 // Difficulty badge styling
 const difficultyStyles: Record<Difficulty, string> = {
@@ -76,15 +82,38 @@ const features = [
 export default function TemplatePreview() {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
-  const { plan: userPlan } = useUserPlan();
+  const { plan: userPlan, loading: planLoading } = useUserPlan();
+  const [activeTemplateCount, setActiveTemplateCount] = useState(0);
+  const [loadingCount, setLoadingCount] = useState(true);
 
   const identity = useMemo(() => (slug ? getTemplateIdentity(slug) : null), [slug]);
-  const locked = identity ? isTemplateLocked(identity.requiredPlan, userPlan) : false;
 
   // Track template open for "Recent" list
   useEffect(() => {
     if (slug) recordTemplateOpen(slug);
   }, [slug]);
+
+  // Fetch active template count for the user
+  useEffect(() => {
+    async function fetchActiveCount() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setLoadingCount(false);
+        return;
+      }
+
+      const { count } = await supabase
+        .from("user_templates")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("is_active", true);
+
+      setActiveTemplateCount(count ?? 0);
+      setLoadingCount(false);
+    }
+
+    fetchActiveCount();
+  }, []);
 
   // Use template-specific bullets or fallback to defaults
   const bullets = identity?.previewBullets?.length 
@@ -111,11 +140,100 @@ export default function TemplatePreview() {
     );
   }
 
+  // Check if template requires a plan upgrade (Pro/Business templates only)
+  const needsPlanUpgrade = requiresPlanUpgrade(identity.requiredPlan, userPlan);
+  
+  // Check if user has hit their activation limit (for free-tier templates)
+  const activationResult = canActivateTemplate({
+    userPlan,
+    activeTemplateCount,
+  });
+  const atActivationLimit = !activationResult.allowed;
+
+  // Determine the blocking reason
+  const isBlocked = needsPlanUpgrade || atActivationLimit;
+  const blockReason = needsPlanUpgrade 
+    ? "plan_required" 
+    : atActivationLimit 
+      ? "limit_reached" 
+      : null;
+
   const planLabel = identity.requiredPlan === "free" 
     ? "Free" 
     : identity.requiredPlan === "pro" 
       ? "Pro" 
       : "Business";
+
+  const limit = getActivationLimit(userPlan);
+  const isLoading = planLoading || loadingCount;
+
+  // CTA button rendering logic
+  const renderActivateButton = (size: "default" | "lg" = "lg") => {
+    if (isLoading) {
+      return (
+        <Button size={size} disabled>
+          <Clock className="h-4 w-4 mr-2 animate-pulse" />
+          Loading...
+        </Button>
+      );
+    }
+
+    if (needsPlanUpgrade) {
+      // Pro/Business template - user needs to upgrade plan
+      return (
+        <Button 
+          size={size}
+          variant="outline"
+          onClick={() => navigate(getUpgradeHref(identity.requiredPlan))}
+          className={`${
+            identity.requiredPlan === "business" 
+              ? "border-purple-500/50 text-purple-400 hover:bg-purple-500/10" 
+              : "border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
+          }`}
+        >
+          <Lock className="h-4 w-4 mr-2" />
+          {getUpgradeLabel(identity.requiredPlan)}
+        </Button>
+      );
+    }
+
+    if (atActivationLimit) {
+      // User hit activation limit - show limit reached state
+      return (
+        <Button 
+          size={size}
+          variant="outline"
+          disabled
+          className="border-muted text-muted-foreground"
+        >
+          <AlertCircle className="h-4 w-4 mr-2" />
+          {activeTemplateCount}/{limit} Active
+        </Button>
+      );
+    }
+
+    // User can activate
+    return (
+      <Button 
+        size={size}
+        onClick={() => navigate(`/templates/${identity.slug}/activate`)}
+      >
+        <Play className="h-4 w-4 mr-2" />
+        Activate
+      </Button>
+    );
+  };
+
+  // Get the bottom CTA message
+  const getBottomMessage = () => {
+    if (needsPlanUpgrade) {
+      return `Upgrade to ${planLabel} to unlock this template.`;
+    }
+    if (atActivationLimit) {
+      return formatActivationLimitMessage(userPlan, activeTemplateCount);
+    }
+    return `Activate ${identity.name} and start seeing results.`;
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -149,30 +267,8 @@ export default function TemplatePreview() {
           </p>
 
           {/* CTAs */}
-          <div className="flex flex-wrap gap-3">
-            {locked ? (
-              <Button 
-                size="lg"
-                variant="outline"
-                onClick={() => navigate(getUpgradeHref(identity.requiredPlan))}
-                className={`${
-                  identity.requiredPlan === "business" 
-                    ? "border-purple-500/50 text-purple-400 hover:bg-purple-500/10" 
-                    : "border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
-                }`}
-              >
-                <Lock className="h-4 w-4 mr-2" />
-                {getUpgradeLabel(identity.requiredPlan)}
-              </Button>
-            ) : (
-              <Button 
-                size="lg"
-                onClick={() => navigate(`/templates/${identity.slug}/activate`)}
-              >
-                <Play className="h-4 w-4 mr-2" />
-                Activate
-              </Button>
-            )}
+          <div className="flex flex-wrap gap-3 items-center">
+            {renderActivateButton()}
             <Button 
               size="lg" 
               variant="outline"
@@ -181,6 +277,20 @@ export default function TemplatePreview() {
               Browse templates
             </Button>
           </div>
+
+          {/* Limit reached helper text */}
+          {atActivationLimit && !needsPlanUpgrade && (
+            <p className="mt-3 text-sm text-muted-foreground flex items-center gap-2">
+              <AlertCircle className="h-4 w-4" />
+              {formatActivationLimitMessage(userPlan, activeTemplateCount)}
+              <Link 
+                to="/pricing" 
+                className="text-primary hover:underline ml-1"
+              >
+                Upgrade to Pro
+              </Link>
+            </p>
+          )}
         </div>
 
         {/* Content grid */}
@@ -220,7 +330,7 @@ export default function TemplatePreview() {
                   </li>
                 ))}
               </ol>
-              {locked && (
+              {needsPlanUpgrade && (
                 <p className="mt-4 text-sm text-amber-500">
                   Requires {planLabel} plan.
                 </p>
@@ -252,13 +362,10 @@ export default function TemplatePreview() {
           <div>
             <h3 className="font-medium mb-1">Ready to get started?</h3>
             <p className="text-sm text-muted-foreground">
-              {locked 
-                ? `Upgrade to ${planLabel} to unlock this template.`
-                : `Activate ${identity.name} and start seeing results.`
-              }
+              {getBottomMessage()}
             </p>
           </div>
-          {locked ? (
+          {needsPlanUpgrade ? (
             <Button 
               onClick={() => navigate(getUpgradeHref(identity.requiredPlan))}
               className={`${
@@ -269,6 +376,14 @@ export default function TemplatePreview() {
             >
               <Lock className="h-4 w-4 mr-2" />
               {getUpgradeLabel(identity.requiredPlan)}
+            </Button>
+          ) : atActivationLimit ? (
+            <Button 
+              onClick={() => navigate("/pricing")}
+              variant="outline"
+              className="border-primary/50 text-primary hover:bg-primary/10"
+            >
+              Upgrade to run more
             </Button>
           ) : (
             <Button onClick={() => navigate(`/templates/${identity.slug}/activate`)}>

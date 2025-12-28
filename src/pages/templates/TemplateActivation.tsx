@@ -1,43 +1,72 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getTemplateById } from "@/lib/templates";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2, Settings2, Clock, Puzzle, Sparkles } from "lucide-react";
+import { Loader2, CheckCircle2, Settings2, Clock, Puzzle, Sparkles, AlertCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useUserPlan } from "@/hooks/useUserPlan";
+import { canActivateTemplate, formatActivationLimitMessage, getActivationLimit } from "@/lib/templateActivation";
 
-type ActivationState = "details" | "activating" | "success" | "error";
+type ActivationState = "loading" | "details" | "activating" | "success" | "error" | "limit_reached";
 
 export default function TemplateActivation() {
   const navigate = useNavigate();
   const { templateId: raw } = useParams();
   const templateId = (raw ?? "").toLowerCase();
+  const { plan: userPlan, loading: planLoading } = useUserPlan();
   
-  const [state, setState] = useState<ActivationState>("details");
+  const [state, setState] = useState<ActivationState>("loading");
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loadingPhase, setLoadingPhase] = useState(0);
+  const [activeTemplateCount, setActiveTemplateCount] = useState(0);
   
   const template = getTemplateById(templateId);
 
-  // Fetch profile on mount
+  // Check activation eligibility on mount
   useEffect(() => {
+    if (planLoading) return;
+    
     if (!template) {
       setError("Template not found");
       setState("error");
       return;
     }
-    fetchProfile();
-  }, [templateId]);
+    
+    checkEligibility();
+  }, [templateId, planLoading]);
 
-  const fetchProfile = async () => {
+  const checkEligibility = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       navigate("/auth");
       return;
     }
 
+    // Get active template count
+    const { count } = await supabase
+      .from("user_templates")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("is_active", true);
+
+    const currentCount = count ?? 0;
+    setActiveTemplateCount(currentCount);
+
+    // Check if user can activate
+    const result = canActivateTemplate({
+      userPlan,
+      activeTemplateCount: currentCount,
+    });
+
+    if (!result.allowed) {
+      setState("limit_reached");
+      return;
+    }
+
+    // Fetch profile for auto-config
     const { data: profileData } = await supabase
       .from("profiles")
       .select("*")
@@ -45,6 +74,7 @@ export default function TemplateActivation() {
       .maybeSingle();
 
     setProfile(profileData);
+    setState("details");
   };
 
   const activateSystem = async () => {
@@ -60,6 +90,25 @@ export default function TemplateActivation() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate("/auth");
+        return;
+      }
+
+      // Double-check eligibility (backend enforcement)
+      const { count } = await supabase
+        .from("user_templates")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("is_active", true);
+
+      const result = canActivateTemplate({
+        userPlan,
+        activeTemplateCount: count ?? 0,
+      });
+
+      if (!result.allowed) {
+        clearInterval(phaseTimer);
+        setActiveTemplateCount(count ?? 0);
+        setState("limit_reached");
         return;
       }
 
@@ -133,6 +182,8 @@ export default function TemplateActivation() {
     { icon: CheckCircle2, text: "Finalizing setup" },
   ];
 
+  const limit = getActivationLimit(userPlan);
+
   if (!template) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -154,6 +205,68 @@ export default function TemplateActivation() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-lg border-primary/20 shadow-xl bg-card/95 backdrop-blur-sm">
         <CardContent className="pt-8 pb-8">
+          
+          {/* Screen: Loading */}
+          {state === "loading" && (
+            <div className="text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary mb-4" />
+              <p className="text-muted-foreground">Checking eligibility...</p>
+            </div>
+          )}
+
+          {/* Screen: Limit Reached */}
+          {state === "limit_reached" && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-500 mb-4">
+                  <AlertCircle className="h-8 w-8" />
+                </div>
+                <h1 className="text-2xl font-bold text-foreground mb-2">
+                  Activation Limit Reached
+                </h1>
+                <p className="text-muted-foreground">
+                  {formatActivationLimitMessage(userPlan, activeTemplateCount)}
+                </p>
+              </div>
+
+              <div className="space-y-3 py-4 border-t border-b border-border">
+                <p className="text-sm text-muted-foreground">
+                  You're running <span className="font-medium text-foreground">{activeTemplateCount}/{limit}</span> active template{limit > 1 ? "s" : ""}.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  To activate <span className="font-medium text-foreground">{template.title}</span>, you can:
+                </p>
+                <ul className="text-sm text-muted-foreground space-y-2 ml-4">
+                  <li>• Deactivate your current template first</li>
+                  <li>• Upgrade to Pro to run multiple templates</li>
+                </ul>
+              </div>
+
+              <div className="space-y-3">
+                <Button 
+                  onClick={() => navigate("/pricing")}
+                  size="lg"
+                  className="w-full"
+                >
+                  Upgrade to Pro
+                </Button>
+                <Button 
+                  onClick={() => navigate("/dashboard")}
+                  variant="outline"
+                  size="lg"
+                  className="w-full"
+                >
+                  Go to Dashboard
+                </Button>
+                <button
+                  onClick={() => navigate("/templates")}
+                  className="w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Back to templates
+                </button>
+              </div>
+            </div>
+          )}
           
           {/* Screen A: Template Details */}
           {state === "details" && (
@@ -281,7 +394,7 @@ export default function TemplateActivation() {
                 <Button variant="outline" onClick={() => navigate("/templates")}>
                   Back to Templates
                 </Button>
-                <Button onClick={() => { setState("details"); setError(null); }}>
+                <Button onClick={() => { setState("loading"); setError(null); checkEligibility(); }}>
                   Try Again
                 </Button>
               </div>
