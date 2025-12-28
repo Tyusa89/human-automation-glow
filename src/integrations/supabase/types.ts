@@ -679,6 +679,7 @@ export type Database = {
           onboarding_completed: boolean | null
           onboarding_completed_at: string | null
           onboarding_step: string | null
+          plan_tier: string | null
           preferences: Json | null
           primary_challenges: string[] | null
           setup_goals: string[] | null
@@ -709,6 +710,7 @@ export type Database = {
           onboarding_completed?: boolean | null
           onboarding_completed_at?: string | null
           onboarding_step?: string | null
+          plan_tier?: string | null
           preferences?: Json | null
           primary_challenges?: string[] | null
           setup_goals?: string[] | null
@@ -741,6 +743,7 @@ export type Database = {
           onboarding_completed?: boolean | null
           onboarding_completed_at?: string | null
           onboarding_step?: string | null
+          plan_tier?: string | null
           preferences?: Json | null
           primary_challenges?: string[] | null
           setup_goals?: string[] | null
@@ -1330,6 +1333,10 @@ export type Database = {
     }
     Functions: {
       activate_template: {
+        Args: { p_template_slug: string; p_user_id: string }
+        Returns: undefined
+      }
+      deactivate_template: {
         Args: { p_template_slug: string; p_user_id: string }
         Returns: undefined
       }
