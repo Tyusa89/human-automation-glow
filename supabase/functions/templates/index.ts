@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -230,6 +231,57 @@ const templates = [
   },
 ];
 
+async function ensureTemplatesExist() {
+  const supabaseUrl = Deno.env.get('SUPABASE_URL');
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+  if (!supabaseUrl || !serviceKey) {
+    console.warn('[templates] Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY; skipping DB sync.');
+    return;
+  }
+
+  const supabase = createClient(supabaseUrl, serviceKey);
+  const slugs = templates.map((t) => t.id);
+
+  const { data: existing, error: existingError } = await supabase
+    .from('templates')
+    .select('slug')
+    .in('slug', slugs);
+
+  if (existingError) {
+    console.error('[templates] Failed checking existing template slugs:', existingError);
+    return;
+  }
+
+  const existingSet = new Set((existing ?? []).map((r: any) => r.slug));
+  const missingRows = templates
+    .filter((t) => !existingSet.has(t.id))
+    .map((t) => ({
+      slug: t.id,
+      name: t.title,
+      description: t.description ?? null,
+      category: t.category ?? null,
+      demo_image_url: t.hero ?? null,
+      is_active: true,
+      config: { source: 'templates-edge', version: 1 },
+    }));
+
+  if (missingRows.length === 0) return;
+
+  console.log(`[templates] Seeding ${missingRows.length} missing templates into public.templates...`);
+
+  const { error: insertError } = await supabase
+    .from('templates')
+    .insert(missingRows);
+
+  if (insertError) {
+    console.error('[templates] Failed inserting missing templates:', insertError);
+    return;
+  }
+
+  console.log('[templates] Seed complete.');
+}
+
 serve(async (req) => {
   // Handle CORS
   if (req.method === 'OPTIONS') {
@@ -239,6 +291,10 @@ serve(async (req) => {
   try {
     // Accept both GET and POST requests (POST is used by supabase.functions.invoke)
     if (req.method === 'GET' || req.method === 'POST') {
+      // Keep DB templates table in sync so RPC activation can resolve slugs.
+      // (No-op if already seeded.)
+      await ensureTemplatesExist();
+
       return new Response(
         JSON.stringify({ ok: true, data: templates }),
         {
