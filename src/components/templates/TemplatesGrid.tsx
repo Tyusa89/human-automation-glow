@@ -109,20 +109,7 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, activeT
   });
 
   const handleActivate = async (templateId: string) => {
-    // If this template is already active, allow "re-activation"
-    if (templateId === activeTemplateSlug) {
-      setActivatingId(templateId);
-      await activate(templateId);
-      return;
-    }
-    
-    // Check activation limit for free plan
-    if (!activationCheck.allowed) {
-      // Show limit reached message
-      navigate(`/templates/${templateId}?limit=reached`);
-      return;
-    }
-    
+    // RPC handles switching for free users automatically (deactivates others first)
     setActivatingId(templateId);
     await activate(templateId);
   };
@@ -279,16 +266,6 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, activeT
                             <Lock className="h-3.5 w-3.5" />
                             {getUpgradeLabel(requiredPlan)}
                           </button>
-                        ) : hitActiveLimit ? (
-                          <button 
-                            onClick={() => navigate(`/templates/${t.id}?limit=reached`)}
-                            disabled
-                            className="inline-flex items-center gap-2 rounded-lg border border-slate-600 px-4 py-2 text-sm font-medium text-slate-400 cursor-not-allowed"
-                            title="Beginner can run 1 template at a time. Deactivate your current template or upgrade to run multiple."
-                          >
-                            <Lock className="h-3.5 w-3.5" />
-                            Running 1/1
-                          </button>
                         ) : (
                           <button 
                             onClick={(e) => { 
@@ -301,7 +278,12 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, activeT
                             {activatingId === t.id ? (
                               <>
                                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                Activating
+                                {hitActiveLimit ? "Switching" : "Activating"}
+                              </>
+                            ) : hitActiveLimit ? (
+                              <>
+                                <ArrowRight className="h-3.5 w-3.5" />
+                                Switch
                               </>
                             ) : (
                               <>
