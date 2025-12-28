@@ -108,10 +108,10 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, activeT
     },
   });
 
-  const handleActivate = async (templateId: string) => {
+  const handleActivate = async (templateKey: string) => {
     // RPC handles switching for free users automatically (deactivates others first)
-    setActivatingId(templateId);
-    await activate(templateId);
+    setActivatingId(templateKey);
+    await activate(templateKey);
   };
 
   // Sort templates: unlocked first, then by tier, then category, then difficulty, then name
@@ -175,7 +175,9 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, activeT
                 const identity = getTemplateIdentity(t.id);
                 const requiredPlan = getRequiredPlan(t.id); // "free" for Beginner templates
                 const difficulty = getDifficulty(t.id);
-                const isActive = t.id === activeTemplateSlug;
+
+                const templateKey = (t as any).slug ?? t.id;
+                const isActive = templateKey === activeTemplateSlug;
 
                 const isPaidTemplate = requiredPlan !== "free";
 
@@ -249,7 +251,7 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, activeT
                       {/* Action buttons */}
                       <div className="flex items-center gap-3">
                         <button 
-                          onClick={() => navigate(`/templates/${t.id}`)}
+                          onClick={() => navigate(`/templates/${templateKey}`)}
                           className="inline-flex items-center justify-center rounded-lg bg-slate-800 border border-slate-700 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
                         >
                           Preview
@@ -279,9 +281,9 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, activeT
                           <button 
                             onClick={(e) => { 
                               e.stopPropagation(); 
-                              handleActivate(t.id);
+                              handleActivate(templateKey);
                             }}
-                            disabled={activatingId === t.id}
+                            disabled={activatingId === templateKey}
                             className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
                             title={
                               willSwitch
@@ -289,7 +291,7 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, activeT
                                 : undefined
                             }
                           >
-                            {activatingId === t.id ? (
+                            {activatingId === templateKey ? (
                               <>
                                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
                                 {willSwitch ? "Switching" : "Activating"}
