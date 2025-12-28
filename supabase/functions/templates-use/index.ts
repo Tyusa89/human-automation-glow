@@ -6,6 +6,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Activation limits per plan tier
+const ACTIVATION_LIMITS: Record<string, number> = {
+  free: 1,
+  pro: 5,
+  business: 999,
+};
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -37,9 +44,74 @@ serve(async (req) => {
       );
     }
 
+    if (!userId) {
+      console.log('Error: userId is required');
+      return new Response(
+        JSON.stringify({ ok: false, error: 'userId is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     console.log(`Processing template usage request for: ${templateId}`);
     console.log('Mode:', mode || 'wizard');
     console.log('Form data:', JSON.stringify(formData));
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // ============================================
+    // BACKEND ENFORCEMENT: Check activation limits
+    // ============================================
+    
+    // Get user's current active template count
+    const { count: activeCount, error: countError } = await supabase
+      .from('user_templates')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('is_active', true);
+
+    if (countError) {
+      console.error('Error counting active templates:', countError);
+      return new Response(
+        JSON.stringify({ ok: false, error: 'Failed to check activation eligibility' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Determine user's plan tier (simplified - in production, check Stripe)
+    // For now, derive from existing active templates
+    let userPlan = 'free';
+    
+    const { data: existingTemplates } = await supabase
+      .from('user_templates')
+      .select('stripe_subscription_id')
+      .eq('user_id', userId)
+      .eq('is_active', true);
+
+    if (existingTemplates && existingTemplates.some(t => t.stripe_subscription_id)) {
+      userPlan = 'pro'; // Has paid subscription
+    }
+
+    const limit = ACTIVATION_LIMITS[userPlan] ?? 1;
+    const currentCount = activeCount ?? 0;
+
+    console.log(`User plan: ${userPlan}, Active count: ${currentCount}, Limit: ${limit}`);
+
+    if (currentCount >= limit) {
+      console.log('Error: Activation limit reached');
+      return new Response(
+        JSON.stringify({ 
+          ok: false, 
+          error: 'ACTIVATION_LIMIT_REACHED',
+          message: `You can only run ${limit} template${limit > 1 ? 's' : ''} on the ${userPlan} plan.`,
+          current: currentCount,
+          limit,
+          plan: userPlan,
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // For auto mode, we apply smart defaults without user interaction
     const isAutoMode = mode === 'auto';
@@ -50,70 +122,63 @@ serve(async (req) => {
       // Simulate quick configuration (faster than wizard)
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      // In auto mode, we want to create a workflow/automation record
-      // to mark the user as having a "first value event"
-      if (userId) {
-        try {
-          const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-          const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-          const supabase = createClient(supabaseUrl, supabaseKey);
-          
-          // Create a workflow for this template
-          const { data: workflow, error: workflowError } = await supabase
-            .from('workflows')
-            .insert({
-              owner_id: userId,
-              name: `${templateId} Workflow`,
-              status: 'active',
-              config: {
-                templateId,
-                mode: 'auto',
-                createdAt: new Date().toISOString(),
-                ...formData,
-              },
-            })
-            .select()
-            .single();
-          
-          if (workflowError) {
-            console.warn('Could not create workflow:', workflowError);
-          } else if (workflow) {
-            // Record a successful automation run to mark first value event
-            await supabase
-              .from('workflow_runs')
-              .insert({
-                workflow_id: workflow.id,
-                owner_id: userId,
-                status: 'completed',
-                started_at: new Date().toISOString(),
-                finished_at: new Date().toISOString(),
-                result_summary: {
-                  type: 'template_activation',
-                  templateId,
-                  success: true,
-                },
-              });
-            
-            console.log('Created workflow and initial run for user:', userId);
-          }
-          
-          // Log an agent event for activity tracking
+      // Create a workflow/automation record to mark "first value event"
+      try {
+        // Create a workflow for this template
+        const { data: workflow, error: workflowError } = await supabase
+          .from('workflows')
+          .insert({
+            owner_id: userId,
+            name: `${templateId} Workflow`,
+            status: 'active',
+            config: {
+              templateId,
+              mode: 'auto',
+              createdAt: new Date().toISOString(),
+              ...formData,
+            },
+          })
+          .select()
+          .single();
+        
+        if (workflowError) {
+          console.warn('Could not create workflow:', workflowError);
+        } else if (workflow) {
+          // Record a successful automation run to mark first value event
           await supabase
-            .from('agent_events')
+            .from('workflow_runs')
             .insert({
-              user_id: userId,
-              type: 'template_activated',
-              payload: {
+              workflow_id: workflow.id,
+              owner_id: userId,
+              status: 'completed',
+              started_at: new Date().toISOString(),
+              finished_at: new Date().toISOString(),
+              result_summary: {
+                type: 'template_activation',
                 templateId,
-                mode: 'auto',
-                config: formData,
+                success: true,
               },
             });
-            
-        } catch (dbError) {
-          console.error('Database operations error:', dbError);
-          // Don't fail the request for DB errors
+          
+          console.log('Created workflow and initial run for user:', userId);
         }
+        
+        // Log an agent event for activity tracking
+        await supabase
+          .from('agent_events')
+          .insert({
+            user_id: userId,
+            type: 'template_activated',
+            payload: {
+              templateId,
+              mode: 'auto',
+              config: formData,
+            },
+          });
+          
+      } catch (dbError) {
+        console.error('Database operations error:', dbError);
+        // Don't fail the request for DB errors
       }
     } else {
       // Wizard mode - original behavior
