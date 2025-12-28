@@ -173,21 +173,30 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, activeT
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {categoryTemplates.map((t) => {
                 const identity = getTemplateIdentity(t.id);
-                const requiredPlan = getRequiredPlan(t.id);
+                const requiredPlan = getRequiredPlan(t.id); // "free" for Beginner templates
                 const difficulty = getDifficulty(t.id);
                 const isActive = t.id === activeTemplateSlug;
-                
-                // For Pro/Business templates, check plan-based lock
-                const needsPlanUpgrade = requiredPlan !== "free" && isTemplateLocked(requiredPlan, userPlan);
-                
-                // For Free templates, check if user hit their active limit (only for free plan users)
-                const hitActiveLimit = requiredPlan === "free" && !isActive && !activationCheck.allowed;
-                
-                // Combined: needs upgrade OR hit limit
+
+                const isPaidTemplate = requiredPlan !== "free";
+
+                // Plan lock ONLY for paid templates
+                const needsPlanUpgrade = isPaidTemplate && isTemplateLocked(requiredPlan, userPlan);
+
+                // Beginner behavior: free templates are never plan-locked.
+                // If they already have an active template, activation becomes a SWITCH (RPC will deactivate others).
+                const isBeginner = userPlan === "free";
+                const willSwitch =
+                  !isPaidTemplate &&
+                  isBeginner &&
+                  !isActive &&
+                  activationCheck &&
+                  activationCheck.allowed === false;
+
+                // Only show upgrade CTA when it's truly a plan lock (paid template)
                 const needsUpgrade = needsPlanUpgrade;
-                
-                // Show tier badge only if not free
-                const showTierBadge = requiredPlan !== "free";
+
+                // Tier badge only for paid templates
+                const showTierBadge = isPaidTemplate;
 
                 return (
                   <motion.div 
@@ -274,13 +283,18 @@ export function TemplatesGrid({ templates, onPreview, onScaffoldMessage, activeT
                             }}
                             disabled={activatingId === t.id}
                             className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
+                            title={
+                              willSwitch
+                                ? "Beginner runs 1 template at a time. Activating this will switch your active template."
+                                : undefined
+                            }
                           >
                             {activatingId === t.id ? (
                               <>
                                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                {hitActiveLimit ? "Switching" : "Activating"}
+                                {willSwitch ? "Switching" : "Activating"}
                               </>
-                            ) : hitActiveLimit ? (
+                            ) : willSwitch ? (
                               <>
                                 <ArrowRight className="h-3.5 w-3.5" />
                                 Switch
