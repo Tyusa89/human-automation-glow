@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ArrowLeft, Play, Lock, Check, Zap, Shield, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import {
   type Difficulty,
 } from "@/config/templates/templateIdentity";
 import { useUserPlan } from "@/hooks/useUserPlan";
+import { recordTemplateOpen } from "@/lib/templateActivity";
 
 // Difficulty badge styling
 const difficultyStyles: Record<Difficulty, string> = {
@@ -79,6 +80,11 @@ export default function TemplatePreview() {
 
   const identity = useMemo(() => (slug ? getTemplateIdentity(slug) : null), [slug]);
   const locked = identity ? isTemplateLocked(identity.requiredPlan, userPlan) : false;
+
+  // Track template open for "Recent" list
+  useEffect(() => {
+    if (slug) recordTemplateOpen(slug);
+  }, [slug]);
 
   // Use template-specific bullets or fallback to defaults
   const bullets = identity?.previewBullets?.length 
