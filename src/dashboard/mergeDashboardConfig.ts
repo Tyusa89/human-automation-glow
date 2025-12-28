@@ -27,12 +27,22 @@ export function resolveDashboardWidgets(
   ruleKeys.forEach((k, idx) => ruleOrder.set(k, (idx + 1) * 10));
 
   // Emphasis rank maps (hero first, then secondary)
+  // ENFORCE: focus_today always rank 1
   const emphasisRank = new Map<WidgetKey, number>();
   if (emphasis) {
-    emphasis.hero.forEach((k, i) => emphasisRank.set(k, i + 1)); // 1..n
-    emphasis.secondary.forEach((k, i) =>
-      emphasisRank.set(k, 100 + i + 1) // 101..n
-    );
+    // Reserve rank 1 for focus_today
+    emphasisRank.set("focus_today", 1);
+
+    let heroRank = 2; // start after focus
+    for (const k of emphasis.hero) {
+      if (k === "focus_today") continue;
+      emphasisRank.set(k, heroRank++);
+    }
+
+    emphasis.secondary.forEach((k, i) => {
+      if (k === "focus_today") return; // just in case it appears there
+      emphasisRank.set(k, 100 + i + 1); // 101..n
+    });
   }
 
   const resolved: ResolvedWidget[] = [];
