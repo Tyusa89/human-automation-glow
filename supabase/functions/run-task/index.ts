@@ -4,7 +4,7 @@ type RunBody = { task: "daily_kpi" | "generate_sop"; params?: Record<string, unk
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-auth',
 };
 
 function ok(payload: unknown, logs: string[] = []) {
