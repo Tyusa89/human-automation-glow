@@ -27,7 +27,9 @@ export function AppSidebar() {
   useEffect(() => {
     const w = collapsed ? 88 : 320;
     document.documentElement.style.setProperty("--sidebar-w", `${w}px`);
-    return () => document.documentElement.style.removeProperty("--sidebar-w");
+    return () => {
+      document.documentElement.style.removeProperty("--sidebar-w");
+    };
   }, [collapsed]);
 
   const explore: Item[] = useMemo(

@@ -19,13 +19,7 @@ const CHALLENGES = [
 
 type Challenge = (typeof CHALLENGES)[number];
 
-type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"] & {
-  work_type?: WorkType | null;
-  client_volume?: ClientVolume | null;
-  tracking_method?: TrackingMethod | null;
-  success_goal?: Goal90 | null;
-  primary_challenges?: Challenge[] | null;
-};
+type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
 
 export default function Profile() {
   const { user, ready } = useAuth();
@@ -64,9 +58,7 @@ export default function Profile() {
 
         const { data, error } = await supabase
           .from("profiles")
-          .select(
-            "user_id,email,full_name,company,business_type,client_volume,tracking_method,success_goal,primary_challenges"
-          )
+          .select("*")
           .eq("user_id", user.id)
           .maybeSingle();
 
@@ -82,7 +74,7 @@ export default function Profile() {
           setClientVolume(data.client_volume || "");
           setTrackingMethod(data.tracking_method || "");
           setGoal90(data.success_goal || "");
-          setChallenges(data.primary_challenges || []);
+          setChallenges((data.primary_challenges as Challenge[]) || []);
         }
       } catch (err: unknown) {
         if (mounted) setError(err instanceof Error ? err.message : "Failed to load profile.");
@@ -111,11 +103,11 @@ export default function Profile() {
       norm(email) !== norm(initial.email) ||
       norm(fullName) !== norm(initial.full_name) ||
       norm(company) !== norm(initial.company) ||
-      norm(workType) !== norm(initial.work_type) ||
+      norm(workType) !== norm(initial.business_type) ||
       norm(clientVolume) !== norm(initial.client_volume) ||
       norm(trackingMethod) !== norm(initial.tracking_method) ||
       norm(goal90) !== norm(initial.success_goal) ||
-      !arrEq(challenges, initial.primary_challenges ?? [])
+      !arrEq(challenges, (initial.primary_challenges as Challenge[]) ?? [])
     );
   }, [initial, email, fullName, company, workType, clientVolume, trackingMethod, goal90, challenges]);
 
@@ -135,11 +127,11 @@ export default function Profile() {
     setEmail(initial.email ?? "");
     setFullName(initial.full_name ?? "");
     setCompany(initial.company ?? "");
-    setWorkType(initial.work_type ?? "");
+    setWorkType(initial.business_type ?? "");
     setClientVolume(initial.client_volume ?? "");
     setTrackingMethod(initial.tracking_method ?? "");
     setGoal90(initial.success_goal ?? "");
-    setChallenges(initial.primary_challenges ?? []);
+    setChallenges((initial.primary_challenges as Challenge[]) ?? []);
     setSavedAt(null);
     setError(null);
   }
@@ -158,8 +150,7 @@ export default function Profile() {
     }
 
     const payload = {
-      user_id: user.id,
-      email: email || null,
+      email: email || undefined,
       full_name: fullName || null,
       company: company || null,
       business_type: workType || null,
@@ -172,7 +163,8 @@ export default function Profile() {
 
     const { error } = await supabase
       .from("profiles")
-      .upsert(payload, { onConflict: "user_id" });
+      .update(payload)
+      .eq("user_id", user.id);
 
     if (error) {
       setSaving(false);
@@ -181,7 +173,7 @@ export default function Profile() {
     }
 
     // refresh initial snapshot
-    setInitial((prev) => prev ? { ...prev, ...payload } : payload as ProfileRow);
+    setInitial((prev) => prev ? { ...prev, ...payload } as ProfileRow : prev);
     setSaving(false);
     setSavedAt(new Date().toLocaleString());
   }
@@ -258,7 +250,7 @@ export default function Profile() {
               <div className="mt-5 text-xs text-slate-400">
                 Role:{" "}
                 <span className="text-slate-200">
-                  {initial.is_owner ? "owner" : initial.role ?? "client"}
+                  {(initial as any).is_owner ? "owner" : (initial as any).role ?? "client"}
                 </span>
               </div>
             )}
