@@ -669,6 +669,7 @@ export type Database = {
           lead_email: string | null
           tags: string[] | null
           updated_at: string
+          user_id: string
         }
         Insert: {
           category?: string | null
@@ -678,6 +679,7 @@ export type Database = {
           lead_email?: string | null
           tags?: string[] | null
           updated_at?: string
+          user_id: string
         }
         Update: {
           category?: string | null
@@ -687,6 +689,7 @@ export type Database = {
           lead_email?: string | null
           tags?: string[] | null
           updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -917,6 +920,45 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
           work_number?: string | null
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          file_bucket: string
+          file_path: string
+          id: string
+          params: Json
+          report_type: string
+          status: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          file_bucket?: string
+          file_path: string
+          id?: string
+          params?: Json
+          report_type: string
+          status?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          file_bucket?: string
+          file_path?: string
+          id?: string
+          params?: Json
+          report_type?: string
+          status?: string
+          title?: string
+          user_id?: string
         }
         Relationships: []
       }
