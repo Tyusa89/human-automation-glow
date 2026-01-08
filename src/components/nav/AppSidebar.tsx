@@ -182,13 +182,9 @@ function SidebarLink({ item, collapsed }: { item: Item; collapsed: boolean }) {
             {/* subtle glow */}
             <span
               className={cn(
-                "pointer-events-none absolute inset-0 rounded-full opacity-0 blur-md transition",
+                "pointer-events-none absolute inset-0 rounded-full opacity-0 blur-md transition nav-glow",
                 isActive && "opacity-100"
               )}
-              style={{
-                background:
-                  "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.22), transparent 60%)",
-              }}
             />
             <Icon className={cn("relative h-5 w-5 text-white/70", isActive && "text-white")} />
           </span>

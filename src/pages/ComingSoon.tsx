@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function ComingSoon() {
+export default function ComingSoon({ title }: { title?: string }) {
   const navigate = useNavigate();
 
   return (
@@ -11,7 +11,7 @@ export default function ComingSoon() {
           <div className="text-3xl">🚀</div>
         </div>
         
-        <h1 className="text-2xl font-semibold mb-4">Coming Soon</h1>
+        <h1 className="text-2xl font-semibold mb-4">{title || "Coming Soon"}</h1>
         
         <p className="text-slate-300 mb-8">
           This feature is under development. We're building something amazing for you.

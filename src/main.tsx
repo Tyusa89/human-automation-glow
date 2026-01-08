@@ -5,6 +5,10 @@ import App from "./App";
 import { AuthProvider } from "./auth/AuthProvider";
 import "./index.css";
 
+// Debug help message
+console.log('🎯 DEBUG MODE ENABLED - Check console for detailed database operation logs');
+console.log('📋 Look for emoji messages: 🔍 (loading) 📡 (saving) ✅ (success) ❌ (error)');
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>

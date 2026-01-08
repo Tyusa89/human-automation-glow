@@ -7,12 +7,7 @@ export function AppShell() {
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <AppSidebar />
       {/* IMPORTANT: main area is offset by sidebar width using CSS variables */}
-      <main
-        className="min-h-screen transition-[padding] duration-200"
-        style={{
-          paddingLeft: "var(--sidebar-w, 88px)",
-        }}
-      >
+      <main className="min-h-screen transition-[padding] duration-200 main-content">
         <Outlet />
       </main>
     </div>
