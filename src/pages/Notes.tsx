@@ -6,9 +6,9 @@ import { useAuth } from "@/auth/AuthProvider";
 type NoteRow = {
   id: string;
   user_id: string;
-  title: string;
+  category: string | null;
   content: string;
-  is_pinned: boolean;
+  is_pinned: boolean | null;
   created_at: string;
   updated_at: string;
 };
@@ -88,7 +88,7 @@ export default function Notes() {
 
     const noteData = {
       user_id: user.id,
-      title: newTitle,
+      category: newTitle,
       content: newContent,
       is_pinned: false,
     };
@@ -239,7 +239,7 @@ export default function Notes() {
                           </span>
                         )}
                         <h3 className="truncate text-base font-semibold text-white">
-                          {n.title || "Untitled"}
+                          {n.category || "Untitled"}
                         </h3>
                       </div>
                       {n.content ? (

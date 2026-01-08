@@ -8,7 +8,7 @@ type SavedReport = {
   id: string;
   title: string;
   created_at: string;
-  report_type: "monthly" | "weekly" | "custom";
+  report_type: string;
   file_path: string;
 };
 
