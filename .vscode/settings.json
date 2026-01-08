@@ -1,5 +1,16 @@
-"
-    "cSpell.enabled": true,
+{
+    "deno.enable": true,
+    "deno.unstable": true,
+    "deno.suggest.imports.hosts": {
+        "https://deno.land": true,
+        "https://esm.sh": true
+    },
+    "typescript.preferences.includePackageJsonAutoImports": "off",
+    "[typescript]": {
+        "editor.defaultFormatter": "denoland.vscode-deno"
+    },
+    "git.enabled": true,
     "git.decorations.enabled": true,
-    "git.enabled": false
+    "git.autoRepositoryDetection": true,
+    "cSpell.enabled": true
 }

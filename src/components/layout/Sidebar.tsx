@@ -1,94 +1,52 @@
-import { Link, useLocation } from "react-router-dom";
-import { 
-  Home, 
-  FileText, 
-  Package, 
-  DollarSign, 
-  Puzzle, 
-  Zap, 
-  Briefcase, 
-  HelpCircle, 
-  Mail, 
-  Shield, 
-  User, 
-  LogOut,
-  MessageSquare,
-  LayoutDashboard,
-  Calendar,
-  Users,
-  FileEdit,
-  BarChart3,
-  CreditCard,
-  Settings,
-  Database,
-  CheckSquare,
-  TrendingUp,
-  Zap as ZapierIcon,
-  UserCheck
-} from "lucide-react";
+import { NavLink } from "react-router-dom";
+import { NAV, NavItem } from "./navConfig";
+import { useAuth } from "@/auth/AuthProvider";
+import SidebarAccountFooter from "@/components/sidebar/SidebarAccountFooter";
 
-const exploreItems = [
-  { icon: Home, label: "Home", href: "/" },
-  { icon: FileText, label: "Templates", href: "/templates" },
-  { icon: Package, label: "Product", href: "/product" },
-  { icon: DollarSign, label: "Pricing", href: "/pricing" },
-  { icon: Puzzle, label: "Solutions", href: "/solutions" },
-  { icon: Zap, label: "Integrations", href: "/integrations" },
-  { icon: Briefcase, label: "Services", href: "/services" },
-  { icon: HelpCircle, label: "Support", href: "/support" },
-  { icon: Mail, label: "Contact", href: "/contact" },
-  { icon: Shield, label: "Trust", href: "/trust" },
-];
+function Item({ item, isAuthed }: { item: NavItem; isAuthed: boolean }) {
+  const disabled = !!item.comingSoon;
+  const hidden = item.requiresAuth && !isAuthed;
 
-const appItems = [
-  { icon: MessageSquare, label: "EcoNest Agent", href: "/agent" },
-  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-  { icon: Calendar, label: "Appointments", href: "/appointments" },
-  { icon: Users, label: "Contacts", href: "/contacts" },
-  { icon: FileEdit, label: "Notes", href: "/notes" },
-  { icon: BarChart3, label: "Reports", href: "/reports" },
-  { icon: CreditCard, label: "Expenses", href: "/expenses" },
-];
+  if (hidden) return null;
 
-const ownerItems = [
-  { icon: Settings, label: "Owner Dashboard", href: "/owner-dashboard" },
-  { icon: Settings, label: "Owner Agent", href: "/owner-agent" },
-  { icon: Database, label: "ACM", href: "/acm" },
-  { icon: Users, label: "Contacts Directory", href: "/contacts-directory" },
-  { icon: CheckSquare, label: "Approvals", href: "/approvals" },
-];
-
-const demosItems = [
-  { icon: TrendingUp, label: "Analytics", href: "/analytics" },
-  { icon: Mail, label: "Email Builder", href: "/email-builder" },
-  { icon: ZapierIcon, label: "Zapier + Intercom", href: "/zapier-intercom" },
-];
-
-const bottomItems = [
-  { icon: User, label: "Profile", href: "/profile" },
-  { icon: LogOut, label: "Sign out", href: "/auth" },
-];
-
-export default function Sidebar() {
-  const location = useLocation();
-
-  const renderNavItem = (item: any, isActive: boolean) => (
-    <Link
-      key={item.label}
-      to={item.href}
-      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
-        isActive
-          ? "bg-white/10 text-white"
-          : "text-gray-400 hover:text-white hover:bg-white/5"
-      }`}
-    >
-      <item.icon size={18} />
-      {item.label}
-    </Link>
-  );
+  const Icon = item.icon;
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0a1426] border-r border-white/10 p-4 overflow-y-auto">
+    <NavLink
+      to={disabled ? "#" : item.to}
+      onClick={(e) => {
+        if (disabled) e.preventDefault();
+      }}
+      className={({ isActive }) =>
+        [
+          "flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition text-white/70",
+          disabled ? "opacity-40 cursor-not-allowed" : "hover:bg-white/5 hover:text-white",
+          isActive && !disabled ? "bg-white/10 text-white" : "",
+        ].join(" ")
+      }
+    >
+      <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/5 border border-white/10">
+        <Icon className="h-4 w-4" />
+      </span>
+      <span className="flex-1">{item.label}</span>
+      {item.comingSoon && (
+        <span className="text-[10px] rounded-full px-2 py-1 bg-white/5 border border-white/10">
+          Soon
+        </span>
+      )}
+    </NavLink>
+  );
+}
+
+export default function Sidebar() {
+  const { user, isOwner } = useAuth();
+  const isAuthed = !!user;
+  
+  // Debug logging
+  console.log("Sidebar debug:", { user: !!user, isOwner, isAuthed });
+
+  return (
+    <aside className="flex h-[calc(100vh-56px)] flex-col bg-[#0a1426] border-r border-white/10 p-4 overflow-y-auto">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-2 text-white">
@@ -99,69 +57,69 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <nav className="space-y-6">
+      <div className="space-y-6 flex-1">
         {/* EXPLORE Section */}
         <div>
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+          <div className="mt-6 mb-2 px-3 text-xs tracking-wider opacity-50">
             EXPLORE
-          </h3>
+          </div>
           <div className="space-y-1">
-            {exploreItems.map((item) => {
-              const isActive = location.pathname === item.href;
-              return renderNavItem(item, isActive);
-            })}
+            {NAV.site.map((item) => (
+              <Item key={item.to} item={item} isAuthed={isAuthed} />
+            ))}
           </div>
         </div>
 
         {/* APP Section */}
-        <div>
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-            APP
-          </h3>
-          <div className="space-y-1">
-            {appItems.map((item) => {
-              const isActive = location.pathname === item.href;
-              return renderNavItem(item, isActive);
-            })}
-          </div>
-        </div>
+        {isAuthed && (
+          <>
+            <div className="h-px bg-white/10" />
+            <div>
+              <div className="mt-6 mb-2 px-3 text-xs tracking-wider opacity-50">
+                APP
+              </div>
+              <div className="space-y-1">
+                {NAV.app.map((item) => (
+                  <Item key={item.to} item={item} isAuthed={isAuthed} />
+                ))}
+              </div>
+            </div>
+          </>
+        )}
 
-        {/* OWNER Section */}
-        <div>
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-            OWNER
-          </h3>
-          <div className="space-y-1">
-            {ownerItems.map((item) => {
-              const isActive = location.pathname === item.href;
-              return renderNavItem(item, isActive);
-            })}
-          </div>
-        </div>
+        {/* OWNER Section - only show if owner */}
+        {(isOwner || isAuthed) && (
+          <>
+            <div className="h-px bg-white/10" />
+            <div>
+              <div className="mt-6 mb-2 px-3 text-xs tracking-wider opacity-50">
+                OWNER {!isOwner && "(DEBUG)"}
+              </div>
+              <div className="space-y-1">
+                {NAV.owner.map((item) => (
+                  <Item key={item.to} item={item} isAuthed={isAuthed} />
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="h-px bg-white/10" />
 
         {/* DEMOS Section */}
         <div>
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+          <div className="mt-6 mb-2 px-3 text-xs tracking-wider opacity-50">
             DEMOS
-          </h3>
+          </div>
           <div className="space-y-1">
-            {demosItems.map((item) => {
-              const isActive = location.pathname === item.href;
-              return renderNavItem(item, isActive);
-            })}
+            {NAV.demos.map((item) => (
+              <Item key={item.to} item={item} isAuthed={isAuthed} />
+            ))}
           </div>
         </div>
+      </div>
 
-        {/* Bottom Items */}
-        <div className="pt-4 border-t border-white/10">
-          <div className="space-y-1">
-            {bottomItems.map((item) => {
-              const isActive = location.pathname === item.href;
-              return renderNavItem(item, isActive);
-            })}
-          </div>
-        </div>
-      </nav>
+      <SidebarAccountFooter />
     </aside>
   );
 }

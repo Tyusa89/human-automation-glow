@@ -224,6 +224,7 @@ export default function Templates() {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className="w-full appearance-none rounded-2xl border border-white/10 bg-slate-950/30 px-10 py-3 text-slate-100 outline-none focus:border-emerald-400/30 focus:ring-1 focus:ring-emerald-400/20"
+              aria-label="Filter templates by category"
             >
               {categories.map((c) => (
                 <option key={c} value={c}>

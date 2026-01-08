@@ -1,5 +1,7 @@
-const SUPABASE_URL = 'https://rqldulvkwzvrmcvwttep.supabase.co';
-const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxbGR1bHZrd3p2cm1jdnd0dGVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MzUzMzQsImV4cCI6MjA3MDIxMTMzNH0.rbgipKLn_obCtSP7sKOf-1k40twWwgi2sEesLBJrGNw';
+// TODO: Replace these with your actual Supabase credentials
+// Get these values from your Supabase project settings > API
+const SUPABASE_URL = 'https://your-project-ref.supabase.co';
+const ANON_KEY = 'your-anon-key-here';
 
 const TABLES = {
   Leads: 'leads',

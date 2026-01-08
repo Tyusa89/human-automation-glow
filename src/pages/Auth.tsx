@@ -47,8 +47,9 @@ export default function Auth() {
       });
       if (error) throw error;
       setMsg("✅ Magic link sent. Check your email.");
-    } catch (e: any) {
-      setMsg(`⚠️ ${e?.message ?? "Failed to send magic link."}`);
+    } catch (e: unknown) {
+      const error = e as Error;
+      setMsg(`⚠️ ${error?.message ?? "Failed to send magic link."}`);
     } finally {
       setBusy(false);
     }
@@ -64,8 +65,9 @@ export default function Auth() {
       });
       if (error) throw error;
       navigate("/", { replace: true });
-    } catch (e: any) {
-      setMsg(`⚠️ ${e?.message ?? "Sign-in failed."}`);
+    } catch (e: unknown) {
+      const error = e as Error;
+      setMsg(`⚠️ ${error?.message ?? "Sign-in failed."}`);
     } finally {
       setBusy(false);
     }
@@ -84,8 +86,9 @@ export default function Auth() {
       });
       if (error) throw error;
       setMsg("✅ Check your email to confirm your account.");
-    } catch (e: any) {
-      setMsg(`⚠️ ${e?.message ?? "Sign-up failed."}`);
+    } catch (e: unknown) {
+      const error = e as Error;
+      setMsg(`⚠️ ${error?.message ?? "Sign-up failed."}`);
     } finally {
       setBusy(false);
     }
@@ -100,8 +103,9 @@ export default function Auth() {
       });
       if (error) throw error;
       setMsg("✅ Code sent. Enter the OTP below.");
-    } catch (e: any) {
-      setMsg(`⚠️ ${e?.message ?? "Failed to send code."}`);
+    } catch (e: unknown) {
+      const error = e as Error;
+      setMsg(`⚠️ ${error?.message ?? "Failed to send code."}`);
     } finally {
       setBusy(false);
     }
@@ -118,8 +122,9 @@ export default function Auth() {
       });
       if (error) throw error;
       navigate("/", { replace: true });
-    } catch (e: any) {
-      setMsg(`⚠️ ${e?.message ?? "OTP verification failed."}`);
+    } catch (e: unknown) {
+      const error = e as Error;
+      setMsg(`⚠️ ${error?.message ?? "OTP verification failed."}`);
     } finally {
       setBusy(false);
     }

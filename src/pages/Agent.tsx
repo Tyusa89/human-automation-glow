@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../auth/AuthProvider";
+import type { User } from "@supabase/supabase-js";
 
 type Msg = { role: "user" | "assistant" | "system"; content: string };
 
@@ -12,7 +13,7 @@ export default function Agent() {
   const [busy, setBusy] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [mode, setMode] = useState("Business Assistant");
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isOwner, setIsOwner] = useState(false);
 
   const roles = ["Background", "Operator", "Analyst", "Architect"];
@@ -86,8 +87,9 @@ export default function Agent() {
       }
 
       setMessages((m) => [...m, { role: "assistant", content: assistantText }]);
-    } catch (e: any) {
-      let errorMessage = `⚠️ Agent error: ${e?.message ?? String(e)}`;
+    } catch (e: unknown) {
+      const error = e as Error;
+      let errorMessage = `⚠️ Agent error: ${error?.message ?? String(e)}`;
       
       // Provide helpful error messages for common issues
       if (e?.message?.includes("Missing authorization header") || e?.message?.includes("401")) {
@@ -137,6 +139,7 @@ export default function Agent() {
                 value={mode}
                 onChange={(e) => setMode(e.target.value)}
                 className="rounded-2xl border border-white/10 bg-slate-950/30 px-3 py-2 text-sm text-slate-100 outline-none"
+                aria-label="Select AI agent mode"
               >
                 <option value="Business Assistant">Business Assistant</option>
                 <option value="Technical Support">Technical Support</option>
