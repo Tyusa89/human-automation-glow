@@ -138,6 +138,7 @@ export type Database = {
           duration_minutes: number
           id: string
           name: string
+          user_id: string | null
         }
         Insert: {
           active?: boolean
@@ -145,6 +146,7 @@ export type Database = {
           duration_minutes: number
           id?: string
           name: string
+          user_id?: string | null
         }
         Update: {
           active?: boolean
@@ -152,6 +154,7 @@ export type Database = {
           duration_minutes?: number
           id?: string
           name?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -169,6 +172,7 @@ export type Database = {
           service_id: string
           start_time: string
           status: string
+          user_id: string | null
         }
         Insert: {
           cancel_token?: string
@@ -183,6 +187,7 @@ export type Database = {
           service_id: string
           start_time: string
           status?: string
+          user_id?: string | null
         }
         Update: {
           cancel_token?: string
@@ -197,6 +202,7 @@ export type Database = {
           service_id?: string
           start_time?: string
           status?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -666,6 +672,7 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          is_pinned: boolean | null
           lead_email: string | null
           tags: string[] | null
           updated_at: string
@@ -676,6 +683,7 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          is_pinned?: boolean | null
           lead_email?: string | null
           tags?: string[] | null
           updated_at?: string
@@ -686,6 +694,7 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          is_pinned?: boolean | null
           lead_email?: string | null
           tags?: string[] | null
           updated_at?: string
@@ -1777,6 +1786,10 @@ export type Database = {
       is_admin_or_owner: { Args: never; Returns: boolean }
       is_owner: { Args: never; Returns: boolean }
       profile_auth_id: { Args: never; Returns: string }
+      report_metrics: {
+        Args: { p_end: string; p_start: string; p_user_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin" | "owner" | "user"
