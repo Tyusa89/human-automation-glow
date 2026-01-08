@@ -113,9 +113,10 @@ Provide a clear, professional SOP that could be immediately implemented.
     });
 
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error('Error in generate-sop function:', error);
     return new Response(JSON.stringify({ 
-      error: error.message,
+      error: message,
       details: 'Failed to generate SOP. Please check your OpenAI API key and try again.'
     }), {
       status: 500,

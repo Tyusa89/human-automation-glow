@@ -171,7 +171,7 @@ export default function Contacts() {
 
       const payload = {
         user_id: user.id,
-        name: form.name.trim() || null,
+        name: form.name.trim() || "Unnamed",
         company: form.company.trim() || null,
         email: form.email.trim() || null,
       };

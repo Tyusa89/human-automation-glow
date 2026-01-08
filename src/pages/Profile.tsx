@@ -66,7 +66,7 @@ export default function Profile() {
 
         // Set initial state directly from database data
         if (data && mounted) {
-          setInitial(data);
+          setInitial(data as ProfileRow);
           setEmail(data.email || "");
           setFullName(data.full_name || "");
           setCompany(data.company || "");

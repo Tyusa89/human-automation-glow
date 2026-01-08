@@ -88,13 +88,13 @@ export default function Agent() {
 
       setMessages((m) => [...m, { role: "assistant", content: assistantText }]);
     } catch (e: unknown) {
-      const error = e as Error;
-      let errorMessage = `⚠️ Agent error: ${error?.message ?? String(e)}`;
-      
+      const msg = e instanceof Error ? e.message : String(e);
+      let errorMessage = `⚠️ Agent error: ${msg}`;
+
       // Provide helpful error messages for common issues
-      if (e?.message?.includes("Missing authorization header") || e?.message?.includes("401")) {
+      if (msg.includes("Missing authorization header") || msg.includes("401")) {
         errorMessage = "⚠️ Authentication required: Please sign in to use the agent.";
-      } else if (e?.message?.includes("Not found") || e?.message?.includes("404")) {
+      } else if (msg.includes("Not found") || msg.includes("404")) {
         errorMessage = `⚠️ Edge Function '${fnName}' not found. Available functions: contact-form, generate-sop, run-task`;
       }
 
