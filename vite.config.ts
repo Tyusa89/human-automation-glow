@@ -7,19 +7,12 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }: { mode: string }) => ({
   server: {
     host: true,
-    port: 5173,
+    port: 8080,
     strictPort: true,
   },
-  plugins: [
-    react(),
-    mode === 'development' &&
-    componentTagger(),
-  ].filter(Boolean),
+  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
-    alias: [
-      { find: "@", replacement: path.resolve(__dirname, "./src") },
-      { find: "@", replacement: path.resolve(__dirname, "./srcsetupTeststs") }
-    ],
+    alias: [{ find: "@", replacement: path.resolve(__dirname, "./src") }],
   },
   test: {
   globals: true,

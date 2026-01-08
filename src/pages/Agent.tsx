@@ -26,11 +26,11 @@ export default function Agent() {
       if (u) {
         const { data: prof } = await supabase
           .from("profiles")
-          .select("role, is_owner")
+          .select("*")
           .eq("user_id", u.id)
           .maybeSingle();
 
-        setIsOwner(prof?.is_owner === true || prof?.role === "owner");
+        setIsOwner((prof as any)?.is_owner === true || (prof as any)?.role === "owner");
       }
     });
 
@@ -41,11 +41,11 @@ export default function Agent() {
       if (u) {
         const { data: prof } = await supabase
           .from("profiles")
-          .select("role, is_owner")
+          .select("*")
           .eq("user_id", u.id)
           .maybeSingle();
 
-        setIsOwner(prof?.is_owner === true || prof?.role === "owner");
+        setIsOwner((prof as any)?.is_owner === true || (prof as any)?.role === "owner");
       } else {
         setIsOwner(false);
       }
