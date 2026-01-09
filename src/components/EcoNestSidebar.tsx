@@ -177,16 +177,52 @@ export default function EcoNestSidebar({
         )}
         
         {user ? (
-          <button
-            onClick={() => supabase.auth.signOut()}
-            className="w-full flex items-center gap-2 rounded-xl px-2 py-2 transition hover:bg-white/5"
-            title={collapsed ? "Sign out" : undefined}
-          >
-            <span className="grid h-8 w-8 place-items-center rounded-2xl border border-white/10 bg-white/5">
-              <span className="text-white/70">⚡</span>
-            </span>
-            {!collapsed && <span className="text-[13px] text-white/80">Sign out</span>}
-          </button>
+          <>
+            <button
+              onClick={async () => {
+                try {
+                  await supabase.auth.signOut({ scope: "global" });
+                } catch (e) {
+                  console.error("Sign out failed:", e);
+                } finally {
+                  try {
+                    localStorage.removeItem("econest-auth");
+                    sessionStorage.clear();
+                  } catch {}
+                  navigate("/auth", { replace: true });
+                }
+              }}
+              className="w-full flex items-center gap-2 rounded-xl px-2 py-2 transition hover:bg-white/5"
+              title={collapsed ? "Sign out" : undefined}
+            >
+              <span className="grid h-8 w-8 place-items-center rounded-2xl border border-white/10 bg-white/5">
+                <span className="text-white/70">⚡</span>
+              </span>
+              {!collapsed && <span className="text-[13px] text-white/80">Sign out</span>}
+            </button>
+
+            <button
+              onClick={async () => {
+                try {
+                  await supabase.auth.signOut({ scope: "global" });
+                } catch (e) {
+                  console.warn("Reset signOut failed (continuing):", e);
+                }
+                try {
+                  localStorage.clear();
+                  sessionStorage.clear();
+                } catch {}
+                window.location.href = "/auth";
+              }}
+              className="w-full flex items-center gap-2 rounded-xl px-2 py-2 transition hover:bg-white/5"
+              title={collapsed ? "Reset" : undefined}
+            >
+              <span className="grid h-8 w-8 place-items-center rounded-2xl border border-white/10 bg-white/5">
+                <span className="text-white/70">🧼</span>
+              </span>
+              {!collapsed && <span className="text-[13px] text-white/80">Reset</span>}
+            </button>
+          </>
         ) : (
           <button
             onClick={() => navigate("/auth")}
