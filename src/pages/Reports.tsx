@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from "react";
 import { useAuth } from "../auth/AuthProvider";
-import { supabase } from "../lib/supabase";
+import { supabase } from '../integrations/supabase/client';
 import { useNavigate } from "react-router-dom";
 import { BarChart3, CalendarDays, ChevronLeft, Download, FileText, Filter } from "lucide-react";
 

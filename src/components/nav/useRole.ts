@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../../integrations/supabase/client";
 
 export function useRole() {
   const [loading, setLoading] = useState(true);

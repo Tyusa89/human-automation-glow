@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../integrations/supabase/client";
 import { useAuth } from "../auth/AuthProvider";
 import { Database } from "../types/supabase";
 
@@ -250,7 +250,7 @@ export default function Profile() {
               <div className="mt-5 text-xs text-slate-400">
                 Role:{" "}
                 <span className="text-slate-200">
-                  {(initial as any).is_owner ? "owner" : (initial as any).role ?? "client"}
+                  client
                 </span>
               </div>
             )}
