@@ -286,6 +286,25 @@ export default function Auth() {
           >
             ← Back to home
           </button>
+
+          {/* Reset button for stuck auth states */}
+          <button
+            onClick={async () => {
+              try {
+                await supabase.auth.signOut({ scope: "global" });
+              } catch (e) {
+                console.warn("Reset signOut failed:", e);
+              }
+              try {
+                localStorage.clear();
+                sessionStorage.clear();
+              } catch {}
+              window.location.href = "/auth";
+            }}
+            className="mt-3 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/60 hover:bg-white/10"
+          >
+            🧼 Reset session
+          </button>
         </div>
       </div>
     </div>

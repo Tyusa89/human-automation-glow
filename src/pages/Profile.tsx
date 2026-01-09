@@ -367,23 +367,65 @@ export default function Profile() {
           </section>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3">
-            <button
-              type="button"
-              onClick={resetToInitial}
-              disabled={!dirty || saving || loading}
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm text-slate-100 hover:bg-white/10 disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={save}
-              disabled={!dirty || saving || loading}
-              className="rounded-2xl bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
-            >
-              {saving ? "Saving..." : "Save changes"}
-            </button>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await supabase.auth.signOut({ scope: "global" });
+                  } catch (e) {
+                    console.error("Sign out failed:", e);
+                  } finally {
+                    try {
+                      localStorage.removeItem("econest-auth");
+                      sessionStorage.clear();
+                    } catch {}
+                    window.location.href = "/auth";
+                  }
+                }}
+                className="rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-2.5 text-sm text-red-300 hover:bg-red-500/20"
+              >
+                Sign out
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await supabase.auth.signOut({ scope: "global" });
+                  } catch (e) {
+                    console.warn("Reset signOut failed:", e);
+                  }
+                  try {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                  } catch {}
+                  window.location.href = "/auth";
+                }}
+                className="rounded-2xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm text-slate-300 hover:bg-white/10"
+              >
+                🧼 Reset
+              </button>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={resetToInitial}
+                disabled={!dirty || saving || loading}
+                className="rounded-2xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm text-slate-100 hover:bg-white/10 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={save}
+                disabled={!dirty || saving || loading}
+                className="rounded-2xl bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+              >
+                {saving ? "Saving..." : "Save changes"}
+              </button>
+            </div>
           </div>
         </div>
 
