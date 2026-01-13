@@ -45,36 +45,30 @@ export default function Profile() {
     let mounted = true;
 
     async function load() {
-      if (mounted) {
-        setLoading(true);
-        setError(null);
-      }
+      if (!mounted) return;
+
+      setLoading(true);
+      setError(null);
 
       try {
-        if (!user) {
-          if (mounted) setError("You must be signed in to view your profile.");
-          return;
-        }
-
         const { data, error } = await supabase
           .from("profiles")
           .select("*")
-          .eq("user_id", user.id)
+          .eq("user_id", user!.id)
           .maybeSingle();
 
         if (error) throw error;
 
-        // Set initial state directly from database data
-        if (data && mounted) {
-          setInitial(data);
-          setEmail(data.email || "");
-          setFullName(data.full_name || "");
-          setCompany(data.company || "");
-          setWorkType(data.business_type || "");
-          setClientVolume(data.client_volume || "");
-          setTrackingMethod(data.tracking_method || "");
-          setGoal90(data.success_goal || "");
-          setChallenges((data.primary_challenges as Challenge[]) || []);
+        if (mounted) {
+          setInitial(data ?? null);
+          setEmail(data?.email || "");
+          setFullName(data?.full_name || "");
+          setCompany(data?.company || "");
+          setWorkType(data?.business_type || "");
+          setClientVolume(data?.client_volume || "");
+          setTrackingMethod(data?.tracking_method || "");
+          setGoal90(data?.success_goal || "");
+          setChallenges((data?.primary_challenges as Challenge[]) || []);
         }
       } catch (err: unknown) {
         if (mounted) setError(err instanceof Error ? err.message : "Failed to load profile.");
@@ -83,8 +77,11 @@ export default function Profile() {
       }
     }
 
-    if (ready) {
+    if (ready && user) {
       load();
+    } else if (ready && !user) {
+      setLoading(false);
+      setError("You must be signed in to view your profile.");
     }
 
     return () => {

@@ -1,9 +1,28 @@
 import { Outlet, useLocation } from "react-router-dom";
-import Header from "@/components/layout/AppHeader";
-import Sidebar from "@/components/layout/Sidebar";
+import { useEffect } from "react";
+import Header from "../components/layout/AppHeader";
+import Sidebar from "../components/layout/Sidebar";
+import { hardSignOut } from "../lib/authActions";
+
+function useHardSignOutHotkey() {
+  useEffect(() => {
+    const onKeyDown = async (e: KeyboardEvent) => {
+      if (e.key === "Escape" && e.shiftKey) {
+        console.log("🔴 Hard sign out triggered (Shift+Esc)");
+        hardSignOut("/auth");
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+}
 
 export default function AppLayout() {
   const location = useLocation();
+  
+  // Global escape hatch: Shift+Esc to force sign out
+  useHardSignOutHotkey();
 
   // Optional: hide sidebar on auth pages only
   const hideSidebar = location.pathname.startsWith("/auth");

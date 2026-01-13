@@ -2,6 +2,8 @@ import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { supabase } from "../integrations/supabase/client";
 import { useAuth } from "../auth/AuthProvider";
+import { hardSignOut, hardReset } from "../lib/authActions";
+import { useState } from "react";
 import {
   Home,
   LayoutGrid,
@@ -75,6 +77,8 @@ export default function EcoNestSidebar({
 }) {
   const navigate = useNavigate();
   const { user, ready: authReady, isOwner } = useAuth();
+  const [signingOut, setSigningOut] = useState(false);
+  const [resetting, setResetting] = useState(false);
   return (
     <aside
       className={cn(
@@ -177,16 +181,44 @@ export default function EcoNestSidebar({
         )}
         
         {user ? (
-          <button
-            onClick={() => supabase.auth.signOut()}
-            className="w-full flex items-center gap-2 rounded-xl px-2 py-2 transition hover:bg-white/5"
-            title={collapsed ? "Sign out" : undefined}
-          >
-            <span className="grid h-8 w-8 place-items-center rounded-2xl border border-white/10 bg-white/5">
-              <span className="text-white/70">⚡</span>
-            </span>
-            {!collapsed && <span className="text-[13px] text-white/80">Sign out</span>}
-          </button>
+          <div className="space-y-2">
+            <button
+              disabled={signingOut}
+              onClick={async () => {
+                if (signingOut) return;
+                console.log("✅ Sidebar sign out clicked");
+                setSigningOut(true);
+                await hardSignOut("/auth");
+              }}
+              className="w-full flex items-center gap-2 rounded-xl px-2 py-2 transition hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+              title={collapsed ? "Sign out" : undefined}
+            >
+              <span className="grid h-8 w-8 place-items-center rounded-2xl border border-white/10 bg-white/5">
+                <span className="text-white/70">⚡</span>
+              </span>
+              {!collapsed && <span className="text-[13px] text-white/80">{signingOut ? "Signing out..." : "Sign out"}</span>}
+            </button>
+
+            {/* Reset button */}
+            <button
+              disabled={resetting}
+              onClick={async () => {
+                if (resetting) return;
+                console.log("🧼 Sidebar reset clicked");
+                setResetting(true);
+                await hardReset("/auth");
+              }}
+              className="w-full flex items-center gap-2 rounded-xl px-2 py-2 transition hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+              title={collapsed ? "Reset" : undefined}
+            >
+              <span className="grid h-8 w-8 place-items-center rounded-2xl border border-white/10 bg-white/5">
+                <span className="text-white/70">🧼</span>
+              </span>
+              {!collapsed && <span className="text-[13px] text-white/80">{resetting ? "Resetting..." : "Reset"}</span>}
+            </button>
+              {!collapsed && <span className="text-[13px] text-white/80">Reset</span>}
+            </button>
+          </div>
         ) : (
           <button
             onClick={() => navigate("/auth")}

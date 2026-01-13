@@ -61,7 +61,7 @@ export const NAV = {
 
   owner: [
     { label: "Owner Dashboard", to: "/owner-dashboard", icon: Shield, requiresAuth: true },
-    { label: "Owner Agent", to: "/owner-agent", icon: Settings, requiresAuth: true, comingSoon: true },
+    { label: "Owner Agent", to: "/owner-agent", icon: Settings, requiresAuth: true },
     { label: "Access Control", to: "/acm", icon: Database, requiresAuth: true, comingSoon: true },
     { label: "Contacts Directory", to: "/contacts-directory", icon: Users, requiresAuth: true, comingSoon: true },
     { label: "Approvals", to: "/approvals", icon: CheckSquare, requiresAuth: true, comingSoon: true },
