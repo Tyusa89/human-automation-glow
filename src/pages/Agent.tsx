@@ -1,72 +1,8 @@
 import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 import { useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "../integrations/supabase/client";
-import type { User } from "@supabase/supabase-js";
+import { useAuth } from "../auth/AuthProvider";
 
-// --- Fast timeout helper ---
-async function withTimeout(promise, ms, label) {
-  let t;
-  const timeout = new Promise((_, reject) => {
-    t = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
-  });
-  try {
-    return await Promise.race([promise, timeout]);
-  } finally {
-    clearTimeout(t);
-  }
-}
-
-// --- Auth + owner role loader ---
-async function loadAuthAndRole(setUser, setIsOwner) {
-  const started = Date.now();
-  let sessionData, sessionErr;
-  try {
-    ({ data: sessionData, error: sessionErr } = await withTimeout(
-      supabase.auth.getSession(),
-      8000,
-      "getSession"
-    ));
-  } catch (err) {
-    console.log("[Agent] getSession error", err);
-    setUser(null);
-    setIsOwner(false);
-    return;
-  }
-  const session = sessionData?.session ?? null;
-  console.log("[Agent] getSession", {
-    ms: Date.now() - started,
-    hasSession: !!session,
-    email: session?.user?.email,
-    userId: session?.user?.id,
-    err: sessionErr?.message,
-    origin: window.location.origin,
-  });
-  const u = session?.user ?? null;
-  setUser(u);
-  if (!u) {
-    setIsOwner(false);
-    return;
-  }
-  const t2 = Date.now();
-  let roleRow, roleErr;
-  try {
-    ({ data: roleRow, error: roleErr } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", u.id)
-      .maybeSingle());
-  } catch (err) {
-    console.log("[Agent] role fetch error", err);
-    setIsOwner(false);
-    return;
-  }
-  console.log("[Agent] role fetch", {
-    ms: Date.now() - t2,
-    role: roleRow?.role ?? null,
-    err: roleErr?.message ?? null,
-  });
-  setIsOwner(roleRow?.role === "owner");
-}
 
 // --- Chat Modes ---
 
@@ -95,19 +31,20 @@ const CHAT_MODES = [
   },
 ];
 
+
 type Msg = { role: "user" | "assistant" | "system"; content: string };
 
 export default function Agent({ defaultMode, ownerOnly, title }: AgentProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [fnName, setFnName] = useState("generate-sop");
+  // Remove fnName, use agent-chat only
+  const [threadId, setThreadId] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [modeId, setModeId] = useState<ChatModeId>(defaultMode ?? "business_assistant");
-  const [user, setUser] = useState<User | null>(null);
-  const [isOwner, setIsOwner] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { user, isOwner, ready: readyAuth } = useAuth();
+  const loading = !readyAuth;
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const isOwnerTheme = ownerOnly || modeId === "owner_agent";
@@ -120,58 +57,31 @@ export default function Agent({ defaultMode, ownerOnly, title }: AgentProps) {
     : CHAT_MODES.filter((m) => !m.ownerOnly || isOwner);
   const selectedMode = CHAT_MODES.find((m) => m.id === modeId) ?? CHAT_MODES[0];
 
+
+  // Set mode to owner_agent if ownerOnly
   useEffect(() => {
-    if (ownerOnly) setModeId("owner_agent");
-  }, [ownerOnly]);
+    if (ownerOnly && modeId !== "owner_agent") setModeId("owner_agent");
+  }, [ownerOnly, modeId]);
 
   // Protect /owner-agent route (redirect non-owners)
   useEffect(() => {
-    if (!ownerOnly) return;
-    if (user && !isOwner) navigate("/dashboard");
-  }, [ownerOnly, user, isOwner, navigate]);
+    if (ownerOnly && user && !isOwner) {
+      setLoadError(
+        `You are signed in as ${user.email || user.id}, but do not have 'owner' role.\n` +
+        `Check the user_roles table for your user_id (${user.id}).\n` +
+        `If you believe this is an error, contact support.`
+      );
+    } else {
+      setLoadError(null);
+    }
+  }, [ownerOnly, user?.id, user?.email, isOwner]);
 
   // Default to Owner Agent in Owner Dashboard
   useEffect(() => {
-    if (isOwner && location.pathname.includes("owner-dashboard")) {
+    if (isOwner && location.pathname.includes("owner-dashboard") && modeId !== "owner_agent") {
       setModeId("owner_agent");
     }
-  }, [isOwner, location.pathname]);
-
-  // Timeout fallback for loading
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (loading) setLoadError("Session check timed out. Please refresh or re-login.");
-    }, 8000);
-    return () => clearTimeout(timeout);
-  }, [loading]);
-
-  useEffect(() => {
-    loadAuthAndRole(setUser, setIsOwner);
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      loadAuthAndRole(setUser, setIsOwner);
-    });
-    return () => subscription.unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Only redirect if not loading and not owner
-  useEffect(() => {
-    if (loading) return;
-    if (!ownerOnly) return;
-    if (user && !isOwner) {
-      if (loadError) return; // Don't redirect if showing error
-      navigate("/dashboard");
-    }
-  }, [ownerOnly, user, isOwner, navigate, loading, loadError]);
-
-  // Fast debug check
-  useEffect(() => {
-    const check = async () => {
-      const { data } = await supabase.auth.getSession();
-      console.log("session?", !!data.session, data.session?.user?.email, data.session?.access_token?.slice(0, 20));
-    };
-    check();
-  }, []);
+  }, [isOwner, location.pathname, modeId]);
 
   async function send() {
     const text = input.trim();
@@ -182,42 +92,21 @@ export default function Agent({ defaultMode, ownerOnly, title }: AgentProps) {
     setBusy(true);
 
     try {
-      // Use supabase.functions.invoke() for better authentication handling
-      const { data: responseData, error } = await supabase.functions.invoke(fnName, {
-        body: { message: text, mode: modeId },
+      // Use new agent-chat contract
+      const { data, error } = await supabase.functions.invoke("agent-chat", {
+        body: { thread_id: threadId, input: text, mode: modeId === "owner_agent" ? "owner" : "client" },
       });
-
-      if (error) {
-        throw new Error(`Edge Function Error: ${error.message || JSON.stringify(error)}`);
+      if (error) throw new Error(error.message);
+      if (data) {
+        setThreadId(data.thread_id);
+        setMessages((m) => [...m, { role: "assistant", content: data.content }]);
       }
-
-      // Handle response data
-      let assistantText = "";
-      if (typeof responseData === "string") {
-        assistantText = responseData;
-      } else if (responseData) {
-        assistantText = responseData?.reply || responseData?.message || responseData?.output || responseData?.response || JSON.stringify(responseData, null, 2);
-      } else {
-        assistantText = "Function executed successfully but returned no data.";
-      }
-
-      setMessages((m) => [...m, { role: "assistant", content: assistantText }]);
-    } catch (e: unknown) {
-      const error = e as Error;
-      let errorMessage = `⚠️ Agent error: ${error?.message ?? String(e)}`;
-      
-      // Provide helpful error messages for common issues
-      if (e?.message?.includes("Missing authorization header") || e?.message?.includes("401")) {
-        errorMessage = "⚠️ Authentication required: Please sign in to use the agent.";
-      } else if (e?.message?.includes("Not found") || e?.message?.includes("404")) {
-        errorMessage = `⚠️ Edge Function '${fnName}' not found. Available functions: contact-form, generate-sop, run-task`;
-      }
-
+    } catch (e: any) {
       setMessages((m) => [
         ...m,
         {
           role: "assistant",
-          content: errorMessage,
+          content: `⚠️ Agent error: ${e?.message ?? String(e)}`,
         },
       ]);
     } finally {
@@ -225,13 +114,56 @@ export default function Agent({ defaultMode, ownerOnly, title }: AgentProps) {
     }
   }
 
+  // Resume last thread on mount or mode change
+  useEffect(() => {
+    async function getLatestThread(mode: "owner" | "client") {
+      const { data, error } = await supabase
+        .from("agent_threads")
+        .select("id,mode,updated_at")
+        .eq("mode", mode)
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) return null;
+      return data?.id ?? null;
+    }
+    async function resumeOrLoad() {
+      const mode = modeId === "owner_agent" ? "owner" : "client";
+      const latestId = await getLatestThread(mode);
+      if (latestId) setThreadId(latestId);
+      else setMessages([]);
+    }
+    resumeOrLoad();
+  }, [modeId]);
+
+  // Load thread history if threadId changes
+  useEffect(() => {
+    async function loadThreadMessages(threadId: string) {
+      const { data, error } = await supabase
+        .from("agent_messages")
+        .select("role,content,created_at")
+        .eq("thread_id", threadId)
+        .order("created_at", { ascending: true });
+      if (error) return;
+      setMessages((data ?? []).map((m: any) => ({ role: m.role, content: m.content })));
+    }
+    if (threadId) loadThreadMessages(threadId);
+  }, [threadId]);
+
   if (loading) {
     return (
-      <div className="min-h-[calc(100vh-64px)] w-full bg-gradient-to-b from-[#071a3a] via-[#06142e] to-[#050b1c] flex items-center justify-center">
+      <div className="min-h-[calc(100vh-64px)] w-full bg-gradient-to-b from-[#071a3a] via-[#06142e] to-[#050b1c] flex flex-col items-center justify-center">
         <div className="text-white text-lg">Loading...</div>
         {loadError && (
           <div className="mt-4 text-red-400 text-base">{loadError}</div>
         )}
+        {/* Debug info */}
+        <div className="mt-6 p-4 bg-black/40 rounded-xl text-xs text-white max-w-xl w-full">
+          <div><b>Debug Info</b></div>
+          <div><b>user:</b> {JSON.stringify(user)}</div>
+          <div><b>isOwner:</b> {String(isOwner)}</div>
+          <div><b>loading:</b> {String(loading)}</div>
+        </div>
       </div>
     );
   }
@@ -295,16 +227,7 @@ export default function Agent({ defaultMode, ownerOnly, title }: AgentProps) {
                     <span className="mx-2 text-white/30">•</span>
                     <span className="font-semibold text-white">Speaker:</span> {selectedMode.speaker}
                   </span>
-                  <select
-                    value={fnName}
-                    onChange={(e) => setFnName(e.target.value)}
-                    title="Select function type"
-                    className="rounded-2xl border border-white/10 bg-slate-950/30 px-3 py-2 text-sm text-slate-100 outline-none"
-                  >
-                    <option value="generate-sop">Generate SOP</option>
-                    <option value="contact-form">Contact Form</option>
-                    <option value="run-task">Run Task</option>
-                  </select>
+                  {/* Function selection removed for agent-chat */}
                 </div>
               )}
             </div>
@@ -339,6 +262,13 @@ export default function Agent({ defaultMode, ownerOnly, title }: AgentProps) {
                       >
                         Back home
                       </button>
+                    </div>
+                    {/* Debug info */}
+                    <div className="mt-6 p-4 bg-black/40 rounded-xl text-xs text-white max-w-xl w-full">
+                      <div><b>Debug Info</b></div>
+                      <div><b>user:</b> {JSON.stringify(user)}</div>
+                      <div><b>isOwner:</b> {String(isOwner)}</div>
+                      <div><b>loading:</b> {String(loading)}</div>
                     </div>
                   </div>
                 </div>

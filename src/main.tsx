@@ -10,11 +10,9 @@ console.log('🎯 DEBUG MODE ENABLED - Check console for detailed database opera
 console.log('📋 Look for emoji messages: 🔍 (loading) 📡 (saving) ✅ (success) ❌ (error)');
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+  <BrowserRouter>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </BrowserRouter>
 );

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "../integrations/supabase/client";
+import { supabase } from "../lib/supabase";
 
 export default function SetOwner() {
   const [loading, setLoading] = useState(false);

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../integrations/supabase/client";
+import { supabase } from "../lib/supabase";
 
 function cn(...c: Array<string | false | null | undefined>) {
   return c.filter(Boolean).join(" ");

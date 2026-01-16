@@ -1,4 +1,4 @@
-import { supabase } from "../integrations/supabase/client";
+import { supabase } from "../lib/supabase";
 
 function withTimeout<T>(p: Promise<T>, ms = 1200): Promise<T | null> {
   return new Promise((resolve) => {

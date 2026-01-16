@@ -1,21 +1,22 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
-const globalForSupabase = globalThis as unknown as {
-  __supabase?: ReturnType<typeof createClient>;
-};
+declare global {
+  // eslint-disable-next-line no-var
+  var __econest_supabase__: SupabaseClient | undefined;
+}
 
 export const supabase =
-  globalForSupabase.__supabase ??
-  createClient(supabaseUrl, supabaseAnonKey, {
+  globalThis.__econest_supabase__ ??
+  (globalThis.__econest_supabase__ = createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       storageKey: "econest-auth",
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
     },
-  });
+  }));
 
-globalForSupabase.__supabase = supabase;
+console.log("[SUPABASE] instance", globalThis.__econest_supabase__ ? "reused" : "new");

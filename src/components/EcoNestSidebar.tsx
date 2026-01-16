@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { supabase } from "../integrations/supabase/client";
+import { supabase } from "../lib/supabase";
 import { useAuth } from "../auth/AuthProvider";
 import { hardSignOut, hardReset } from "../lib/authActions";
 import { useState } from "react";
