@@ -58,6 +58,25 @@ export default function SidebarAccountFooter() {
       >
         {resetting ? "Clearing..." : "Sign out + clear cache"}
       </button>
+
+      <button
+        onClick={async () => {
+          try {
+            const { supabase } = await import("@/integrations/supabase/client");
+            await supabase.auth.signOut({ scope: "global" });
+          } catch (e) {
+            console.warn("Reset signOut failed (continuing):", e);
+          }
+          try {
+            localStorage.clear();
+            sessionStorage.clear();
+          } catch {}
+          window.location.href = "/auth";
+        }}
+        className="flex w-full items-center justify-center rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm text-white font-medium hover:bg-white/20 hover:border-white/30 transition-all"
+      >
+        Reset
+      </button>
     </div>
   );
 }

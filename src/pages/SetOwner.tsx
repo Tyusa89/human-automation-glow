@@ -18,8 +18,8 @@ export default function SetOwner() {
       const { error } = await supabase
         .from("profiles")
         .update({
-          is_owner: true
-        } as any)
+          is_owner: true,
+        })
         .eq("user_id", user.id);
 
       if (error) {

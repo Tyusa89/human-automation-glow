@@ -6,9 +6,9 @@ import { useAuth } from "@/auth/AuthProvider";
 type NoteRow = {
   id: string;
   user_id: string;
-  title: string;
+  category: string | null;
   content: string;
-  pinned: boolean;
+  is_pinned: boolean | null;
   created_at: string;
   updated_at: string;
 };
@@ -38,7 +38,7 @@ export default function Notes() {
     const { data, error } = await supabase
       .from("notes")
       .select("*")
-      .order("pinned", { ascending: false })
+      .order("is_pinned", { ascending: false })
       .order("updated_at", { ascending: false });
 
     if (error) setError(error.message);
@@ -67,9 +67,9 @@ export default function Notes() {
 
     const { error } = await supabase.from("notes").insert({
       user_id: user.id,
-      title: newTitle,
+      category: newTitle,
       content: newContent,
-      pinned: false,
+      is_pinned: false,
     });
 
     if (error) {
@@ -88,7 +88,7 @@ export default function Notes() {
     setError(null);
     const { error } = await supabase
       .from("notes")
-      .update({ pinned: !note.pinned })
+      .update({ is_pinned: !note.is_pinned })
       .eq("id", note.id);
 
     if (error) setError(error.message);
@@ -191,13 +191,13 @@ export default function Notes() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        {n.pinned && (
+                        {n.is_pinned && (
                           <span className="rounded-full bg-yellow-300/20 px-2 py-0.5 text-xs text-yellow-200">
                             Pinned
                           </span>
                         )}
                         <h3 className="truncate text-base font-semibold text-white">
-                          {n.title || "Untitled"}
+                          {n.category || "Untitled"}
                         </h3>
                       </div>
                       {n.content ? (
@@ -219,7 +219,7 @@ export default function Notes() {
                         onClick={() => togglePin(n)}
                         className="rounded-xl border border-white/10 bg-black/20 px-3 py-1.5 text-xs text-white hover:bg-white/10"
                       >
-                        {n.pinned ? "Unpin" : "Pin"}
+                        {n.is_pinned ? "Unpin" : "Pin"}
                       </button>
                       <button
                         onClick={() => deleteNote(n.id)}
