@@ -22,7 +22,7 @@ type Challenge = (typeof CHALLENGES)[number];
 type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
 
 export default function Profile() {
-  const { user, ready } = useAuth();
+  const { user, ready, isOwner } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,17 +45,13 @@ export default function Profile() {
     let mounted = true;
 
     async function load() {
-      if (mounted) {
-        setLoading(true);
-        setError(null);
-      }
+      if (!mounted) return;
+      if (!user) return;
+
+      setLoading(true);
+      setError(null);
 
       try {
-        if (!user) {
-          if (mounted) setError("You must be signed in to view your profile.");
-          return;
-        }
-
         const { data, error } = await supabase
           .from("profiles")
           .select("*")
@@ -64,17 +60,16 @@ export default function Profile() {
 
         if (error) throw error;
 
-        // Set initial state directly from database data
-        if (data && mounted) {
-          setInitial(data as ProfileRow);
-          setEmail(data.email || "");
-          setFullName(data.full_name || "");
-          setCompany(data.company || "");
-          setWorkType(data.business_type || "");
-          setClientVolume(data.client_volume || "");
-          setTrackingMethod(data.tracking_method || "");
-          setGoal90(data.success_goal || "");
-          setChallenges((data.primary_challenges as Challenge[]) || []);
+        if (mounted) {
+          setInitial(data ?? null);
+          setEmail(data?.email || "");
+          setFullName(data?.full_name || "");
+          setCompany(data?.company || "");
+          setWorkType(data?.business_type || "");
+          setClientVolume(data?.client_volume || "");
+          setTrackingMethod(data?.tracking_method || "");
+          setGoal90(data?.success_goal || "");
+          setChallenges((data?.primary_challenges as Challenge[]) || []);
         }
       } catch (err: unknown) {
         if (mounted) setError(err instanceof Error ? err.message : "Failed to load profile.");
@@ -83,8 +78,11 @@ export default function Profile() {
       }
     }
 
-    if (ready) {
+    if (ready && user) {
       load();
+    } else if (ready && !user) {
+      setLoading(false);
+      setError("You must be signed in to view your profile.");
     }
 
     return () => {
@@ -141,8 +139,6 @@ export default function Profile() {
     setError(null);
     setSavedAt(null);
 
-    const { data: sessionData } = await supabase.auth.getSession();
-    const user = sessionData.session?.user;
     if (!user) {
       setSaving(false);
       setError("You must be signed in to save changes.");
@@ -172,8 +168,7 @@ export default function Profile() {
       return;
     }
 
-    // refresh initial snapshot
-    setInitial((prev) => prev ? { ...prev, ...payload } as ProfileRow : prev);
+    setInitial((prev) => (prev ? ({ ...prev, ...payload } as ProfileRow) : prev));
     setSaving(false);
     setSavedAt(new Date().toLocaleString());
   }
@@ -249,9 +244,7 @@ export default function Profile() {
             {initial && (
               <div className="mt-5 text-xs text-slate-400">
                 Role:{" "}
-                <span className="text-slate-200">
-                  {(initial as any).is_owner ? "owner" : (initial as any).role ?? "client"}
-                </span>
+                <span className="text-slate-200">{isOwner ? "owner" : "client"}</span>
               </div>
             )}
           </section>
@@ -328,8 +321,11 @@ export default function Profile() {
                   <option value="fewer_dropped_balls">Fewer Dropped Balls</option>
                   <option value="more_time">More Time</option>
                   <option value="preparing_to_grow">Preparing to Grow</option>
-                  <option value="Automate scheduling">Automate scheduling</option>
-                  <option value="Other">Other</option>
+                  {/*
+                    NOTE: If your success_goal enum in Postgres uses snake_case, update these values accordingly (e.g., automate_scheduling, other)
+                  */}
+                  <option value="automate_scheduling">Automate scheduling</option>
+                  <option value="other">Other</option>
                 </select>
               </div>
 

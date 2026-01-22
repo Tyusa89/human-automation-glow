@@ -18,6 +18,7 @@ export default function Auth() {
   const [otp, setOtp] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [forgotMode, setForgotMode] = useState(false);
 
   const canSubmit = useMemo(() => {
     if (busy) return false;
@@ -33,6 +34,11 @@ export default function Auth() {
       if (data.session) navigate("/", { replace: true });
     });
   }, [navigate]);
+
+  useEffect(() => {
+    // Leaving password tab should exit forgot mode
+    if (tab !== "password") setForgotMode(false);
+  }, [tab]);
 
   async function sendMagicLink() {
     setBusy(true);
@@ -130,6 +136,23 @@ export default function Auth() {
     }
   }
 
+  async function resetPasswordEmail() {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/auth/reset`,
+      });
+      if (error) throw error;
+      setMsg("✅ Password reset email sent. Check your inbox.");
+    } catch (e: unknown) {
+      const error = e as Error;
+      setMsg(`⚠️ ${error?.message ?? "Failed to send reset email."}`);  
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#07112a] text-white">
       {/* Ambient */}
@@ -202,6 +225,18 @@ export default function Auth() {
                     placeholder="••••••••"
                     className="w-full rounded-2xl border border-white/10 bg-[#0b1735]/70 px-4 py-3 text-white placeholder:text-white/35 outline-none focus:border-emerald-400/40 focus:ring-2 focus:ring-emerald-500/10"
                   />
+                  <div className="text-right">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForgotMode(true);
+                        setMsg(null);
+                      }}
+                      className="text-xs text-emerald-200/80 hover:text-emerald-200 underline underline-offset-4"
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
                 </>
               )}
             </div>
@@ -256,21 +291,46 @@ export default function Auth() {
           )}
 
           {tab === "password" && (
-            <div className="mt-6 grid grid-cols-2 gap-2">
-              <button
-                onClick={signInPassword}
-                disabled={!canSubmit}
-                className="rounded-2xl bg-emerald-500 px-4 py-3 font-medium text-white hover:bg-emerald-600 disabled:opacity-50"
-              >
-                Sign in
-              </button>
-              <button
-                onClick={signUpPassword}
-                disabled={!canSubmit}
-                className="rounded-2xl border border-white/10 bg-white/7 px-4 py-3 font-medium text-white hover:bg-white/10 disabled:opacity-50"
-              >
-                Sign up
-              </button>
+            <div className="mt-6 space-y-2">
+              {forgotMode ? (
+                <>
+                  <button
+                    onClick={resetPasswordEmail}
+                    disabled={busy || !email.trim().includes("@")}
+                    className="w-full rounded-2xl bg-emerald-500 px-4 py-3 font-medium text-white hover:bg-emerald-600 disabled:opacity-50"
+                  >
+                    {busy ? "Sending..." : "Send reset link"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotMode(false);
+                      setMsg(null);
+                    }}
+                    className="w-full rounded-2xl border border-white/10 bg-white/7 px-4 py-3 font-medium text-white hover:bg-white/10"
+                  >
+                    Back to sign in
+                  </button>
+                </>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={signInPassword}
+                    disabled={!canSubmit}
+                    className="rounded-2xl bg-emerald-500 px-4 py-3 font-medium text-white hover:bg-emerald-600 disabled:opacity-50"
+                  >
+                    Sign in
+                  </button>
+                  <button
+                    onClick={signUpPassword}
+                    disabled={!canSubmit}
+                    className="rounded-2xl border border-white/10 bg-white/7 px-4 py-3 font-medium text-white hover:bg-white/10 disabled:opacity-50"
+                  >
+                    Sign up
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -280,31 +340,25 @@ export default function Auth() {
             </div>
           )}
 
-          <button
-            onClick={() => navigate("/")}
-            className="mt-6 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/80 hover:bg-white/10"
-          >
-            ← Back to home
-          </button>
-
-          {/* Reset button for stuck auth states */}
-          <button
-            onClick={async () => {
-              try {
-                await supabase.auth.signOut({ scope: "global" });
-              } catch (e) {
-                console.warn("Reset signOut failed:", e);
-              }
-              try {
-                localStorage.clear();
-                sessionStorage.clear();
-              } catch {}
-              window.location.href = "/auth";
-            }}
-            className="mt-3 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/60 hover:bg-white/10"
-          >
-            🧼 Reset session
-          </button>
+          <div className="mt-6 space-y-2">
+            <button
+              onClick={() => navigate("/")}
+              className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/80 hover:bg-white/10"
+            >
+              ← Back to home
+            </button>
+            
+            {tab === "password" && (
+              <button
+                type="button"
+                onClick={resetPasswordEmail}
+                disabled={busy || !email.trim().includes("@")}
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/80 hover:bg-white/10 disabled:opacity-50"
+              >
+                Reset password
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

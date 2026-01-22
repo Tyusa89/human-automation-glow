@@ -1,35 +1,43 @@
 import { Routes, Route } from "react-router-dom";
-import AppLayout from "@/layouts/AppLayout";
+import AppLayout from "./layouts/AppLayout";
 
-import Home from "@/pages/Home";
-import Dashboard from "@/pages/Dashboard";
-import Profile from "@/pages/Profile";
-import Agent from "@/pages/Agent";
-import Auth from "@/pages/Auth";
-import Templates from "@/pages/Templates";
-import Product from "@/pages/Product";
-import Solutions from "@/pages/Solutions";
-import Pricing from "@/pages/Pricing";
-import Integrations from "@/pages/Integrations";
-import Services from "@/pages/Services";
-import Support from "@/pages/Support";
-import Contact from "@/pages/Contact";
-import Trust from "@/pages/Trust";
-import Admin from "@/pages/Admin";
-import AuthCallback from "@/pages/AuthCallback";
-import ComingSoon from "@/pages/ComingSoon";
-import OwnerDashboard from "@/pages/OwnerDashboard";
-import SetOwner from "@/pages/SetOwner";
-import Appointments from "@/pages/Appointments";
-import Contacts from "@/pages/Contacts";
-import Notes from "@/pages/Notes";
-import Reports from "@/pages/Reports";
-import Expenses from "@/pages/Expenses";
-import NotFound from "@/pages/NotFound";
+import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
+import Agent from "./pages/Agent";
+import Auth from "./pages/Auth";
+import Templates from "./pages/Templates";
+import Product from "./pages/Product";
+import Solutions from "./pages/Solutions";
+import Pricing from "./pages/Pricing";
+import Integrations from "./pages/Integrations";
+import Services from "./pages/Services";
+import Support from "./pages/Support";
+import Contact from "./pages/Contact";
+import Trust from "./pages/Trust";
+import Admin from "./pages/Admin";
+import AuthCallback from "./pages/AuthCallback";
+import AuthReset from "./pages/AuthReset";
+import ComingSoon from "./pages/ComingSoon";
+import OwnerDashboard from "./pages/OwnerDashboard";
+import OwnerAgent from "./pages/OwnerAgent";
+import SetOwner from "./pages/SetOwner";
+import Appointments from "./pages/Appointments";
+import Contacts from "./pages/Contacts";
+import Notes from "./pages/Notes";
+import Reports from "./pages/Reports";
+import Expenses from "./pages/Expenses";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
   return (
     <Routes>
+      {/* Public auth routes outside layout */}
+      <Route path="/auth" element={<Auth />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route path="/auth/reset" element={<AuthReset />} />
+
+      {/* Everything else inside layout */}
       <Route element={<AppLayout />}>
         {/* Site */}
         <Route path="/" element={<Home />} />
@@ -43,10 +51,6 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/trust" element={<Trust />} />
 
-        {/* Auth */}
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
-
         {/* App */}
         <Route path="/agent" element={<Agent />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -59,7 +63,7 @@ export default function App() {
         {/* Admin/Owner */}
         <Route path="/admin" element={<Admin />} />
         <Route path="/owner-dashboard" element={<OwnerDashboard />} />
-        <Route path="/owner-agent" element={<ComingSoon title="Owner Agent" />} />
+        <Route path="/owner-agent" element={<OwnerAgent />} />
         <Route path="/acm" element={<ComingSoon title="ACM" />} />
         <Route path="/contacts-directory" element={<ComingSoon title="Contacts Directory" />} />
         <Route path="/approvals" element={<ComingSoon title="Approvals" />} />
@@ -68,9 +72,10 @@ export default function App() {
 
         {/* Demos */}
         <Route path="/demos/analytics" element={<ComingSoon title="Analytics Demo" />} />
-
-        <Route path="*" element={<NotFound />} />
       </Route>
+
+      {/* Global fallback */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

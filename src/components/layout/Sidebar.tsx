@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { NAV, NavItem } from "./navConfig";
-import { useAuth } from "@/auth/AuthProvider";
-import SidebarAccountFooter from "@/components/sidebar/SidebarAccountFooter";
+import { useAuth } from "../../auth/AuthProvider";
+import SidebarAccountFooter from "../sidebar/SidebarAccountFooter";
 
 function Item({ item, isAuthed }: { item: NavItem; isAuthed: boolean }) {
   const disabled = !!item.comingSoon;
