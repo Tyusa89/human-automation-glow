@@ -285,6 +285,8 @@ export default function Expenses() {
     });
   }, [expenses, vendorQuery, categoryFilter]);
 
+  // Highlight row after edit
+  const [highlightId, setHighlightId] = useState<string | null>(null);
   // CSV Export Handler
   function handleExportCsv() {
     // Export ALL filtered rows (not just 10 visible)
